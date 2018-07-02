@@ -13,7 +13,6 @@
 #include <string.h>
 
 static	char usbOutputBuffer[128];
-static  char strTestOutput[50];
 
 static uint8_t				startBtnState,startBtnPress;
 static SD_CardInfo			sdInfo;
@@ -336,12 +335,11 @@ void	BSP_SDCard_Task(void const * argument)
 
 						f_close(&fFile);
 
-						/*sprintf(usbOutputBuffer,"%d %5d %5d %5d\n",sdWriteData.sensorsData.devID,
+						sprintf(usbOutputBuffer,"%d %5d %5d %5d\n",sdWriteData.sensorsData.devID,
 																   sdWriteData.sensorsData.sensorValue[0],
 																   sdWriteData.sensorsData.sensorValue[1],
 																   sdWriteData.sensorsData.sensorValue[2]);
-						*/
-						sprintf(strTestOutput,"%d\n",sdWriteData.sensorsData.sensorValue[0]);
+
 						BSP_Usb_SendString(usbOutputBuffer);
 
 						if(sdWriteData.sensorsData.devID == 4)
