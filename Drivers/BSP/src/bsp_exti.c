@@ -17,12 +17,15 @@ void	BSP_EXTI_Init()
 	  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 10, 0);
 	  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
-	  //Lidar IRQ pin
 	  GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING_FALLING;
 	  GPIO_InitStructure.Pull = GPIO_PULLDOWN;
-	  GPIO_InitStructure.Pin = GPIO_PIN_4;
+	  GPIO_InitStructure.Pin = GPIO_PIN_3|GPIO_PIN_4;
 	  HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
 
+	  //Lidar IRQ pin
+	  HAL_NVIC_SetPriority(EXTI3_IRQn, 9, 1);
+	  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+	  //Sonar IRQ pin
 	  HAL_NVIC_SetPriority(EXTI4_IRQn, 10, 1);
 	  HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 }
@@ -46,6 +49,11 @@ __weak void BSP_EXTI5_Callback()
 }
 
 __weak void BSP_EXTI4_Callback()
+{
+
+}
+
+__weak void BSP_EXTI3_Callback()
 {
 
 }
