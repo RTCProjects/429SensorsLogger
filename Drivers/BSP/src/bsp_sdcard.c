@@ -331,6 +331,8 @@ void	BSP_SDCard_Task(void const * argument)
 															  sdWriteData.sensorsData.sensorValue[0],
 															  sdWriteData.sensorsData.sensorValue[1],0);
 
+							sprintf(usbOutputBuffer,"%d\n",sdWriteData.sensorsData.sensorValue[0]);
+							BSP_Usb_SendString(usbOutputBuffer);
 
 						}
 
@@ -341,8 +343,8 @@ void	BSP_SDCard_Task(void const * argument)
 																   sdWriteData.sensorsData.sensorValue[1],
 																   sdWriteData.sensorsData.sensorValue[2]);
 						*/
-						sprintf(strTestOutput,"%d\n",sdWriteData.sensorsData.sensorValue[0]);
-						BSP_Usb_SendString(usbOutputBuffer);
+
+
 
 						if(sdWriteData.sensorsData.devID == 4)
 							BSP_Usb_SendString("--------------------------------------\n");
