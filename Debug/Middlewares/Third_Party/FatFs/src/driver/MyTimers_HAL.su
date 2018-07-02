@@ -1,0 +1,4 @@
+MyTimers_HAL.c:19:6:InitandEnableDelayTimer15	24	static
+MyTimers_HAL.c:32:6:delay_us	16	static
+MyTimers_HAL.c:39:6:delay_ms	8	static
+MyTimers_HAL.c:48:6:delay_s	16	static

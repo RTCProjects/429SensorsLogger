@@ -1,0 +1,2 @@
+bsp_rtc.c:7:6:BSP_RTC_Init	32	static
+bsp_rtc.c:57:18:BSP_RTC_GetTime	8	static

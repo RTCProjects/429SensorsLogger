@@ -1,0 +1,7 @@
+MySPI_HAL.c:19:6:MySPI3_Init_Slow	48	static
+MySPI_HAL.c:49:6:MySPI3_Init_Fast	48	static
+MySPI_HAL.c:79:6:MySPI3_DeInit	0	static
+MySPI_HAL.c:84:9:MySPI3_ReadByte	24	static
+MySPI_HAL.c:92:9:MySPI3_ReadBytes	16	static
+MySPI_HAL.c:101:9:MySPI3_SendByte	32	static
+MySPI_HAL.c:109:9:MySPI3_SendBytes	8	static

@@ -1,0 +1,3 @@
+devices.c:22:6:Devices_Init	8	static
+devices.c:44:6:Devices_PackageAnalysis	24	static
+devices.c:150:6:Devices_SensorsDataRequest	8	static

@@ -1,0 +1,6 @@
+bsp_canbus.c:176:13:BSP_CanBus_TxTask	48	static
+bsp_canbus.c:156:13:BSP_CanBus_RxTask	16	static
+bsp_canbus.c:34:6:BSP_CanBus_Init	96	static
+bsp_canbus.c:132:6:BSP_CanBus_SendData	32	static
+bsp_canbus.c:195:6:HAL_CAN_RxFifo0MsgPendingCallback	8	static
+bsp_canbus.c:224:6:HAL_CAN_TxMailbox0CompleteCallback	0	static

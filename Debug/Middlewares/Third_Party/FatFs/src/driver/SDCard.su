@@ -1,0 +1,3 @@
+SDCard.c:15:6:SDCard_HWInit	32	static
+SDCard.c:28:6:SDCard_ChipSelect	0	static
+SDCard.c:33:6:SDCard_ChipDeselect	0	static

@@ -1,0 +1,12 @@
+mmc_stm32_spi.c:60:13:xchg_spi	0	static
+mmc_stm32_spi.c:100:13:deselect	8	static
+mmc_stm32_spi.c:85:12:wait_ready.isra.0	8	static
+mmc_stm32_spi.c:108:12:select	8	static
+mmc_stm32_spi.c:166:13:send_cmd	16	static
+mmc_stm32_spi.c:122:12:rcvr_datablock	16	static
+mmc_stm32_spi.c:143:12:xmit_datablock	16	static
+mmc_stm32_spi.c:209:9:disk_initialize	32	static
+mmc_stm32_spi.c:267:9:disk_status	0	static
+mmc_stm32_spi.c:279:9:disk_read	16	static
+mmc_stm32_spi.c:319:9:disk_write	16	static
+mmc_stm32_spi.c:367:9:disk_ioctl	32	static
