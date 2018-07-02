@@ -1,3 +1,4 @@
-bsp_exti.c:3:6:BSP_EXTI_Init	32	static
-bsp_exti.c:30:13:BSP_EXTI5_Callback	0	static
-bsp_exti.c:22:6:HAL_GPIO_EXTI_Callback	8	static
+bsp_exti.c:3:6:BSP_EXTI_Init	40	static
+bsp_exti.c:43:13:BSP_EXTI5_Callback	0	static
+bsp_exti.c:48:13:BSP_EXTI4_Callback	0	static
+bsp_exti.c:31:6:HAL_GPIO_EXTI_Callback	8	static

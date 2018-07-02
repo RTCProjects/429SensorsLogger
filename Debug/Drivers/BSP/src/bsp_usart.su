@@ -1,0 +1,2 @@
+bsp_usart.c:5:6:USART_Init	8	static
+bsp_usart.c:21:6:HAL_UART_RxCpltCallback	0	static

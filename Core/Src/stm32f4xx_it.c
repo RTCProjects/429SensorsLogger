@@ -46,6 +46,7 @@ extern TIM_HandleTypeDef	htim7;
 extern TIM_HandleTypeDef 	htim1;
 extern CAN_HandleTypeDef  	CanHandle;
 extern I2C_HandleTypeDef 	I2C1Handle;
+extern UART_HandleTypeDef 	bsp_uart1;
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -235,7 +236,7 @@ void I2C1_ER_IRQHandler(void)
 }
 
 /**
-  * @brief  This function handles External line 0 interrupt request.
+  * @brief  This function handles External line 9-5 interrupt request.
   * @param  None
   * @retval None
   */
@@ -243,6 +244,27 @@ void EXTI9_5_IRQHandler(void)
 {
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
 }
+
+/**
+  * @brief  This function handles External line 4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI4_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
+}
+
+/**
+  * @brief  This function handles External line 0 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void USART1_IRQHandler(void)
+{
+	HAL_UART_IRQHandler(&bsp_uart1);
+}
+
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */

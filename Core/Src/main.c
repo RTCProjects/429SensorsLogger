@@ -30,7 +30,8 @@ void mainTask(void const * argument);
   * @retval None
   */
 int main(void)
-  {
+
+{
   HAL_Init();
 
   systemClock_Config();
@@ -124,7 +125,6 @@ void portClkInit(void)
 
    HAL_GPIO_WritePin(GPIOD,GPIO_PIN_4,GPIO_PIN_RESET);
 }
-
 /*----------------------------------------------------------------------------------------------------*/
 /** 
   * @brief 			Главный поток программы.
@@ -133,7 +133,6 @@ void portClkInit(void)
   */
 void mainTask(void const * argument)
 {		
-
 	//инициализация RTC
 	BSP_RTC_Init();
 	//инициализация обработчика устройств на шине
@@ -144,8 +143,6 @@ void mainTask(void const * argument)
 	BSP_SDCard_Init();
 	//инициализация CanBus
 	BSP_CanBus_Init();
-
-
 	//Инициализация датчика
 	IMU_Init();
 
