@@ -141,8 +141,6 @@ void mainTask(void const * argument)
 	BSP_Usb_Init();
 	//инициализация SDCard SPI
 	BSP_SDCard_Init();
-	//инициализация CanBus
-	BSP_CanBus_Init();
 	//Инициализация датчика
 	IMU_Init();
 

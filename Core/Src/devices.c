@@ -55,30 +55,6 @@ void	Devices_PackageAnalysis(TQueryCanRxData	*rxData)
 		
 		static tSDCardWriteData		writeData;
 		
-		/*memset(&writeData.sensorsData,0,sizeof(tSensorData));
-		writeData.type = E_RANGEFINDER;
-		writeData.sensorsData.devID = logicNumber;
-		writeData.sensorsData.devType = typeNumber;
-		writeData.sensorsData.uFlags.flags = rxData->Data[1];
-
-		memcpy(writeData.sensorsData.sensorValue,rxData->Data + 2,sizeof(uint16_t) * 3);
-
-		if(logicNumber>=0 && logicNumber<=4)
-		{
-			if(typeNumber == TYPE_1){
-				sensorsLowData[sensorsCounter].ulRangefinder[logicNumber] = writeData.sensorsData.sensorValue[2];
-			}
-			if(typeNumber == TYPE_2){
-				sensorsLowData[sensorsCounter].ulRangefinder[logicNumber] = writeData.sensorsData.sensorValue[1];
-				sensorsLowData[sensorsCounter].ulRadar = writeData.sensorsData.sensorValue[0];
-			}
-			sensorsCounter++;
-
-			if(sensorsCounter>=100){
-				BSP_SDCard_WriteSensorsData(&writeData);
-				sensorsCounter = 0;
-			}
-		}*/
 		writeData.type = E_RANGEFINDER;
 
 		memset(&writeData.sensorsData,0,sizeof(tSensorData));
