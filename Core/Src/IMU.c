@@ -415,6 +415,7 @@ void	IMU_Task(void const * argument)
 	{
 		xSemaphoreTake( xIMURdySemaphore, portMAX_DELAY );
 		IMU_GetData();
+		Devices_SensorsDataRequest();
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/

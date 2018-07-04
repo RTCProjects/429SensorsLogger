@@ -143,8 +143,8 @@ void mainTask(void const * argument)
 
 	for(;;)
 	{
-		Devices_SensorsDataRequest();
-		osDelay(100);
+		//Devices_SensorsDataRequest();
+		//osDelay(100);
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/
