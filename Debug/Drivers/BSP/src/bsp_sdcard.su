@@ -4,10 +4,10 @@ bsp_sdcard.c:58:6:BSP_SDCard_SPIInit	8	static
 bsp_sdcard.c:84:6:BSP_SDCardSPIDeInit	0	static
 bsp_sdcard.c:94:6:BSP_SDCard_WriteSensorsData	0	static
 bsp_sdcard.c:100:7:BSP_SDCard_StartBtnState	8	static
-bsp_sdcard.c:249:10:BSP_SDCard_GetFileNumbers	88	static
+bsp_sdcard.c:247:10:BSP_SDCard_GetFileNumbers	88	static
 bsp_sdcard.c:121:19:BSP_SDCard_GetNewFileName	8	static
-bsp_sdcard.c:278:6:BSP_SDCard_CreateDefaultFolders	32	static
-bsp_sdcard.c:338:9:SD_IO_CSState	0	static
-bsp_sdcard.c:353:8:SD_IO_WriteReadData	16	static
-bsp_sdcard.c:363:11:SD_IO_WriteByte	32	static
-bsp_sdcard.c:323:9:SD_IO_Init	8	static
+bsp_sdcard.c:276:6:BSP_SDCard_CreateDefaultFolders	32	static
+bsp_sdcard.c:336:9:SD_IO_CSState	0	static
+bsp_sdcard.c:351:8:SD_IO_WriteReadData	16	static
+bsp_sdcard.c:361:11:SD_IO_WriteByte	32	static
+bsp_sdcard.c:321:9:SD_IO_Init	8	static

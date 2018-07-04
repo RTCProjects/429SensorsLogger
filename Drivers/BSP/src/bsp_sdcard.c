@@ -213,12 +213,10 @@ void	BSP_SDCard_Task(void const * argument)
 						f_printf(&fFile,"%s",usbOutputBuffer);
 						f_close(&fFile);
 
-						BSP_Usb_SendString(usbOutputBuffer);
-						BSP_Usb_SendString("--------------------------------------\n");
-
+						//BSP_Usb_SendString(usbOutputBuffer);
 					}
 					else{
-						BSP_Usb_SendString("write error sensors\n");
+						//BSP_Usb_SendString("write error sensors\n");
 					}
 				}break;
 
@@ -233,8 +231,8 @@ void	BSP_SDCard_Task(void const * argument)
 
 						f_close(&fFile);
 					}
-					else
-						BSP_Usb_SendString("write imu error\n");
+					else;
+						//BSP_Usb_SendString("write imu error\n");
 				}break;
 			}
 		}

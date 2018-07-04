@@ -5,6 +5,7 @@
 **/
 /*----------------------------------------------------------------------------------------------------*/
 #include "bsp_usb.h"
+#include "bsp_usart.h"
 #include "cmsis_os.h"
 #include <string.h>
 
@@ -57,7 +58,7 @@ void	BSP_Usb_TxTask(void const * argument)
 				//uint8_t *pPackage = protocol_CreatePackageForOutputStream(txMsg.Event,txMsg.Status,txMsg.DataSize,txMsg.pData,&pPackSize);
 				//if(pPackage)
 				
-					
+					//BSP_WIFI_UARTSend(txMsg.pData,txMsg.Len);
 					CDC_Transmit_FS(txMsg.pData,txMsg.Len);
 					osDelay(1);
 					

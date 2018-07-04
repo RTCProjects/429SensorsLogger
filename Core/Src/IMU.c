@@ -24,7 +24,7 @@ const uint16_t	CALIB_REQUEST_VAL = 1000;
 
 float	SelfTest[6];
 float 	gyroBias[3], accelBias[3];
-static float Ax, Ay, Az, Gx, Gy, Gz;
+float Ax, Ay, Az, Gx, Gy, Gz;
 
 tIMULowData	imuLowData[IMU_LOW_DATA_SIZE] CCM_SRAM;
 uint8_t	uIMURdy = 0;
@@ -490,7 +490,6 @@ void IMU_GetData(void)
 
 	static tSDCardWriteData	writeData;
 	memset(&writeData.imuData,0,sizeof(tIMUData));
-
 							writeData.type = E_GYRO;
 							writeData.imuData.fAz = Az;
 							writeData.imuData.fPitch = Gx;//fTemp1X / M_PI * 180.0f / 72.0f * 90.0f;
@@ -517,8 +516,17 @@ void BSP_EXTI5_Callback()
 {
 	portBASE_TYPE 	xTaskWoken;
 	uint8_t 		Buf[14];
-	HAL_I2C_Mem_Read(&I2C1Handle, (uint16_t)MPU6050_ADDRESS << 1, ACCEL_XOUT_H, 1, Buf, 14, 0xFFFF);
+	HAL_StatusTypeDef hStatus = HAL_I2C_Mem_Read(&I2C1Handle, (uint16_t)MPU6050_ADDRESS << 1, ACCEL_XOUT_H, 1, Buf, 14, 0x100);
+	if(hStatus!= HAL_OK){
+		static I2C_Module	i2c1Module;
+			i2c1Module.instance = I2C1Handle;
+			i2c1Module.sclPin = GPIO_PIN_6;
+			i2c1Module.sclPort = GPIOB;
+			i2c1Module.sdaPin = GPIO_PIN_8;
+			i2c1Module.sdaPort = GPIOB;
 
+		I2C_ClearBusyFlagErratum(&i2c1Module);
+	}
 	ax = (int16_t)Buf[0]<<8 | Buf[1];
 	ay = (int16_t)Buf[2]<<8 | Buf[3];
 	az = (int16_t)Buf[4]<<8 | Buf[5];

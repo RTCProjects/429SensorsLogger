@@ -48,6 +48,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
+#include "cmsis_os.h"
 
 extern void _Error_Handler(char *, int);
 extern UART_HandleTypeDef bsp_uart1;
@@ -300,6 +301,23 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
   /* USER CODE END USART1_MspInit 1 */
   }
+  if(uartHandle->Instance==UART5)
+  {
+	  __HAL_RCC_UART5_CLK_ENABLE();
+	  __HAL_RCC_GPIOC_CLK_ENABLE();
+	  __HAL_RCC_GPIOD_CLK_ENABLE();
+
+	    GPIO_InitStruct.Pin = GPIO_PIN_2;
+	    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	    GPIO_InitStruct.Alternate = GPIO_AF8_UART5;
+	    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+	    GPIO_InitStruct.Pin = GPIO_PIN_12;
+	    GPIO_InitStruct.Alternate = GPIO_AF8_UART5;
+	    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  }
+
 }
 
 void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
@@ -327,6 +345,26 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   }
 }
 
+/**
+  * @brief I2C MSP De-Initialization
+  *        This function frees the hardware resources used in this example:
+  *          - Disable the Peripheral's clock
+  *          - Revert GPIO, DMA and NVIC configuration to their default state
+  * @param hi2c: I2C handle pointer
+  * @retval None
+  */
+void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
+{
+  /*##-1- Reset peripherals ##################################################*/
+	__HAL_RCC_I2C1_FORCE_RESET();
+	__HAL_RCC_I2C1_RELEASE_RESET();
+
+  /*##-2- Disable peripherals and GPIO Clocks ################################*/
+  /* Configure I2C Tx as alternate function  */
+  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_6);
+  /* Configure I2C Rx as alternate function  */
+  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_7);
+}
 /**
   * @}
   */

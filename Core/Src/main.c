@@ -13,6 +13,7 @@
 #include "bsp_sdcard.h"
 #include "bsp_manchester.h"
 #include "bsp_rtc.h"
+#include "bsp_usart.h"
 
 #include "devices.h"
 #include "IMU.h"
@@ -29,7 +30,6 @@ void mainTask(void const * argument);
   * @retval None
   */
 int main(void)
-
 {
   HAL_Init();
 
@@ -130,6 +130,9 @@ void portClkInit(void)
   * @param		 	argument: параметры потока FreeRTOS
   * @reval			None
   */
+extern tSensors	SensorsData;
+extern float Ax, Ay, Az, Gx, Gy, Gz;
+
 void mainTask(void const * argument)
 {		
 	//инициализация RTC
@@ -140,11 +143,21 @@ void mainTask(void const * argument)
 	BSP_Usb_Init();
 	//инициализация SDCard SPI
 	BSP_SDCard_Init();
+	//
+	BSP_WIFI_Init();
+	static char	pack[100];
+
 
 	for(;;)
 	{
-		//Devices_SensorsDataRequest();
-		//osDelay(100);
+		/*for(int i = 0;i<10;i++)
+		{
+
+		}*/
+		sprintf(pack,"L%5d R%5d S%5d\nAz:%f Gx:%f Gy:%f\n",SensorsData.ulLidarDistance,SensorsData.ulRadarDistance,SensorsData.ulSonarDistance,
+															Az,Gx,Gy);
+		BSP_WIFI_UARTSend((uint8_t*)pack,strlen(pack));
+		osDelay(500);
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/
