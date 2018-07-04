@@ -146,42 +146,6 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
 
 	}
 }
-
-
-/**
-  * @brief CAN MSP Initialization
-  *        This function configures the hardware resources used in this example:
-  *           - Peripheral's clock enable
-  *           - Peripheral's GPIO Configuration
-  *           - NVIC configuration for DMA interrupt request enable
-  * @param hcan: CAN handle pointer
-  * @retval None
-  */
-void HAL_CAN_MspInit(CAN_HandleTypeDef *hcan)
-{
-  GPIO_InitTypeDef   GPIO_InitStruct;
-
-  /*##-1- Enable peripherals and GPIO Clocks #################################*/
-  
-  /* Enable GPIO clock ****************************************/
-  __HAL_RCC_GPIOD_CLK_ENABLE();	
-
-	/* CAN1 Periph clock enable */
-  __HAL_RCC_CAN1_CLK_ENABLE();
-	
-  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;
-    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-
-  /*##-3- Configure the NVIC #################################################*/
-  /* NVIC configuration for CAN1 Reception complete interrupt */
-  HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 8, 0);
-  HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
-}
-
 /**
   * @brief CAN MSP De-Initialization
   *        This function frees the hardware resources used in this example:
@@ -315,7 +279,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
   {
     /* USART1 clock enable */
     __HAL_RCC_USART1_CLK_ENABLE();
-
+    __HAL_RCC_GPIOA_CLK_ENABLE();
     /**USART1 GPIO Configuration
     PA9     ------> USART1_TX
     PA10     ------> USART1_RX
@@ -323,15 +287,14 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Pin = GPIO_PIN_9;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = GPIO_PIN_10;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
     /* USART1 interrupt Init */
-    HAL_NVIC_SetPriority(USART1_IRQn, 11, 0);
+    HAL_NVIC_SetPriority(USART1_IRQn, 8, 0);
     HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspInit 1 */
 

@@ -4,7 +4,6 @@
 #include "main.h"
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
-#include "bsp_canbus.h"
 
 #define RX_SENSOR	0x100
 #define RX_ARRAY	0x110
@@ -39,17 +38,14 @@ typedef struct
 
 typedef struct
 {
-	uint16_t	msgCounter;
-	float		*pRxData;
-}tDistArrayData;
-
-typedef struct
-{
-	uint16_t	ulRangefinder[4];
-	uint16_t	ulRadar;
-}tSensorLowData;
+	uint16_t	ulLidarDistance;
+	uint16_t	ulRadarDistance;
+	uint16_t	ulSonarDistance;
+}tSensors;
 
 void 	Devices_Init(void);
-void	Devices_PackageAnalysis(TQueryCanRxData	*rxData);
 void	Devices_SensorsDataRequest(void);
+void	Devices_LedToggle(void);
+
+
 #endif

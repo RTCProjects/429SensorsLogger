@@ -139,7 +139,7 @@ typedef unsigned long UBaseType_t;
 extern void vPortEnterCritical( void );
 extern void vPortExitCritical( void );
 #define portSET_INTERRUPT_MASK_FROM_ISR()		ulPortRaiseBASEPRI()
-#define portCLEAR_INTERRUPT_MASK_FROM_ISR(x)	vPortSetBASEPRI(x)
+#define portCLEAR_INTERRUPT_MASK_FROM_ISR( x )	vPortSetBASEPRI( x )
 #define portDISABLE_INTERRUPTS()				vPortRaiseBASEPRI()
 #define portENABLE_INTERRUPTS()					vPortSetBASEPRI(0)
 #define portENTER_CRITICAL()					vPortEnterCritical()

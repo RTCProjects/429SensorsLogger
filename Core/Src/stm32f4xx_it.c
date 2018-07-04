@@ -37,14 +37,13 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "bsp_usart.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef 	hpcd_USB_OTG_FS;
 extern TIM_HandleTypeDef	htim7;
 extern TIM_HandleTypeDef 	htim1;
-extern CAN_HandleTypeDef  	CanHandle;
 extern I2C_HandleTypeDef 	I2C1Handle;
 extern UART_HandleTypeDef 	bsp_uart1;
 /******************************************************************************/
@@ -202,17 +201,6 @@ void TIM7_IRQHandler(void)
 {
 	HAL_TIM_IRQHandler(&htim7);
 }
-
-/**
-* @brief  This function handles CAN1 RX0 interrupt request.
-* @param  None
-* @retval None
-*/
-void CAN1_RX0_IRQHandler(void)
-{
-  HAL_CAN_IRQHandler(&CanHandle);
-}
-
 /**
   * @brief  This function handles I2C event interrupt request.
   * @param  None
@@ -272,7 +260,11 @@ void EXTI3_IRQHandler(void)
   */
 void USART1_IRQHandler(void)
 {
-	HAL_UART_IRQHandler(&bsp_uart1);
+	if (USART1->SR & USART_SR_RXNE) {
+			USART1->SR &=~USART_SR_RXNE;
+		BSP_USART_RxData(USART1->DR);
+	}
+	//HAL_UART_IRQHandler(&bsp_uart1);
 }
 
 /* USER CODE BEGIN 1 */

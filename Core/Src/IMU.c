@@ -356,12 +356,9 @@ tCalibKoef	IMU_AccelCalib()
   */
 void	IMU_Task(void const * argument)
 {
-	char	strFmtString[150];
-	__IO uint8_t	devID = 0;
+	uint8_t	devID = 0;
 
 	BSP_I2C_Init();
-	BSP_EXTI_Init();
-
 	//	Clear sleep mode bit (6), enable all sensors
 	BSP_I2C_Write_Byte(MPU6050_ADDRESS, PWR_MGMT_1, 0x00);
 

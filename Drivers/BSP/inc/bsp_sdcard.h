@@ -32,7 +32,7 @@ typedef enum
 typedef struct
 {
 	eSensorType	type;
-	tSensorData	sensorsData;
+	tSensors	sensorsData;
 	tIMUData	imuData;
 }tSDCardWriteData;
 

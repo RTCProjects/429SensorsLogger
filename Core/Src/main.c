@@ -11,7 +11,6 @@
 
 #include "bsp_usb.h"
 #include "bsp_sdcard.h"
-#include "bsp_canbus.h"
 #include "bsp_manchester.h"
 #include "bsp_rtc.h"
 
@@ -141,12 +140,9 @@ void mainTask(void const * argument)
 	BSP_Usb_Init();
 	//инициализация SDCard SPI
 	BSP_SDCard_Init();
-	//Инициализация датчика
-	IMU_Init();
 
 	for(;;)
 	{
-		//BSP_Usb_SendString("MainTask\r\n");
 		Devices_SensorsDataRequest();
 		osDelay(100);
 	}

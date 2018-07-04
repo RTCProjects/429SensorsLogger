@@ -10,7 +10,7 @@ void	BSP_Timers_TIM3Init()
 
 	Tim3LidarHandle.Instance = TIM3;
 
-	Tim3LidarHandle.Init.Prescaler     = 72 - 1;
+	Tim3LidarHandle.Init.Prescaler     = 84 - 1;
 	Tim3LidarHandle.Init.Period        = 50000;
 	Tim3LidarHandle.Init.ClockDivision = 0;
 	Tim3LidarHandle.Init.CounterMode   = TIM_COUNTERMODE_UP;
@@ -30,7 +30,7 @@ void	BSP_Timers_TIM4Init()
 
 	Tim4SonarHandle.Instance = TIM4;
 
-	Tim4SonarHandle.Init.Prescaler     = 72 - 1;
+	Tim4SonarHandle.Init.Prescaler     = 84 - 1;
 	Tim4SonarHandle.Init.Period        = 50000;
 	Tim4SonarHandle.Init.ClockDivision = 0;
 	Tim4SonarHandle.Init.CounterMode   = TIM_COUNTERMODE_UP;

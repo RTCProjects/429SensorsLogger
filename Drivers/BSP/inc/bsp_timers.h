@@ -6,5 +6,6 @@
 #include "cmsis_os.h"
 
 void	BSP_Timers_TIM3Init(void);
+void	BSP_Timers_TIM4Init(void);
 
 #endif
