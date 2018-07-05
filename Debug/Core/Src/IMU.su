@@ -1,8 +1,9 @@
-IMU.c:39:6:IMU_Init	40	static
-IMU.c:59:6:IMU_SelfTest	72	static
-IMU.c:102:6:IMU_Calibrate	72	static
-IMU.c:255:12:IMU_GyroCalib	112	static
-IMU.c:284:12:IMU_AccelCalib	144	static
-IMU.c:426:6:IMU_GetData	0	static
-IMU.c:357:6:IMU_Task	8	static
-IMU.c:515:6:BSP_EXTI5_Callback	72	static
+IMU.c:43:6:IMU_Init	40	static
+IMU.c:63:6:IMU_SelfTest	72	static
+IMU.c:106:6:IMU_Calibrate	72	static
+IMU.c:259:12:IMU_GyroCalib	112	static
+IMU.c:288:12:IMU_AccelCalib	144	static
+IMU.c:431:6:IMU_Calcualte	72	static
+IMU.c:361:6:IMU_Task	8	static
+IMU.c:477:10:IMU_GetCurrentData	32	static
+IMU.c:482:6:BSP_EXTI5_Callback	64	static

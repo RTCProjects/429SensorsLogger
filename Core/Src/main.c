@@ -24,6 +24,10 @@ osThreadId 			defaultTaskHandle;
 void systemClock_Config(void);
 void portClkInit(void);
 void mainTask(void const * argument);
+
+xSemaphoreHandle xMainSemaphore;
+
+char	strBufOutput[64];
 /*----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  The application entry point.
@@ -36,8 +40,10 @@ int main(void)
   systemClock_Config();
   portClkInit();
 
-  osThreadDef(defaultTask, mainTask, osPriorityNormal, 0, configMINIMAL_STACK_SIZE + 0x400);
+  osThreadDef(defaultTask, mainTask, osPriorityRealtime, 0, configMINIMAL_STACK_SIZE + 0x400);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+
+  vSemaphoreCreateBinary(xMainSemaphore);
 	
   osKernelStart();	
 }
@@ -132,33 +138,36 @@ void portClkInit(void)
   */
 extern tSensors	SensorsData;
 extern float Ax, Ay, Az, Gx, Gy, Gz;
-
+extern float roll,pitch,yaw;
 void mainTask(void const * argument)
 {		
 	//инициализация RTC
-	BSP_RTC_Init();
+	//BSP_RTC_Init();
 	//инициализация обработчика устройств на шине
 	Devices_Init();
 	//инициализация USB
-	BSP_Usb_Init();
+	//BSP_Usb_Init();
 	//инициализация SDCard SPI
-	BSP_SDCard_Init();
+	//BSP_SDCard_Init();
 	//
 	BSP_WIFI_Init();
-	static char	pack[100];
-
 
 	for(;;)
 	{
-		/*for(int i = 0;i<10;i++)
-		{
 
-		}*/
-		sprintf(pack,"L%5d R%5d S%5d\nAz:%f Gx:%f Gy:%f\n",SensorsData.ulLidarDistance,SensorsData.ulRadarDistance,SensorsData.ulSonarDistance,
-															Az,Gx,Gy);
-		BSP_WIFI_UARTSend((uint8_t*)pack,strlen(pack));
-		osDelay(500);
 	}
+	/*for(;;)
+	{
+		xSemaphoreTake( xMainSemaphore, portMAX_DELAY );
+			sprintf(strBufOutput,"L%5d R%5d S%5d\nAz:%f Gx:%f Gy:%f\n",SensorsData.ulLidarDistance,SensorsData.ulRadarDistance,SensorsData.ulSonarDistance,
+															roll,pitch,yaw);
+			BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
+	}*/
+}
+
+void mainGiveSemaphore()
+{
+	xSemaphoreGive(xMainSemaphore);
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**

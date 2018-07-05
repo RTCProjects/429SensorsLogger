@@ -26,10 +26,10 @@ void	BSP_EXTI_Init()
 	  HAL_GPIO_Init(GPIOI, &GPIO_InitStructure);
 
 	  //Lidar IRQ pin
-	  HAL_NVIC_SetPriority(EXTI3_IRQn, 10, 1);
+	  HAL_NVIC_SetPriority(EXTI3_IRQn, 7, 0);
 	  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 	  //Sonar IRQ pin
-	  HAL_NVIC_SetPriority(EXTI4_IRQn, 11, 0);
+	  HAL_NVIC_SetPriority(EXTI4_IRQn, 7, 1);
 	  HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 
 

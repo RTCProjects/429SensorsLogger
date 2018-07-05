@@ -8,8 +8,9 @@
 #include "bsp_exti.h"
 #include "bsp_usb.h"
 #include "bsp_sdcard.h"
+#include "bsp_usart.h"
 
-#define IMU_LOW_DATA_SIZE 100
+#define IMU_LOW_DATA_SIZE 10
 
 extern I2C_HandleTypeDef I2C1Handle;
 osThreadId 				IMUDeviceHandle;
@@ -26,9 +27,12 @@ float	SelfTest[6];
 float 	gyroBias[3], accelBias[3];
 float Ax, Ay, Az, Gx, Gy, Gz;
 
+tIMUData	imuCurrentData;
 tIMULowData	imuLowData[IMU_LOW_DATA_SIZE] CCM_SRAM;
 uint8_t	uIMURdy = 0;
-uint8_t	uIMUCounter = 0;
+uint16_t	uIMUCounter = 0;
+
+
 
 xSemaphoreHandle xIMURdySemaphore;
 /*----------------------------------------------------------------------------------------------------*/
@@ -38,7 +42,7 @@ xSemaphoreHandle xIMURdySemaphore;
   */
 void IMU_Init(void)
 {
-	osThreadDef(IMUTask, IMU_Task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE + 0x200 );
+	osThreadDef(IMUTask, IMU_Task, osPriorityRealtime, 0, configMINIMAL_STACK_SIZE + 0x200 );
 	IMUDeviceHandle = osThreadCreate(osThread(IMUTask), NULL);
 
 	vSemaphoreCreateBinary(xIMURdySemaphore);
@@ -414,8 +418,8 @@ void	IMU_Task(void const * argument)
 	while(1)
 	{
 		xSemaphoreTake( xIMURdySemaphore, portMAX_DELAY );
-		IMU_GetData();
-		Devices_SensorsDataRequest();
+		IMU_Calcualte();
+		//Devices_SensorsDataRequest();
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -423,59 +427,13 @@ void	IMU_Task(void const * argument)
   * @brief 			Функция запроса измеренных данных с IMU датчика
   * @reval			None
   */
-void IMU_GetData(void)
+char strBufOutput[64];
+void IMU_Calcualte(void)
 {
-	/*uint8_t Buf[14];
-	HAL_I2C_Mem_Read(&I2C1Handle, (uint16_t)MPU6050_ADDRESS << 1, ACCEL_XOUT_H, 1, Buf, 14, 0xFFFF);
-
-	ax = (int16_t)Buf[0]<<8 | Buf[1];
-	ay = (int16_t)Buf[2]<<8 | Buf[3];
-	az = (int16_t)Buf[4]<<8 | Buf[5];
-
-	gx = (int16_t)Buf[8]<<8 | Buf[9];
-	gy = (int16_t)Buf[10]<<8 | Buf[11];
-	gz = (int16_t)Buf[12]<<8 | Buf[13];
-*/
-
-
-	//Ax = (float)(ax/* - rKoef.fKoef[0]*/) * A_RES;
-	//Ay = (float)(ay/* - rKoef.fKoef[1]*/) * A_RES;
-	//Az = (float)(az/* - rKoef.fKoef[2]*/) * A_RES;
-
-	//Gx = (float)(gx/* - cKoef.fKoef[0]*/) * G_RES;
-	//Gy = (float)(gy/* - cKoef.fKoef[1]*/) * G_RES;
-	//Gz = (float)(gz/* - cKoef.fKoef[2]*/) * G_RES;
-
-	/*
-	 * CALIBRATION
-	 */
-	/*if(!uCalibState){
-		fCalibAz+=Az;
-		uCalibCounter++;
-		if(uCalibCounter >= CALIB_REQUEST_VAL){
-			uCalibState = 1;
-			fCalibAz = fCalibAz / CALIB_REQUEST_VAL;
-
-			HAL_GPIO_WritePin(GPIOD,GPIO_PIN_4,GPIO_PIN_SET);
-		}
-	}
-	else{
-		Az = (Az - fCalibAz);
-	}*/
-
-	//Gx = Gx - 0.017692864938857;
-	//Gy = Gy - 0.012610743859649;
-	//Az = Az - 1.0395446271510515;
-
-	//fTemp1X = (fTemp1X + (Gx) * 0.1f) ;
-	//fTemp1Y = (fTemp1Y + (Gy) * 0.1f) ;
-
 
 
 	//	Send raw data to the filter
-/*
 	MadgwickAHRSupdateIMU(Gx, Gy, Gz, Ax, Ay, Az);
-
 
 	//	Calculate angles from quaternions
 	roll = atan2(2*(q0*q1+q2*q3), q3*q3-q2*q2-q1*q1+q0*q0);
@@ -486,30 +444,39 @@ void IMU_GetData(void)
 	yaw = RAD_TO_DEG * yaw;
 	pitch = RAD_TO_DEG * pitch;
 	roll = RAD_TO_DEG * roll;
-*/
 
-	static tSDCardWriteData	writeData;
+
+	uIMUCounter++;
+	if(uIMUCounter >= 100){
+		uIMUCounter = 0;
+
+		sprintf(strBufOutput,"Roll:%f\t Pitch:%f\t Yaw:%f\n",roll,pitch,yaw);
+		//sprintf(strBufOutput,"Ax:%d Ay:%d Az:%d\n",ax,ay,az);
+
+		BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
+
+		//mainGiveSemaphore();
+		Devices_LedToggle();
+	}
+
+	/*static tSDCardWriteData	writeData;
 	memset(&writeData.imuData,0,sizeof(tIMUData));
 							writeData.type = E_GYRO;
 							writeData.imuData.fAz = Az;
 							writeData.imuData.fPitch = Gx;//fTemp1X / M_PI * 180.0f / 72.0f * 90.0f;
 							writeData.imuData.fRoll = Gy;//fTemp1Y / M_PI * 180.0f / 72.0f * 90.0f;
 
+	imuCurrentData.fAz = Az;
+	imuCurrentData.fPitch = Gx;
+	imuCurrentData.fRoll = Gy;
 
-	BSP_SDCard_WriteSensorsData(&writeData);
-/*
-	sprintf(TransmitData, "aX: %0.8f aY: %0.8f aZ: %0.8f, Gx: %0.8f, Gy: %0.8f Gz: %0.8f \n",Ax,Ay, Az, Gx, Gy,Gz);
-	//sprintf(TransmitData, "aX: %8d aY: %8d aZ: %8d, Gx: %8d, Gy: %8d Gz: %8d \n",ax,ay,az,gx,gy,gz);
-	BSP_Usb_SendString(TransmitData);
-*/
+	BSP_SDCard_WriteSensorsData(&writeData);*/
 
-	//IMU_InsertDataInQuery(&currentIMUData);
+}
 
-	//sprintf(TransmitData, "%f\r\n", fCalibAz * 10.0f);
-	//BSP_Usb_SendString(TransmitData);
-
-	//sprintf(TransmitData, "q0: %0.1d, q1: %0.1d, q2: %0.1d, q3: %0.1d\r\n", (int8_t)(q0*10), (int8_t)(q1*10), (int8_t)(q2*10), (int8_t)(q3*10));
-	//HAL_UART_Transmit(&huart1, (uint8_t*)TransmitData, strlen(TransmitData), 0xFFFF);
+tIMUData	IMU_GetCurrentData()
+{
+	return imuCurrentData;
 }
 /*----------------------------------------------------------------------------------------------------*/
 void BSP_EXTI5_Callback()
@@ -539,33 +506,13 @@ void BSP_EXTI5_Callback()
 	Ay = (float)(ay/* - rKoef.fKoef[1]*/) * A_RES;
 	Az = (float)(az/* - rKoef.fKoef[2]*/) * A_RES;
 
-	Gx = (float)(gx/* - cKoef.fKoef[0]*/) * G_RES;
-	Gy = (float)(gy/* - cKoef.fKoef[1]*/) * G_RES;
-	Gz = (float)(gz/* - cKoef.fKoef[2]*/) * G_RES;
+	Gx = (float)(gx/* - cKoef.fKoef[0]*/) * G_RES * DEG_TO_RAD;
+	Gy = (float)(gy/* - cKoef.fKoef[1]*/) * G_RES * DEG_TO_RAD;
+	Gz = (float)(gz/* - cKoef.fKoef[2]*/) * G_RES * DEG_TO_RAD;
 
-	/*
-	 *
-	 * Частота работы IMU - 1kHz
-	 * Пишем каждый 100-й запрос, получаем запись 10 раз в секунду
-	 */
-	if(uIMUCounter<IMU_LOW_DATA_SIZE)
-	{
-		imuLowData[uIMUCounter].fAccel[0] = Ax;
-		imuLowData[uIMUCounter].fAccel[1] = Ay;
-		imuLowData[uIMUCounter].fAccel[2] = Az;
-		imuLowData[uIMUCounter].fGyro[0] = Gx;
-		imuLowData[uIMUCounter].fGyro[1] = Gy;
-		imuLowData[uIMUCounter].fGyro[2] = Gz;
-
-		uIMUCounter++;
-	}
-	else
-	{
-		xSemaphoreGiveFromISR( xIMURdySemaphore, &xTaskWoken );
-		if( xTaskWoken == pdTRUE){
+	xSemaphoreGiveFromISR( xIMURdySemaphore, &xTaskWoken );
+	if( xTaskWoken == pdTRUE){
 			taskYIELD();
-		}
-		uIMUCounter = 0;
 	}
 
 
