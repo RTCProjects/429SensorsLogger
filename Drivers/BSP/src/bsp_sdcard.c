@@ -176,11 +176,11 @@ void	BSP_SDCard_Task(void const * argument)
 	}
 	 */
 
-	fResult = f_open(&fFile,"imulog.ini",FA_OPEN_APPEND|FA_WRITE);
+	/*fResult = f_open(&fFile,"imulog.ini",FA_OPEN_APPEND|FA_WRITE);
 	if(fResult == FR_OK){
 		f_printf(&fFile,"\r\n--------------------START--------------------\r\n");
 		f_close(&fFile);
-	}
+	}*/
 
 	fResult = f_open(&fFile,"senslog.ini",FA_OPEN_APPEND|FA_WRITE);
 	if(fResult == FR_OK){
@@ -203,9 +203,9 @@ void	BSP_SDCard_Task(void const * argument)
 				{
 					fResult = f_open(&fFile,"senslog.ini",FA_OPEN_APPEND|FA_WRITE);
 					if(fResult == FR_OK){
-						Devices_LedToggle();
-
-						sprintf(usbOutputBuffer,"%5d %5d %5d\n",
+						//Devices_LedToggle();
+						Devices_LedOn();
+						sprintf(usbOutputBuffer,"%5d,%5d,%5d,",
 																   sdWriteData.sensorsData.ulLidarDistance,
 																   sdWriteData.sensorsData.ulRadarDistance,
 																   sdWriteData.sensorsData.ulSonarDistance);
@@ -222,11 +222,12 @@ void	BSP_SDCard_Task(void const * argument)
 
 				case E_GYRO:
 				{
-					fResult = f_open(&fFile,"imulog.ini",FA_OPEN_APPEND|FA_WRITE);
+					fResult = f_open(&fFile,"senslog.ini",FA_OPEN_APPEND|FA_WRITE);
 					if(fResult == FR_OK){
 
 						char	fmtStr[100];
-						sprintf(fmtStr,"IMU Az:%f Pitch:%f Roll%f\n",sdWriteData.imuData.fAz,sdWriteData.imuData.fPitch,sdWriteData.imuData.fRoll);
+						Devices_LedOff();
+						sprintf(fmtStr,"%0.2f,%0.2f\n",sdWriteData.imuData.fPitch,sdWriteData.imuData.fRoll);
 						f_printf(&fFile,"%s",fmtStr);
 
 						f_close(&fFile);

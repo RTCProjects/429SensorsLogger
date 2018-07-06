@@ -46,6 +46,8 @@ typedef struct
 void 	Devices_Init(void);
 void	Devices_SensorsDataRequest(void);
 void	Devices_LedToggle(void);
+void	Devices_LedOff(void);
+void	Devices_LedOn(void);
 void	Devices_IMUOn(void);
 void	Devices_IMUOff(void);
 

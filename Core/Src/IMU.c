@@ -31,6 +31,7 @@ tIMUData	imuCurrentData;
 tIMULowData	imuLowData[IMU_LOW_DATA_SIZE] CCM_SRAM;
 uint8_t	uIMURdy = 0;
 uint16_t	uIMUCounter = 0;
+uint16_t	uIMUSDCardCounter = 0;
 
 
 
@@ -151,16 +152,22 @@ void IMU_Calcualte(void)
 
 
 
-	if(uIMUCounter >= 250){
+	if(uIMUCounter >= 200){
 		uIMUCounter = 0;
 
 		Devices_SensorsDataRequest();
 		IMU_SensorsDataRequest();
-		mainGiveSemaphore();
+
 		//sprintf(strBufOutput,"L%5d R%5d S%5d\nRoll:%f\t Pitch:%f\t Yaw:%f\n",SensorsData.ulLidarDistance,SensorsData.ulRadarDistance,SensorsData.ulSonarDistance,roll,pitch,yaw);
 		//BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
 	}
+	if(uIMUSDCardCounter >= 500){
+		mainGiveSemaphore();
+		uIMUSDCardCounter = 0;
+	}
+
 	uIMUCounter++;
+	uIMUSDCardCounter++;
 
 	/*
 	memset(&writeData.imuData,0,sizeof(tIMUData));
