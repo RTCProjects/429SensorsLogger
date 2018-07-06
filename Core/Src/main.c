@@ -27,7 +27,7 @@ void mainTask(void const * argument);
 
 xSemaphoreHandle xMainSemaphore;
 
-char	strBufOutput[64];
+
 /*----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  The application entry point.
@@ -40,7 +40,7 @@ int main(void)
   systemClock_Config();
   portClkInit();
 
-  osThreadDef(defaultTask, mainTask, osPriorityRealtime, 0, configMINIMAL_STACK_SIZE + 0x400);
+  osThreadDef(defaultTask, mainTask, osPriorityNormal, 0, configMINIMAL_STACK_SIZE + 0x400);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   vSemaphoreCreateBinary(xMainSemaphore);
@@ -113,6 +113,7 @@ void portClkInit(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOG_CLK_ENABLE();
 
   GPIO_InitTypeDef  GPIO_InitStruct;
 
@@ -128,6 +129,13 @@ void portClkInit(void)
    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
+   GPIO_InitStruct.Pin       = GPIO_PIN_10;
+   GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_OD;
+   GPIO_InitStruct.Pull      = GPIO_NOPULL;
+   GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
+   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+
+   HAL_GPIO_WritePin(GPIOG,GPIO_PIN_10,GPIO_PIN_RESET);
    HAL_GPIO_WritePin(GPIOD,GPIO_PIN_4,GPIO_PIN_RESET);
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -136,33 +144,31 @@ void portClkInit(void)
   * @param		 	argument: параметры потока FreeRTOS
   * @reval			None
   */
+
 extern tSensors	SensorsData;
 extern float Ax, Ay, Az, Gx, Gy, Gz;
 extern float roll,pitch,yaw;
+char	strBufOutput[128];
+
 void mainTask(void const * argument)
 {		
 	//инициализация RTC
-	//BSP_RTC_Init();
+	BSP_RTC_Init();
 	//инициализация обработчика устройств на шине
 	Devices_Init();
 	//инициализация USB
-	//BSP_Usb_Init();
+	BSP_Usb_Init();
 	//инициализация SDCard SPI
-	//BSP_SDCard_Init();
-	//
+	BSP_SDCard_Init();
+	//инициализация UART для WiFi модуля
 	BSP_WIFI_Init();
 
 	for(;;)
 	{
-
+		xSemaphoreTake(xMainSemaphore,portMAX_DELAY);
+		sprintf(strBufOutput,"L%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f\r\n",SensorsData.ulLidarDistance,SensorsData.ulRadarDistance,SensorsData.ulSonarDistance,Az,pitch,roll);
+		BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
 	}
-	/*for(;;)
-	{
-		xSemaphoreTake( xMainSemaphore, portMAX_DELAY );
-			sprintf(strBufOutput,"L%5d R%5d S%5d\nAz:%f Gx:%f Gy:%f\n",SensorsData.ulLidarDistance,SensorsData.ulRadarDistance,SensorsData.ulSonarDistance,
-															roll,pitch,yaw);
-			BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
-	}*/
 }
 
 void mainGiveSemaphore()

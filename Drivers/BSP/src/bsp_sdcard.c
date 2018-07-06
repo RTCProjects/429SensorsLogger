@@ -226,7 +226,7 @@ void	BSP_SDCard_Task(void const * argument)
 					if(fResult == FR_OK){
 
 						char	fmtStr[100];
-						sprintf(fmtStr,"IMU Az:%f Gx:%f Gy:%f\n",sdWriteData.imuData.fAz,sdWriteData.imuData.fPitch,sdWriteData.imuData.fRoll);
+						sprintf(fmtStr,"IMU Az:%f Pitch:%f Roll%f\n",sdWriteData.imuData.fAz,sdWriteData.imuData.fPitch,sdWriteData.imuData.fRoll);
 						f_printf(&fFile,"%s",fmtStr);
 
 						f_close(&fFile);

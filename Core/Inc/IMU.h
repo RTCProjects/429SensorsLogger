@@ -42,6 +42,7 @@ typedef struct
 
 void 		IMU_Init(void);
 void 		IMU_Calcualte(void);
+void 		IMU_SensorsDataRequest(void);
 tIMUData	IMU_GetCurrentData(void);
 
 #endif

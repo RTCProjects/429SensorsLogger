@@ -122,3 +122,13 @@ void	Devices_LedToggle()
 {
 	HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_4);
 }
+
+void	Devices_IMUOn()
+{
+	HAL_GPIO_WritePin(GPIOG,GPIO_PIN_10,GPIO_PIN_RESET);
+}
+
+void	Devices_IMUOff()
+{
+	HAL_GPIO_WritePin(GPIOG,GPIO_PIN_10,GPIO_PIN_SET);
+}
