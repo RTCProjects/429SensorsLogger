@@ -8,7 +8,9 @@ stm32f4xx_it.c:154:6:SysTick_Handler	0	static
 stm32f4xx_it.c:175:6:TIM1_UP_TIM10_IRQHandler	0	static
 stm32f4xx_it.c:189:6:OTG_FS_IRQHandler	0	static
 stm32f4xx_it.c:200:6:TIM7_IRQHandler	0	static
-stm32f4xx_it.c:210:6:CAN1_RX0_IRQHandler	0	static
-stm32f4xx_it.c:221:6:I2C1_EV_IRQHandler	0	static
-stm32f4xx_it.c:232:6:I2C1_ER_IRQHandler	0	static
-stm32f4xx_it.c:242:6:EXTI9_5_IRQHandler	0	static
+stm32f4xx_it.c:210:6:I2C1_EV_IRQHandler	0	static
+stm32f4xx_it.c:221:6:I2C1_ER_IRQHandler	0	static
+stm32f4xx_it.c:231:6:EXTI9_5_IRQHandler	0	static
+stm32f4xx_it.c:241:6:EXTI4_IRQHandler	0	static
+stm32f4xx_it.c:251:6:EXTI3_IRQHandler	0	static
+stm32f4xx_it.c:261:6:USART1_IRQHandler	8	static

@@ -5,6 +5,9 @@
 #include <cmsis_os.h>
 
 void	BSP_EXTI_Init(void);
-__weak void BSP_EXTI5_Callback(void);
+__weak 	void BSP_EXTI5_Callback(void);
+__weak	void BSP_EXTI4_Callback(void);
+__weak	void BSP_EXTI3_Callback(void);
+
 
 #endif

@@ -30,7 +30,6 @@ void 	BSP_SDCard_CreateDefaultFolders(void);
 
 extern xQueueHandle 			xIMUDataQueue;
 extern tIMULowData				imuLowData[100] CCM_SRAM;
-extern tSensorLowData			sensorsLowData[100] CCM_SRAM;
 /*----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  Initializes the SD card device.
@@ -143,115 +142,6 @@ tSDCardFileNames	*BSP_SDCard_GetNewFileName()
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**
-	* @brief	Функция записи на карту данных от сенсоров
-	* @param 	fileName: имя файла для записи на диск
-	* @param	pData: указатель структура данных сенсоров
-	* @reval	None
-  */
-static uint16_t	uRangefinders[5];
-static uint16_t	uRadar;
-
-void	BSP_SDCard_RangefinderWrite(const char *fileName,tSDCardWriteData *pData)
-{
-	FRESULT 		fResult;
-	FIL 			fFile;
-	char			strFmtToFile[100];
-
-	if(!pData || pData->type!=E_RANGEFINDER)
-		return;
-
-	if(!fileName)
-		return;
-
-
-
-	//TO-DO write to disk
-	/*fResult = f_open(&fFile,fileName,FA_OPEN_APPEND|FA_WRITE);
-	if(fResult == FR_OK)
-	{
-		for(int i = 0;i<100;i++)
-		{
-			sprintf(strFmtToFile,"%5d %5d %5d %5d %5d %5d\n",sensorsLowData[i].ulRangefinder[0],sensorsLowData[i].ulRangefinder[1],sensorsLowData[i].ulRangefinder[2],sensorsLowData[i].ulRangefinder[3],sensorsLowData[i].ulRangefinder[4],sensorsLowData[i].ulRadar);
-			f_printf(&fFile,"%s",strFmtToFile);
-		}
-		f_close(&fFile);
-
-		BSP_Usb_SendString(strFmtToFile);
-	}
-	else
-	{
-		BSP_Usb_SendString("Lidar/Radar data write error\n");
-	}
-	 */
-
-	uint8_t	devID = pData->sensorsData.devID;
-
-	if(devID>=0 && devID<=4){
-		if(pData->sensorsData.devType == TYPE_1){
-			uRangefinders[devID] = pData->sensorsData.sensorValue[2];
-		}
-		if(pData->sensorsData.devType == TYPE_2){
-			uRangefinders[devID] = pData->sensorsData.sensorValue[1];
-			uRadar = pData->sensorsData.sensorValue[0];
-		}
-
-		if(devID == 4)
-		{
-
-			sprintf(strFmtToFile,"%5d %5d %5d %5d %5d %5d\n",uRangefinders[0],uRangefinders[1],uRangefinders[2],uRangefinders[3],uRangefinders[4],uRadar);
-				//TO-DO write to disk
-			fResult = f_open(&fFile,fileName,FA_OPEN_APPEND|FA_WRITE);
-			if(fResult == FR_OK)
-			{
-				f_printf(&fFile,"%s",strFmtToFile);
-				f_close(&fFile);
-
-				BSP_Usb_SendString(strFmtToFile);
-			}
-			else
-			{
-				BSP_Usb_SendString("Lidar/Radar data write error\n");
-			}
-		}
-	}
-
-}
-/*----------------------------------------------------------------------------------------------------*/
-/**
-	* @brief	Функция записи на карту данных от гироскопа
-	* @param 	fileName: имя файла для записи на диск
-	* @param	pData: указатель на структуру данных сенсоров
-	* @reval	None
-  */
-void	BSP_SDCard_IMUSensorWrite(const char	*fileName,tSDCardWriteData *pData)
-{
-	FRESULT 		fResult;
-	FIL 			fFile;
-	char			strFmtToFile[100];
-
-	if(!pData || pData->type!=E_GYRO)
-		return;
-	if(!fileName)
-		return;
-
-	//sprintf(strFmtToFile,"IMU Az:%f Gx:%f Gy:%f\n",pData->imuData.fAccel[0],pData->imuData.fAccel[1],pData->imuData.fAccel[2]);
-
-	fResult = f_open(&fFile,fileName,FA_OPEN_APPEND|FA_WRITE);
-	if(fResult == FR_OK)
-	{
-		f_printf(&fFile,"%s",strFmtToFile);
-		f_close(&fFile);
-
-		BSP_Usb_SendString(strFmtToFile);
-	}
-	else
-	{
-		BSP_Usb_SendString("IMU data write error\n");
-	}
-
-}
-/*----------------------------------------------------------------------------------------------------*/
-/**
 	* @brief	Основной поток для работы с SD картой
 	* @param	argument: параметры потока FreeRTOS 
 	* @reval	None
@@ -286,11 +176,11 @@ void	BSP_SDCard_Task(void const * argument)
 	}
 	 */
 
-	fResult = f_open(&fFile,"imulog.ini",FA_OPEN_APPEND|FA_WRITE);
+	/*fResult = f_open(&fFile,"imulog.ini",FA_OPEN_APPEND|FA_WRITE);
 	if(fResult == FR_OK){
 		f_printf(&fFile,"\r\n--------------------START--------------------\r\n");
 		f_close(&fFile);
-	}
+	}*/
 
 	fResult = f_open(&fFile,"senslog.ini",FA_OPEN_APPEND|FA_WRITE);
 	if(fResult == FR_OK){
@@ -311,71 +201,39 @@ void	BSP_SDCard_Task(void const * argument)
 			{
 				case E_RANGEFINDER:
 				{
-
-
 					fResult = f_open(&fFile,"senslog.ini",FA_OPEN_APPEND|FA_WRITE);
 					if(fResult == FR_OK){
-						if(sdWriteData.sensorsData.devType == TYPE_1){
-							f_printf(&fFile,"%d %5d %5d %5d\n",
+						//Devices_LedToggle();
+						Devices_LedOn();
+						sprintf(usbOutputBuffer,"%5d,%5d,%5d,",
+																   sdWriteData.sensorsData.ulLidarDistance,
+																   sdWriteData.sensorsData.ulRadarDistance,
+																   sdWriteData.sensorsData.ulSonarDistance);
 
-															  sdWriteData.sensorsData.devID,
-															  sdWriteData.sensorsData.sensorValue[0],
-															  sdWriteData.sensorsData.sensorValue[1],
-															  sdWriteData.sensorsData.sensorValue[2]);
-						}
-						if(sdWriteData.sensorsData.devType == TYPE_2){
-							f_printf(&fFile,"%d %5d %5d %5d\n",
-
-															  sdWriteData.sensorsData.devID,
-															  sdWriteData.sensorsData.sensorValue[0],
-															  sdWriteData.sensorsData.sensorValue[1],0);
-
-
-						}
-
+						f_printf(&fFile,"%s",usbOutputBuffer);
 						f_close(&fFile);
 
-						sprintf(usbOutputBuffer,"%d %5d %5d %5d\n",sdWriteData.sensorsData.devID,
-																   sdWriteData.sensorsData.sensorValue[0],
-																   sdWriteData.sensorsData.sensorValue[1],
-																   sdWriteData.sensorsData.sensorValue[2]);
-
-						BSP_Usb_SendString(usbOutputBuffer);
-
-						if(sdWriteData.sensorsData.devID == 4)
-							BSP_Usb_SendString("--------------------------------------\n");
+						//BSP_Usb_SendString(usbOutputBuffer);
 					}
 					else{
-						BSP_Usb_SendString("write error sensors\n");
+						//BSP_Usb_SendString("write error sensors\n");
 					}
-
-
-				/*BSP_SDCard_RangefinderWrite("senslog.ini",&sdWriteData);
-				 */
 				}break;
 
 				case E_GYRO:
 				{
-					fResult = f_open(&fFile,"imulog.ini",FA_OPEN_APPEND|FA_WRITE);
+					fResult = f_open(&fFile,"senslog.ini",FA_OPEN_APPEND|FA_WRITE);
 					if(fResult == FR_OK){
 
 						char	fmtStr[100];
-						sprintf(fmtStr,"IMU Az:%f Gx:%f Gy:%f\n",sdWriteData.imuData.fAz,sdWriteData.imuData.fPitch,sdWriteData.imuData.fRoll);
+						Devices_LedOff();
+						sprintf(fmtStr,"%0.2f,%0.2f\n",sdWriteData.imuData.fPitch,sdWriteData.imuData.fRoll);
 						f_printf(&fFile,"%s",fmtStr);
 
-						/*for(int i = 0;i<10;i++)
-						{
-							//sprintf(fmtStr,"IMU Ax%f Gx:%f Gy:%f\n",sdWriteData.imuData.fAz,sdWriteData.imuData.fPitch,sdWriteData.imuData.fRoll);
-							sprintf(fmtStr,"%f;%f;%f\n",imuLowData[i].fAccel[2],imuLowData[i].fGyro[0],imuLowData[i].fGyro[1]);
-							f_printf(&fFile,"%s",fmtStr);
-						}*/
-
 						f_close(&fFile);
-
-						//BSP_Usb_SendString(fmtStr);
 					}
-					else
-						BSP_Usb_SendString("write imu error\n");
+					else;
+						//BSP_Usb_SendString("write imu error\n");
 				}break;
 			}
 		}

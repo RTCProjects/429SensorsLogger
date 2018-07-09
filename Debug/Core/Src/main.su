@@ -1,8 +1,9 @@
-main.c:134:6:mainTask	8	static
-main.c:49:6:systemClock_Config	96	static
-main.c:103:6:portClkInit	56	static
-main.c:32:5:main	40	static
-main.c:170:6:HAL_TIM_PeriodElapsedCallback	8	static
-main.c:182:10:GetRunTimeStatsValue	0	static
-main.c:189:6:SetupRunTimeStatsTimer	48	static
-main.c:238:6:_Error_Handler	0	static
+main.c:153:6:mainTask	40	static
+main.c:55:6:systemClock_Config	96	static
+main.c:109:6:portClkInit	64	static
+main.c:36:5:main	40	static
+main.c:174:6:mainGiveSemaphore	0	static
+main.c:189:6:HAL_TIM_PeriodElapsedCallback	8	static
+main.c:201:10:GetRunTimeStatsValue	0	static
+main.c:208:6:SetupRunTimeStatsTimer	48	static
+main.c:257:6:_Error_Handler	0	static

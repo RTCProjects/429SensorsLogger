@@ -1,10 +1,3 @@
-/*
- * IMU.h
- *
- *  Created on: 31 мая 2018 г.
- *      Author: denisdenk
- */
-
 #ifndef IMU_H_
 #define IMU_H_
 
@@ -47,8 +40,9 @@ typedef struct
 	float	fGyro[3];
 }tIMULowData;
 
-// Function Prototypes
-void IMU_Init(void);
-void IMU_GetData(void);
+void 		IMU_Init(void);
+void 		IMU_Calcualte(void);
+void 		IMU_SensorsDataRequest(void);
+tIMUData	IMU_GetCurrentData(void);
 
-#endif /* IMU_H_ */
+#endif

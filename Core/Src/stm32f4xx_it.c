@@ -37,15 +37,15 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "bsp_usart.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef 	hpcd_USB_OTG_FS;
 extern TIM_HandleTypeDef	htim7;
 extern TIM_HandleTypeDef 	htim1;
-extern CAN_HandleTypeDef  	CanHandle;
 extern I2C_HandleTypeDef 	I2C1Handle;
+extern UART_HandleTypeDef 	bsp_uart1;
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -201,17 +201,6 @@ void TIM7_IRQHandler(void)
 {
 	HAL_TIM_IRQHandler(&htim7);
 }
-
-/**
-* @brief  This function handles CAN1 RX0 interrupt request.
-* @param  None
-* @retval None
-*/
-void CAN1_RX0_IRQHandler(void)
-{
-  HAL_CAN_IRQHandler(&CanHandle);
-}
-
 /**
   * @brief  This function handles I2C event interrupt request.
   * @param  None
@@ -235,7 +224,7 @@ void I2C1_ER_IRQHandler(void)
 }
 
 /**
-  * @brief  This function handles External line 0 interrupt request.
+  * @brief  This function handles External line 9-5 interrupt request.
   * @param  None
   * @retval None
   */
@@ -243,6 +232,41 @@ void EXTI9_5_IRQHandler(void)
 {
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
 }
+
+/**
+  * @brief  This function handles External line 4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI4_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
+}
+
+/**
+  * @brief  This function handles External line 4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI3_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+}
+
+/**
+  * @brief  This function handles External line 0 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void USART1_IRQHandler(void)
+{
+	if (USART1->SR & USART_SR_RXNE) {
+			USART1->SR &=~USART_SR_RXNE;
+		BSP_USART_RxData(USART1->DR);
+	}
+	//HAL_UART_IRQHandler(&bsp_uart1);
+}
+
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */

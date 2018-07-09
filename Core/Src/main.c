@@ -11,9 +11,9 @@
 
 #include "bsp_usb.h"
 #include "bsp_sdcard.h"
-#include "bsp_canbus.h"
 #include "bsp_manchester.h"
 #include "bsp_rtc.h"
+#include "bsp_usart.h"
 
 #include "devices.h"
 #include "IMU.h"
@@ -24,13 +24,17 @@ osThreadId 			defaultTaskHandle;
 void systemClock_Config(void);
 void portClkInit(void);
 void mainTask(void const * argument);
+
+xSemaphoreHandle xMainSemaphore;
+
+
 /*----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  The application entry point.
   * @retval None
   */
 int main(void)
-  {
+{
   HAL_Init();
 
   systemClock_Config();
@@ -38,6 +42,8 @@ int main(void)
 
   osThreadDef(defaultTask, mainTask, osPriorityNormal, 0, configMINIMAL_STACK_SIZE + 0x400);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+
+  vSemaphoreCreateBinary(xMainSemaphore);
 	
   osKernelStart();	
 }
@@ -107,6 +113,7 @@ void portClkInit(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOG_CLK_ENABLE();
 
   GPIO_InitTypeDef  GPIO_InitStruct;
 
@@ -122,18 +129,29 @@ void portClkInit(void)
    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
+   GPIO_InitStruct.Pin       = GPIO_PIN_10;
+   GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_OD;
+   GPIO_InitStruct.Pull      = GPIO_NOPULL;
+   GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
+   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+
+   HAL_GPIO_WritePin(GPIOG,GPIO_PIN_10,GPIO_PIN_RESET);
    HAL_GPIO_WritePin(GPIOD,GPIO_PIN_4,GPIO_PIN_RESET);
 }
-
 /*----------------------------------------------------------------------------------------------------*/
 /** 
   * @brief 			Главный поток программы.
   * @param		 	argument: параметры потока FreeRTOS
   * @reval			None
   */
+
+extern tSensors	SensorsData;
+extern float Ax, Ay, Az, Gx, Gy, Gz;
+extern float roll,pitch,yaw;
+char	strBufOutput[128];
+
 void mainTask(void const * argument)
 {		
-
 	//инициализация RTC
 	BSP_RTC_Init();
 	//инициализация обработчика устройств на шине
@@ -142,19 +160,20 @@ void mainTask(void const * argument)
 	BSP_Usb_Init();
 	//инициализация SDCard SPI
 	BSP_SDCard_Init();
-	//инициализация CanBus
-	BSP_CanBus_Init();
-
-
-	//Инициализация датчика
-	IMU_Init();
+	//инициализация UART для WiFi модуля
+	BSP_WIFI_Init();
 
 	for(;;)
 	{
-		//BSP_Usb_SendString("MainTask\r\n");
-		Devices_SensorsDataRequest();
-		osDelay(100);
+		xSemaphoreTake(xMainSemaphore,portMAX_DELAY);
+		sprintf(strBufOutput,"L%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f\r\n",SensorsData.ulLidarDistance,SensorsData.ulRadarDistance,SensorsData.ulSonarDistance,Az,pitch,roll);
+		BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
 	}
+}
+
+void mainGiveSemaphore()
+{
+	xSemaphoreGive(xMainSemaphore);
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**

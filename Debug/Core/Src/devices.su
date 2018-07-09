@@ -1,3 +1,10 @@
-devices.c:22:6:Devices_Init	8	static
-devices.c:44:6:Devices_PackageAnalysis	24	static
-devices.c:150:6:Devices_SensorsDataRequest	8	static
+devices.c:32:6:Devices_Init	8	static
+devices.c:48:6:Devices_SensorsDataRequest	0	static
+devices.c:58:6:BSP_EXTI3_Callback	0	static
+devices.c:72:6:BSP_EXTI4_Callback	0	static
+devices.c:86:6:BSP_USART_RxData	8	static
+devices.c:121:6:Devices_LedToggle	0	static
+devices.c:126:6:Devices_LedOn	0	static
+devices.c:131:6:Devices_LedOff	0	static
+devices.c:136:6:Devices_IMUOn	0	static
+devices.c:141:6:Devices_IMUOff	0	static

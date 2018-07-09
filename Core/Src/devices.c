@@ -5,15 +5,25 @@
 **/
 /*----------------------------------------------------------------------------------------------------*/
 #include <string.h>
+
+
 #include "devices.h"
 #include "bsp_sdcard.h"
-#include "bsp_canbus.h"
+#include "bsp_exti.h"
+#include "bsp_timers.h"
+#include "bsp_usart.h"
 
-static const uint8_t	sensorRequestArray[] = {0x00};
-static tDistArrayData	distArrayData;	//данные камеры
+uint8_t receivedDataCounter;
+char receivedData[20];
 
-tSensorLowData	sensorsLowData[100] CCM_SRAM;
-uint16_t		sensorsCounter = 0;
+uint8_t flag = 0;
+uint8_t flag2 = 0;
+uint8_t flag3 = 0;
+uint8_t flag4 = 0;
+
+uint32_t tempData;
+
+tSensors	SensorsData;
 /*----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  Инициализация модуля устройств
@@ -21,126 +31,14 @@ uint16_t		sensorsCounter = 0;
   */
 void Devices_Init()
 {
-	sensorsCounter = 0;
+	memset(&SensorsData,0,sizeof(tSensors));
 
-	distArrayData.pRxData = (float*)pvPortMalloc(sizeof(float) * DATA_ARRAY_SIZE);
-	if(!distArrayData.pRxData)
-		Error_Handler();
-}
-/*----------------------------------------------------------------------------------------------------*/
-/**
-  * @brief  Функция анализа полученных из линии CAN данных
-	*	Формат пакета данных	
-	* | Byte0| Byte1|Byte2|Byte3|Byte4|Byte5|Byte6|Byte7|
-	* | Type | Stat |Lidar		|Sonar		|Radar		|
-	* 	Type - тип
-	*		Stat - байт флагов статуса
-	*		Lidar - лидар
-	*		Sonar -	сонар
-	*		Radar - радар
-	* @param *rxData: указатель на входящее сообщение из CAN линии
-  * @retval None
-  */
-void	Devices_PackageAnalysis(TQueryCanRxData	*rxData)
-{
-	uint16_t	canID = rxData->RxHeader.StdId;
-	uint8_t		logicNumber = 0;
-	uint8_t		typeNumber = 0;
-	
-	//проверка на корректность ID устройства. Диапазон устройств с сенсорами на CAN линии - 0x100 - 0x10F
-	if(canID >= 0x100 && canID <= 0x10F)
-	{
-		logicNumber = canID & 0x0F;		//логический номер устройства на шине, закодирован в младших 4 битах CanID
-		typeNumber = rxData->Data[0];	//логический ттип устройства - согласно протоколу обмена это 1 байт кадра данных
-		
-		static tSDCardWriteData		writeData;
-		
-		/*memset(&writeData.sensorsData,0,sizeof(tSensorData));
-		writeData.type = E_RANGEFINDER;
-		writeData.sensorsData.devID = logicNumber;
-		writeData.sensorsData.devType = typeNumber;
-		writeData.sensorsData.uFlags.flags = rxData->Data[1];
-
-		memcpy(writeData.sensorsData.sensorValue,rxData->Data + 2,sizeof(uint16_t) * 3);
-
-		if(logicNumber>=0 && logicNumber<=4)
-		{
-			if(typeNumber == TYPE_1){
-				sensorsLowData[sensorsCounter].ulRangefinder[logicNumber] = writeData.sensorsData.sensorValue[2];
-			}
-			if(typeNumber == TYPE_2){
-				sensorsLowData[sensorsCounter].ulRangefinder[logicNumber] = writeData.sensorsData.sensorValue[1];
-				sensorsLowData[sensorsCounter].ulRadar = writeData.sensorsData.sensorValue[0];
-			}
-			sensorsCounter++;
-
-			if(sensorsCounter>=100){
-				BSP_SDCard_WriteSensorsData(&writeData);
-				sensorsCounter = 0;
-			}
-		}*/
-		writeData.type = E_RANGEFINDER;
-
-		memset(&writeData.sensorsData,0,sizeof(tSensorData));
-
-		writeData.sensorsData.devID = logicNumber;
-		writeData.sensorsData.devType = typeNumber;
-		writeData.sensorsData.uFlags.flags = rxData->Data[1];
-
-		switch(typeNumber)
-		{
-			case TYPE_1:
-			{
-				memset(&writeData.sensorsData,0,sizeof(tSensorData));
-
-				writeData.sensorsData.devID = logicNumber;
-				writeData.sensorsData.devType = typeNumber;
-				writeData.sensorsData.uFlags.flags = rxData->Data[1];
-
-				memcpy(writeData.sensorsData.sensorValue,rxData->Data + 2,sizeof(uint16_t) * 3);
-				BSP_SDCard_WriteSensorsData(&writeData);
-			}break;
-			
-			case TYPE_2:
-			{
-				memset(&writeData.sensorsData,0,sizeof(tSensorData));
-
-				writeData.sensorsData.devID = logicNumber;
-				writeData.sensorsData.devType = typeNumber;
-				writeData.sensorsData.uFlags.flags = rxData->Data[1];
-				
-				memcpy(writeData.sensorsData.sensorValue,rxData->Data + 2,sizeof(uint16_t) * 2);
-				BSP_SDCard_WriteSensorsData(&writeData);
-			}break;
-		}
-
-	}
-	//проверка на корректность ID устройства. Диапазон устройств с камерами на CAN линии - 0x110 - 0x11F
-	if(canID >= 0x110 && canID <= 0x11F)
-	{
-		uint32_t	uHeaders[2];
-
-		uHeaders[0] = (rxData->Data[3]<<24)|(rxData->Data[2]<<16)|(rxData->Data[1]<<8)|rxData->Data[0];
-		uHeaders[1] = (rxData->Data[7]<<24)|(rxData->Data[6]<<16)|(rxData->Data[5]<<8)|rxData->Data[4];
-
-		if(uHeaders[0] == 0x7FFFFFFF && uHeaders[1] == 0xFFFFFFFF)
-		{
-			//поймали заголовочное сообщение
-			distArrayData.msgCounter = 0;
-		}
-		else if(distArrayData.msgCounter < DATA_ARRAY_SIZE)
-		{
-			memcpy(distArrayData.pRxData,rxData->Data,sizeof(float));
-			memcpy(distArrayData.pRxData + distArrayData.msgCounter + 1,rxData->Data + 4,sizeof(float));
-
-			distArrayData.msgCounter += 2;
-		}
-		else
-		{
-			//закончили получать массив
-			distArrayData.msgCounter = 0;
-		}
-	}
+	BSP_Timers_TIM3Init();
+	BSP_Timers_TIM4Init();
+	BSP_USART_Init();
+	BSP_EXTI_Init();
+	//Инициализация датчика аксселерометра
+	IMU_Init();
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**
@@ -149,19 +47,98 @@ void	Devices_PackageAnalysis(TQueryCanRxData	*rxData)
   */
 void	Devices_SensorsDataRequest()
 {
-	/*for(uint8_t i = 0;i<=4;i++){
-		BSP_CanBus_SendData(RX_SENSOR + i,(uint8_t*)sensorRequestArray,0);
-			osDelay(1);
-	}*/
-	BSP_CanBus_SendData(RX_SENSOR ,(uint8_t*)sensorRequestArray,0);
-		osDelay(1);
-	BSP_CanBus_SendData(RX_SENSOR + 1 ,(uint8_t*)sensorRequestArray,0);
-		osDelay(1);
-	BSP_CanBus_SendData(RX_SENSOR + 2,(uint8_t*)sensorRequestArray,0);
-		osDelay(1);
-	BSP_CanBus_SendData(RX_SENSOR + 3,(uint8_t*)sensorRequestArray,0);
-		osDelay(1);
-	BSP_CanBus_SendData(RX_SENSOR + 4,(uint8_t*)sensorRequestArray,0);
-		osDelay(1);
+	static tSDCardWriteData	sensorsSDCardData;
+
+	sensorsSDCardData.type = E_RANGEFINDER;
+	memcpy(&sensorsSDCardData.sensorsData,&SensorsData,sizeof(tSensors));
+
+	BSP_SDCard_WriteSensorsData(&sensorsSDCardData);
 }
 /*----------------------------------------------------------------------------------------------------*/
+void BSP_EXTI3_Callback()//Sonar
+{
+	__disable_irq();
+
+	if(GPIOI->IDR & GPIO_IDR_IDR_3) TIM4->CR1 |= TIM_CR1_CEN;
+	else {
+		TIM4->CR1 &= ~TIM_CR1_CEN;
+		SensorsData.ulSonarDistance = TIM4->CNT/58;
+		TIM4->CNT = 0;
+	}
+
+	__enable_irq();
+}
+/*----------------------------------------------------------------------------------------------------*/
+void BSP_EXTI4_Callback()//Lidar
+{
+	__disable_irq();
+
+	if(GPIOI->IDR & GPIO_IDR_IDR_4) TIM3->CR1 |= TIM_CR1_CEN;
+	else {
+		TIM3->CR1 &= ~TIM_CR1_CEN;
+		SensorsData.ulLidarDistance = TIM3->CNT/10;
+		TIM3->CNT = 0;
+	}
+
+	__enable_irq();
+}
+/*----------------------------------------------------------------------------------------------------*/
+void BSP_USART_RxData(uint8_t rxByte)
+{
+	tempData = rxByte;
+
+
+				if (tempData == 0xAA) {
+					if (flag == 1) {
+						flag2 = 1;
+						flag = 0;
+					} else flag = 1;
+				}
+
+				if (flag2 == 1) {
+					if(tempData == 0x0C) {
+						flag3 = 1;
+						flag2 = 0;
+					} else flag3 = 0;
+				}
+
+				if (flag3 == 1) {
+					receivedData[receivedDataCounter] = USART1->DR;
+					receivedDataCounter ++;
+
+					if (receivedDataCounter > 5) {
+						SensorsData.ulRadarDistance = (receivedData[4] * 256 + receivedData[5]);
+
+						for(uint8_t i = 0; i < 20; i++) {
+							receivedData[i] = 0;
+						}
+						receivedDataCounter  = 0;
+						flag3 = 0;
+					}
+				}
+}
+
+void	Devices_LedToggle()
+{
+	HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_4);
+}
+
+void	Devices_LedOn()
+{
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_4,GPIO_PIN_SET);
+}
+
+void	Devices_LedOff()
+{
+	HAL_GPIO_WritePin(GPIOD,GPIO_PIN_4,GPIO_PIN_RESET);
+}
+
+void	Devices_IMUOn()
+{
+	HAL_GPIO_WritePin(GPIOG,GPIO_PIN_10,GPIO_PIN_RESET);
+}
+
+void	Devices_IMUOff()
+{
+	HAL_GPIO_WritePin(GPIOG,GPIO_PIN_10,GPIO_PIN_SET);
+}

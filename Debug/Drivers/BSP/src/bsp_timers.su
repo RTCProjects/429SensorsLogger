@@ -1,0 +1,2 @@
+bsp_timers.c:7:6:BSP_Timers_TIM3Init	16	static
+bsp_timers.c:27:6:BSP_Timers_TIM4Init	16	static
