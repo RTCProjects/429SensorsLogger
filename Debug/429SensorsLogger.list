@@ -25,23 +25,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  10 .ARM.attributes 00000030  00000000  00000000  00020340  2**0
                   CONTENTS, READONLY
- 11 .debug_info   0005091f  00000000  00000000  00020370  2**0
+ 11 .debug_info   00050904  00000000  00000000  00020370  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_abbrev 00009846  00000000  00000000  00070c8f  2**0
+ 12 .debug_abbrev 0000985c  00000000  00000000  00070c74  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_loc    00019d9d  00000000  00000000  0007a4d5  2**0
+ 13 .debug_loc    00019d9d  00000000  00000000  0007a4d0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_aranges 00002060  00000000  00000000  00094278  2**3
+ 14 .debug_aranges 00002068  00000000  00000000  00094270  2**3
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_ranges 00002980  00000000  00000000  000962d8  2**3
+ 15 .debug_ranges 00002988  00000000  00000000  000962d8  2**3
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_line   000148d8  00000000  00000000  00098c58  2**0
+ 16 .debug_line   000148e2  00000000  00000000  00098c60  2**0
                   CONTENTS, READONLY, DEBUGGING
- 17 .debug_str    0000b0b5  00000000  00000000  000ad530  2**0
+ 17 .debug_str    0000b0c9  00000000  00000000  000ad542  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .comment      0000007c  00000000  00000000  000b85e5  2**0
+ 18 .comment      0000007c  00000000  00000000  000b860b  2**0
                   CONTENTS, READONLY
- 19 .debug_frame  00006de0  00000000  00000000  000b8664  2**2
+ 19 .debug_frame  00006df0  00000000  00000000  000b8688  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -1555,7 +1555,7 @@ void IMU_SensorsDataRequest()
  800121c:	2002292c 	.word	0x2002292c
  8001220:	20022938 	.word	0x20022938
  8001224:	200003ec 	.word	0x200003ec
- 8001228:	20022a7c 	.word	0x20022a7c
+ 8001228:	200229fc 	.word	0x200229fc
  800122c:	20000004 	.word	0x20000004
  8001230:	20022930 	.word	0x20022930
  8001234:	200003e4 	.word	0x200003e4
@@ -1645,7 +1645,7 @@ void IMU_SensorsDataRequest()
  80012e4:	f7ff fe9c 	bl	8001020 <IMU_Calcualte>
  80012e8:	e7f5      	b.n	80012d6 <IMU_Task+0x82>
 		Error_Handler();
- 80012ea:	2175      	movs	r1, #117	; 0x75
+ 80012ea:	2168      	movs	r1, #104	; 0x68
  80012ec:	4802      	ldr	r0, [pc, #8]	; (80012f8 <IMU_Task+0xa4>)
  80012ee:	f000 fd6b 	bl	8001dc8 <_Error_Handler>
  80012f2:	e7ef      	b.n	80012d4 <IMU_Task+0x80>
@@ -1921,7 +1921,7 @@ void BSP_EXTI5_Callback()
  800154c:	40668000 	.word	0x40668000
  8001550:	200228cc 	.word	0x200228cc
  8001554:	20022930 	.word	0x20022930
- 8001558:	20022a7c 	.word	0x20022a7c
+ 8001558:	200229fc 	.word	0x200229fc
  800155c:	200229a8 	.word	0x200229a8
  8001560:	e000ed04 	.word	0xe000ed04
 
@@ -2272,7 +2272,7 @@ void Devices_Init()
  8001870:	e8bd 4008 	ldmia.w	sp!, {r3, lr}
 	IMU_Init();
  8001874:	f7ff bb7c 	b.w	8000f70 <IMU_Init>
- 8001878:	20022a90 	.word	0x20022a90
+ 8001878:	20022a10 	.word	0x20022a10
 
 0800187c <Devices_SensorsDataRequest>:
 /**
@@ -2324,7 +2324,7 @@ void BSP_EXTI0_Callback()//Front Lidar
  80018b0:	625a      	str	r2, [r3, #36]	; 0x24
  80018b2:	e7f1      	b.n	8001898 <BSP_EXTI0_Callback+0x18>
  80018b4:	40022000 	.word	0x40022000
- 80018b8:	20022a90 	.word	0x20022a90
+ 80018b8:	20022a10 	.word	0x20022a10
 
 080018bc <BSP_EXTI1_Callback>:
   __ASM volatile ("cpsid i" : : : "memory");
@@ -2361,7 +2361,7 @@ void BSP_EXTI1_Callback()//Left Lidar
  80018ec:	625a      	str	r2, [r3, #36]	; 0x24
  80018ee:	e7f1      	b.n	80018d4 <BSP_EXTI1_Callback+0x18>
  80018f0:	40022000 	.word	0x40022000
- 80018f4:	20022a90 	.word	0x20022a90
+ 80018f4:	20022a10 	.word	0x20022a10
 
 080018f8 <BSP_EXTI2_Callback>:
   __ASM volatile ("cpsid i" : : : "memory");
@@ -2398,7 +2398,7 @@ void BSP_EXTI2_Callback()//Right Lidar
  8001928:	625a      	str	r2, [r3, #36]	; 0x24
  800192a:	e7f1      	b.n	8001910 <BSP_EXTI2_Callback+0x18>
  800192c:	40022000 	.word	0x40022000
- 8001930:	20022a90 	.word	0x20022a90
+ 8001930:	20022a10 	.word	0x20022a10
 
 08001934 <BSP_EXTI3_Callback>:
   __ASM volatile ("cpsid i" : : : "memory");
@@ -2435,7 +2435,7 @@ void BSP_EXTI3_Callback()//Sonar
  8001964:	625a      	str	r2, [r3, #36]	; 0x24
  8001966:	e7f1      	b.n	800194c <BSP_EXTI3_Callback+0x18>
  8001968:	40022000 	.word	0x40022000
- 800196c:	20022a90 	.word	0x20022a90
+ 800196c:	20022a10 	.word	0x20022a10
 
 08001970 <BSP_EXTI4_Callback>:
   __ASM volatile ("cpsid i" : : : "memory");
@@ -2472,7 +2472,7 @@ void BSP_EXTI4_Callback()//Center Lidar
  80019a0:	625a      	str	r2, [r3, #36]	; 0x24
  80019a2:	e7f1      	b.n	8001988 <BSP_EXTI4_Callback+0x18>
  80019a4:	40022000 	.word	0x40022000
- 80019a8:	20022a90 	.word	0x20022a90
+ 80019a8:	20022a10 	.word	0x20022a10
 
 080019ac <BSP_USART_RxData>:
 	__enable_irq();
@@ -2571,14 +2571,14 @@ void BSP_USART_RxData(uint8_t rxByte)
  8001a16:	7020      	strb	r0, [r4, #0]
  8001a18:	bd10      	pop	{r4, pc}
  8001a1a:	bf00      	nop
- 8001a1c:	20022ab0 	.word	0x20022ab0
+ 8001a1c:	20022a30 	.word	0x20022a30
  8001a20:	200003f1 	.word	0x200003f1
  8001a24:	200003f0 	.word	0x200003f0
  8001a28:	200003f2 	.word	0x200003f2
- 8001a2c:	20022ab4 	.word	0x20022ab4
+ 8001a2c:	20022a34 	.word	0x20022a34
  8001a30:	40011000 	.word	0x40011000
- 8001a34:	20022a9c 	.word	0x20022a9c
- 8001a38:	20022a90 	.word	0x20022a90
+ 8001a34:	20022a1c 	.word	0x20022a1c
+ 8001a38:	20022a10 	.word	0x20022a10
 
 08001a3c <Devices_LedOn>:
 	HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_4);
@@ -2709,13 +2709,13 @@ void mainTask(void const * argument)
  8001af8:	4628      	mov	r0, r5
  8001afa:	f001 f8b3 	bl	8002c64 <BSP_WIFI_UARTSend>
  8001afe:	e7cd      	b.n	8001a9c <mainTask+0x20>
- 8001b00:	20022a90 	.word	0x20022a90
- 8001b04:	200229fc 	.word	0x200229fc
+ 8001b00:	20022a10 	.word	0x20022a10
+ 8001b04:	20022a7c 	.word	0x20022a7c
  8001b08:	200229d8 	.word	0x200229d8
  8001b0c:	200229d4 	.word	0x200229d4
  8001b10:	200229b0 	.word	0x200229b0
  8001b14:	0800dcbb 	.word	0x0800dcbb
- 8001b18:	20022ab8 	.word	0x20022ab8
+ 8001b18:	20022a38 	.word	0x20022a38
 
 08001b1c <systemClock_Config>:
 {
@@ -2988,8 +2988,8 @@ void mainTask(void const * argument)
  8001cf0:	b007      	add	sp, #28
  8001cf2:	bd30      	pop	{r4, r5, pc}
  8001cf4:	0800dc4c 	.word	0x0800dc4c
- 8001cf8:	20022abc 	.word	0x20022abc
- 8001cfc:	20022ab8 	.word	0x20022ab8
+ 8001cf8:	20022a3c 	.word	0x20022a3c
+ 8001cfc:	20022a38 	.word	0x20022a38
 
 08001d00 <mainGiveSemaphore>:
 	}
@@ -3005,7 +3005,7 @@ void mainGiveSemaphore()
  8001d08:	6800      	ldr	r0, [r0, #0]
  8001d0a:	f007 bfad 	b.w	8009c68 <xQueueGenericSend>
  8001d0e:	bf00      	nop
- 8001d10:	20022ab8 	.word	0x20022ab8
+ 8001d10:	20022a38 	.word	0x20022a38
 
 08001d14 <HAL_TIM_PeriodElapsedCallback>:
   */
@@ -3148,7 +3148,7 @@ void SetupRunTimeStatsTimer()
  8001db4:	bd30      	pop	{r4, r5, pc}
  8001db6:	bf00      	nop
  8001db8:	40023800 	.word	0x40023800
- 8001dbc:	20022ac0 	.word	0x20022ac0
+ 8001dbc:	20022a40 	.word	0x20022a40
  8001dc0:	40001400 	.word	0x40001400
  8001dc4:	00989680 	.word	0x00989680
 
@@ -3908,7 +3908,7 @@ void TIM7_IRQHandler(void)
  8002140:	4801      	ldr	r0, [pc, #4]	; (8002148 <TIM7_IRQHandler+0x8>)
  8002142:	f003 bcd5 	b.w	8005af0 <HAL_TIM_IRQHandler>
  8002146:	bf00      	nop
- 8002148:	20022ac0 	.word	0x20022ac0
+ 8002148:	20022a40 	.word	0x20022a40
 
 0800214c <I2C1_EV_IRQHandler>:
   * @retval None
@@ -5174,11 +5174,11 @@ static tSDCardWriteData	sdWriteData;
 void	BSP_SDCard_Task(void const * argument)
 {
  80027ac:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
+	FRESULT 		fResult;
 	FIL 			fFile;
 	portBASE_TYPE 	xStatus;
 	//tSDCardFileNames			*logFileNames = 0;
 
-	
 	FATFS_LinkDriver(&SD_Driver, SDPath);
  80027b0:	4934      	ldr	r1, [pc, #208]	; (8002884 <BSP_SDCard_Task+0xd8>)
  80027b2:	4835      	ldr	r0, [pc, #212]	; (8002888 <BSP_SDCard_Task+0xdc>)
@@ -5196,7 +5196,7 @@ void	BSP_SDCard_Task(void const * argument)
  80027c6:	f005 fd8b 	bl	80082e0 <f_mount>
  80027ca:	b118      	cbz	r0, 80027d4 <BSP_SDCard_Task+0x28>
 			Error_Handler();
- 80027cc:	21a8      	movs	r1, #168	; 0xa8
+ 80027cc:	21a7      	movs	r1, #167	; 0xa7
  80027ce:	4831      	ldr	r0, [pc, #196]	; (8002894 <BSP_SDCard_Task+0xe8>)
  80027d0:	f7ff fafa 	bl	8001dc8 <_Error_Handler>
 	}
@@ -5204,10 +5204,6 @@ void	BSP_SDCard_Task(void const * argument)
 	BSP_SD_GetCardInfo(&sdInfo);
  80027d4:	4830      	ldr	r0, [pc, #192]	; (8002898 <BSP_SDCard_Task+0xec>)
  80027d6:	f006 fb59 	bl	8008e8c <BSP_SD_GetCardInfo>
-	if(fResult == FR_OK){
-		f_printf(&fFile,"\r\n--------------------START--------------------\r\n");
-		f_close(&fFile);
-	}*/
 
 	fResult = f_open(&fFile,"senslog.ini",FA_OPEN_APPEND|FA_WRITE);
  80027da:	2232      	movs	r2, #50	; 0x32

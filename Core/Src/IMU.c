@@ -83,19 +83,6 @@ void	IMU_Task(void const * argument)
 
 	if(devID == 0x73)
 	{
-		/*	osDelay(5000);
-			//Self test
-			IMU_SelfTest(SelfTest);
-			sprintf(strFmtString,"aX%f aY%f aZ%f gX%f gY%f gZ%f\n\n",SelfTest[0],SelfTest[1],SelfTest[2],SelfTest[3],SelfTest[4],SelfTest[5]);
-			BSP_Usb_SendString(strFmtString);
-			if(SelfTest[0] < 1.0f && SelfTest[1] < 1.0f && SelfTest[2] < 1.0f && SelfTest[3] < 1.0f && SelfTest[4] < 1.0f && SelfTest[5] < 1.0f)
-				BSP_Usb_SendString("Pass selftest!\r\n");
-
-			//Calibrate
-			IMU_Calibrate(gyroBias, accelBias);
-			sprintf(strFmtString,"gbX%f gbY%f gbZ%f abX%f abY%f abZ%f\n\n",gyroBias[0],gyroBias[1],gyroBias[2],accelBias[0],accelBias[1],accelBias[2]);
-			BSP_Usb_SendString(strFmtString);
-		*/
 		//	Set accelerometers low pass filter at 5Hz
 		BSP_I2C_Write_Byte(MPU6050_ADDRESS, CONFIG, 0x06);
 		osDelay(10);
@@ -128,10 +115,7 @@ void	IMU_Task(void const * argument)
   * @brief 			Функция запроса измеренных данных с IMU датчика
   * @reval			None
   */
-extern tSensors	SensorsData;
-extern float Ax, Ay, Az, Gx, Gy, Gz;
-extern float roll,pitch,yaw;
-char	strBufOutput[128];
+
 void IMU_Calcualte(void)
 {
 
@@ -149,17 +133,11 @@ void IMU_Calcualte(void)
 	pitch = RAD_TO_DEG * pitch;
 	roll = RAD_TO_DEG * roll;
 
-
-
-
 	if(uIMUCounter >= 200){
 		uIMUCounter = 0;
 
 		Devices_SensorsDataRequest();
 		IMU_SensorsDataRequest();
-
-		//sprintf(strBufOutput,"L%5d R%5d S%5d\nRoll:%f\t Pitch:%f\t Yaw:%f\n",SensorsData.ulLidarDistance,SensorsData.ulRadarDistance,SensorsData.ulSonarDistance,roll,pitch,yaw);
-		//BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
 	}
 	if(uIMUSDCardCounter >= 500){
 		mainGiveSemaphore();

@@ -160,7 +160,6 @@ void	BSP_SDCard_Task(void const * argument)
 	portBASE_TYPE 	xStatus;
 	//tSDCardFileNames			*logFileNames = 0;
 
-	
 	FATFS_LinkDriver(&SD_Driver, SDPath);
 	BSP_SD_Init();
 
@@ -169,18 +168,6 @@ void	BSP_SDCard_Task(void const * argument)
 	}
 
 	BSP_SD_GetCardInfo(&sdInfo);
-	/*logFileNames = BSP_SDCard_GetNewFileName();
-
-	if(!logFileNames){
-		Error_Handler();
-	}
-	 */
-
-	/*fResult = f_open(&fFile,"imulog.ini",FA_OPEN_APPEND|FA_WRITE);
-	if(fResult == FR_OK){
-		f_printf(&fFile,"\r\n--------------------START--------------------\r\n");
-		f_close(&fFile);
-	}*/
 
 	fResult = f_open(&fFile,"senslog.ini",FA_OPEN_APPEND|FA_WRITE);
 	if(fResult == FR_OK){
