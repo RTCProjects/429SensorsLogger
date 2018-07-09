@@ -38,8 +38,11 @@ typedef struct
 
 typedef struct
 {
-	uint16_t	ulLidarDistance;
 	uint16_t	ulRadarDistance;
+	uint16_t	ulCenterLidarDistance;
+	uint16_t	ulLeftLidarDistance;
+	uint16_t	ulRightLidarDistance;
+	uint16_t	ulFrontLidarDistance;
 	uint16_t	ulSonarDistance;
 }tSensors;
 

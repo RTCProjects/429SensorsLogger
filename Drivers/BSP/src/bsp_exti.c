@@ -20,16 +20,26 @@ void	BSP_EXTI_Init()
 	  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 9, 0);
 	  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
+	  //EXTI lidars/sonar 0 - 4
 	  GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING_FALLING;
 	  GPIO_InitStructure.Pull = GPIO_PULLDOWN;
-	  GPIO_InitStructure.Pin = GPIO_PIN_3|GPIO_PIN_4;
+	  GPIO_InitStructure.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4;
 	  HAL_GPIO_Init(GPIOI, &GPIO_InitStructure);
 
-	  //Lidar IRQ pin
-	  HAL_NVIC_SetPriority(EXTI3_IRQn, 7, 0);
+	  //Angle Lidar IRQ pin
+	  HAL_NVIC_SetPriority(EXTI0_IRQn, 7, 0);
+	  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	  //Left Lidar IRQ pin
+	  HAL_NVIC_SetPriority(EXTI1_IRQn, 7, 1);
+	  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+	  //Right Lidar IRQ pin
+	  HAL_NVIC_SetPriority(EXTI2_IRQn, 7, 2);
+	  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+	  //Center Lidar IRQ pin
+	  HAL_NVIC_SetPriority(EXTI3_IRQn, 7, 3);
 	  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 	  //Sonar IRQ pin
-	  HAL_NVIC_SetPriority(EXTI4_IRQn, 7, 1);
+	  HAL_NVIC_SetPriority(EXTI4_IRQn, 7, 4);
 	  HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 
 
@@ -41,12 +51,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	if(GPIO_Pin == GPIO_PIN_5)
 		BSP_EXTI5_Callback();
 
-	if(GPIO_Pin == GPIO_PIN_4)
+	/*if(GPIO_Pin == GPIO_PIN_4)
 		BSP_EXTI4_Callback();
 
 	if(GPIO_Pin == GPIO_PIN_3)
 		BSP_EXTI3_Callback();
-
+	 */
 }
 //IMU
 __weak void BSP_EXTI5_Callback()
@@ -59,6 +69,21 @@ __weak void BSP_EXTI4_Callback()
 }
 //Radar
 __weak void BSP_EXTI3_Callback()
+{
+
+}
+//Lidar
+__weak void BSP_EXTI2_Callback()
+{
+
+}
+//Lidar
+__weak void BSP_EXTI1_Callback()
+{
+
+}
+//Lidar
+__weak void BSP_EXTI0_Callback()
 {
 
 }

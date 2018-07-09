@@ -33,8 +33,12 @@ void Devices_Init()
 {
 	memset(&SensorsData,0,sizeof(tSensors));
 
-	BSP_Timers_TIM3Init();
-	BSP_Timers_TIM4Init();
+	BSP_Timers_TIM2Init();//Front lidar
+	BSP_Timers_TIM3Init();//Center lidar
+	BSP_Timers_TIM4Init();//Sonar
+	BSP_Timers_TIM5Init();//Left lidar
+	BSP_Timers_TIM6Init();//Rigth lidar
+	//USART Radar
 	BSP_USART_Init();
 	BSP_EXTI_Init();
 	//Инициализация датчика аксселерометра
@@ -52,7 +56,46 @@ void	Devices_SensorsDataRequest()
 	sensorsSDCardData.type = E_RANGEFINDER;
 	memcpy(&sensorsSDCardData.sensorsData,&SensorsData,sizeof(tSensors));
 
-	BSP_SDCard_WriteSensorsData(&sensorsSDCardData);
+	//BSP_SDCard_WriteSensorsData(&sensorsSDCardData);
+}
+/*----------------------------------------------------------------------------------------------------*/
+void BSP_EXTI0_Callback()//Front Lidar
+{
+	__disable_irq();
+
+	if(GPIOI->IDR & GPIO_IDR_IDR_0) TIM2->CR1 |= TIM_CR1_CEN;
+	else {
+		TIM2->CR1 &= ~TIM_CR1_CEN;
+		SensorsData.ulFrontLidarDistance = TIM2->CNT/10;
+		TIM2->CNT = 0;
+	}
+	__enable_irq();
+}
+/*----------------------------------------------------------------------------------------------------*/
+void BSP_EXTI1_Callback()//Left Lidar
+{
+	__disable_irq();
+
+	if(GPIOI->IDR & GPIO_IDR_IDR_1) TIM5->CR1 |= TIM_CR1_CEN;
+	else {
+		TIM5->CR1 &= ~TIM_CR1_CEN;
+		SensorsData.ulLeftLidarDistance = TIM5->CNT/10;
+		TIM5->CNT = 0;
+	}
+	__enable_irq();
+}
+/*----------------------------------------------------------------------------------------------------*/
+void BSP_EXTI2_Callback()//Right Lidar
+{
+	__disable_irq();
+
+	if(GPIOI->IDR & GPIO_IDR_IDR_2) TIM6->CR1 |= TIM_CR1_CEN;
+	else {
+		TIM6->CR1 &= ~TIM_CR1_CEN;
+		SensorsData.ulRightLidarDistance = TIM6->CNT/10;
+		TIM6->CNT = 0;
+	}
+	__enable_irq();
 }
 /*----------------------------------------------------------------------------------------------------*/
 void BSP_EXTI3_Callback()//Sonar
@@ -69,14 +112,14 @@ void BSP_EXTI3_Callback()//Sonar
 	__enable_irq();
 }
 /*----------------------------------------------------------------------------------------------------*/
-void BSP_EXTI4_Callback()//Lidar
+void BSP_EXTI4_Callback()//Center Lidar
 {
 	__disable_irq();
 
 	if(GPIOI->IDR & GPIO_IDR_IDR_4) TIM3->CR1 |= TIM_CR1_CEN;
 	else {
 		TIM3->CR1 &= ~TIM_CR1_CEN;
-		SensorsData.ulLidarDistance = TIM3->CNT/10;
+		SensorsData.ulCenterLidarDistance = TIM3->CNT/10;
 		TIM3->CNT = 0;
 	}
 

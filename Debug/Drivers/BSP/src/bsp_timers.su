@@ -1,2 +1,5 @@
-bsp_timers.c:7:6:BSP_Timers_TIM3Init	16	static
-bsp_timers.c:27:6:BSP_Timers_TIM4Init	16	static
+bsp_timers.c:11:6:BSP_Timers_TIM3Init	16	static
+bsp_timers.c:30:6:BSP_Timers_TIM5Init	16	static
+bsp_timers.c:49:6:BSP_Timers_TIM6Init	16	static
+bsp_timers.c:68:6:BSP_Timers_TIM2Init	16	static
+bsp_timers.c:88:6:BSP_Timers_TIM4Init	16	static

@@ -166,7 +166,11 @@ void mainTask(void const * argument)
 	for(;;)
 	{
 		xSemaphoreTake(xMainSemaphore,portMAX_DELAY);
-		sprintf(strBufOutput,"L%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f\r\n",SensorsData.ulLidarDistance,SensorsData.ulRadarDistance,SensorsData.ulSonarDistance,Az,pitch,roll);
+		sprintf(strBufOutput,"Lc%5d Ll%5d Lr%5d Lf%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f\r\n",SensorsData.ulCenterLidarDistance,
+																										SensorsData.ulLeftLidarDistance,
+																										SensorsData.ulRightLidarDistance,
+																										SensorsData.ulFrontLidarDistance,
+																										SensorsData.ulRadarDistance,SensorsData.ulSonarDistance,Az,pitch,roll);
 		BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
 	}
 }

@@ -206,7 +206,7 @@ void	BSP_SDCard_Task(void const * argument)
 						//Devices_LedToggle();
 						Devices_LedOn();
 						sprintf(usbOutputBuffer,"%5d,%5d,%5d,",
-																   sdWriteData.sensorsData.ulLidarDistance,
+																   sdWriteData.sensorsData.ulCenterLidarDistance,
 																   sdWriteData.sensorsData.ulRadarDistance,
 																   sdWriteData.sensorsData.ulSonarDistance);
 

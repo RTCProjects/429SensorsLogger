@@ -194,7 +194,7 @@ void IMU_SensorsDataRequest()
 								writeData.imuData.fPitch = pitch;//fTemp1X / M_PI * 180.0f / 72.0f * 90.0f;
 								writeData.imuData.fRoll = roll;//fTemp1Y / M_PI * 180.0f / 72.0f * 90.0f;
 
-	BSP_SDCard_WriteSensorsData(&writeData);
+	//BSP_SDCard_WriteSensorsData(&writeData);
 }
 /*----------------------------------------------------------------------------------------------------*/
 void BSP_EXTI5_Callback()

@@ -240,7 +240,10 @@ void EXTI9_5_IRQHandler(void)
   */
 void EXTI4_IRQHandler(void)
 {
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
+  //HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
+  BSP_EXTI4_Callback();
+  EXTI->PR |= EXTI_PR_PR4;
+
 }
 
 /**
@@ -250,7 +253,45 @@ void EXTI4_IRQHandler(void)
   */
 void EXTI3_IRQHandler(void)
 {
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+  //HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+  BSP_EXTI3_Callback();
+  EXTI->PR |= EXTI_PR_PR3;
+}
+
+/**
+  * @brief  This function handles External line 4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI2_IRQHandler(void)
+{
+  //HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+  BSP_EXTI2_Callback();
+  EXTI->PR |= EXTI_PR_PR2;
+}
+
+/**
+  * @brief  This function handles External line 4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI1_IRQHandler(void)
+{
+  //HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+  BSP_EXTI1_Callback();
+  EXTI->PR |= EXTI_PR_PR1;
+}
+
+/**
+  * @brief  This function handles External line 4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI0_IRQHandler(void)
+{
+  //HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+  BSP_EXTI0_Callback();
+  EXTI->PR |= EXTI_PR_PR0;
 }
 
 /**
