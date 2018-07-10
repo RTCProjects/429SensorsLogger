@@ -34,7 +34,11 @@ typedef struct
 	eSensorType	type;
 	tSensors	sensorsData;
 	tIMUData	imuData;
+	float		fAltitude;
+	float		fLatitude;
+	float		fLongitude;
 }tSDCardWriteData;
+
 
 typedef struct
 {
@@ -47,5 +51,6 @@ void		BSP_SDCard_WriteSensorsData(tSDCardWriteData	*Data);
 uint16_t	BSP_SDCard_GetFileNumbers(char*);
 void 		BSP_SDCard_SPIInit(uint32_t baudratePrescaler);
 void 		BSP_SDCardSPIDeInit(void);
+void		BSP_SDCard_StartWrite(void);
 tSDCardFileNames		*BSP_SDCard_GetNewFileName(void);
 #endif

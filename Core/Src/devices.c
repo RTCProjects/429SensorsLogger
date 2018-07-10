@@ -23,6 +23,9 @@ uint8_t flag4 = 0;
 
 uint32_t tempData;
 
+uint16_t	ulDistances[6];
+
+
 tSensors	SensorsData;
 /*----------------------------------------------------------------------------------------------------*/
 /**
@@ -51,14 +54,25 @@ void Devices_Init()
   */
 void	Devices_SensorsDataRequest()
 {
-	static tSDCardWriteData	sensorsSDCardData;
+	/*static tSDCardWriteData	sensorsSDCardData;
 
 	sensorsSDCardData.type = E_RANGEFINDER;
 	memcpy(&sensorsSDCardData.sensorsData,&SensorsData,sizeof(tSensors));
 
-	//BSP_SDCard_WriteSensorsData(&sensorsSDCardData);
+	//BSP_SDCard_WriteSensorsData(&sensorsSDCardData);*/
+	memcpy(&SensorsData,ulDistances,sizeof(tSensors));
 }
 /*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief  Функция получения указателя на блок данных расстояния
+  * @retval None
+  */
+tSensors	*Devices_GetDataPointer()
+{
+	memcpy(&SensorsData,ulDistances,sizeof(tSensors));
+	return &SensorsData;
+}
+
 void BSP_EXTI0_Callback()//Front Lidar
 {
 	__disable_irq();
@@ -66,7 +80,8 @@ void BSP_EXTI0_Callback()//Front Lidar
 	if(GPIOI->IDR & GPIO_IDR_IDR_0) TIM2->CR1 |= TIM_CR1_CEN;
 	else {
 		TIM2->CR1 &= ~TIM_CR1_CEN;
-		SensorsData.ulFrontLidarDistance = TIM2->CNT/10;
+		//SensorsData.ulFrontLidarDistance = TIM2->CNT/10;
+		ulDistances[4] = TIM2->CNT/10;
 		TIM2->CNT = 0;
 	}
 	__enable_irq();
@@ -79,7 +94,8 @@ void BSP_EXTI1_Callback()//Left Lidar
 	if(GPIOI->IDR & GPIO_IDR_IDR_1) TIM5->CR1 |= TIM_CR1_CEN;
 	else {
 		TIM5->CR1 &= ~TIM_CR1_CEN;
-		SensorsData.ulLeftLidarDistance = TIM5->CNT/10;
+		//SensorsData.ulLeftLidarDistance = TIM5->CNT/10;
+		ulDistances[2] = TIM5->CNT/10;
 		TIM5->CNT = 0;
 	}
 	__enable_irq();
@@ -92,7 +108,8 @@ void BSP_EXTI2_Callback()//Right Lidar
 	if(GPIOI->IDR & GPIO_IDR_IDR_2) TIM6->CR1 |= TIM_CR1_CEN;
 	else {
 		TIM6->CR1 &= ~TIM_CR1_CEN;
-		SensorsData.ulRightLidarDistance = TIM6->CNT/10;
+		//SensorsData.ulRightLidarDistance = TIM6->CNT/10;
+		ulDistances[3] = TIM6->CNT/10;
 		TIM6->CNT = 0;
 	}
 	__enable_irq();
@@ -105,7 +122,8 @@ void BSP_EXTI3_Callback()//Sonar
 	if(GPIOI->IDR & GPIO_IDR_IDR_3) TIM4->CR1 |= TIM_CR1_CEN;
 	else {
 		TIM4->CR1 &= ~TIM_CR1_CEN;
-		SensorsData.ulSonarDistance = TIM4->CNT/58;
+		//SensorsData.ulSonarDistance = TIM4->CNT/58;
+		ulDistances[5] = TIM4->CNT/58;
 		TIM4->CNT = 0;
 	}
 
@@ -119,7 +137,8 @@ void BSP_EXTI4_Callback()//Center Lidar
 	if(GPIOI->IDR & GPIO_IDR_IDR_4) TIM3->CR1 |= TIM_CR1_CEN;
 	else {
 		TIM3->CR1 &= ~TIM_CR1_CEN;
-		SensorsData.ulCenterLidarDistance = TIM3->CNT/10;
+		//SensorsData.ulCenterLidarDistance = TIM3->CNT/10;
+		ulDistances[1] = TIM3->CNT/10;
 		TIM3->CNT = 0;
 	}
 
@@ -150,8 +169,8 @@ void BSP_USART_RxData(uint8_t rxByte)
 					receivedDataCounter ++;
 
 					if (receivedDataCounter > 5) {
-						SensorsData.ulRadarDistance = (receivedData[4] * 256 + receivedData[5]);
-
+						//SensorsData.ulRadarDistance = (receivedData[4] * 256 + receivedData[5]);
+						ulDistances[0] = (receivedData[4] * 256 + receivedData[5]);
 						for(uint8_t i = 0; i < 20; i++) {
 							receivedData[i] = 0;
 						}

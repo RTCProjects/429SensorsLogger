@@ -53,6 +53,6 @@ void	Devices_LedOff(void);
 void	Devices_LedOn(void);
 void	Devices_IMUOn(void);
 void	Devices_IMUOff(void);
-
+tSensors	*Devices_GetDataPointer(void);
 
 #endif

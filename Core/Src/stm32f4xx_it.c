@@ -38,6 +38,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "bsp_usart.h"
+#include "bsp_exti.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/

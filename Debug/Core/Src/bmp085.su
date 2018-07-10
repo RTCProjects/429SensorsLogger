@@ -1,0 +1,4 @@
+bmp085.c:3:6:BMP085_Init	8	static
+bmp085.c:19:10:BMP085_ReadRawTemperature	16	static
+bmp085.c:29:10:BMP085_ReadRawPresure	0	static
+bmp085.c:34:10:BMP085_ReadPresusure	0	static

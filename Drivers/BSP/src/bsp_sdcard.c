@@ -9,10 +9,9 @@
 #include "bsp_rtc.h"
 #include "fatfs.h"
 #include "IMU.h"
-
 #include <string.h>
-
-static	char usbOutputBuffer[128];
+/*----------------------------------------------------------------------------------------------------*/
+static char usbOutputBuffer[128];
 
 static uint8_t				startBtnState,startBtnPress;
 static SD_CardInfo			sdInfo;
@@ -25,11 +24,9 @@ xQueueHandle 			xSDCardDataWriteQueue;
 uint32_t				uFilesCount;
 
 void	BSP_SDCard_Task(void const * argument);
-void 	BSP_SDCard_StartBtnState(void);
 void 	BSP_SDCard_CreateDefaultFolders(void);
 
-extern xQueueHandle 			xIMUDataQueue;
-extern tIMULowData				imuLowData[100] CCM_SRAM;
+xSemaphoreHandle xSDWriteProcessSemaphore;
 /*----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  Initializes the SD card device.
@@ -39,8 +36,9 @@ void	BSP_SDCard_Init()
 {	
 
 	xSDCardDataWriteQueue = xQueueCreate(SDCARD_WRITE_QUEUE_SIZE, sizeof(tSDCardWriteData));
+	vSemaphoreCreateBinary(xSDWriteProcessSemaphore);
 	
-	osThreadDef(SDCardTask, BSP_SDCard_Task, osPriorityAboveNormal, 0, configMINIMAL_STACK_SIZE + 0x400);
+	osThreadDef(SDCardTask, BSP_SDCard_Task, /*osPriorityAboveNormal*/ osPriorityRealtime, 0, configMINIMAL_STACK_SIZE + 0x400);
 	usbTaskSdCardHandle = osThreadCreate(osThread(SDCardTask), NULL);
 	
 	uFilesCount = 0;
@@ -96,22 +94,7 @@ void	BSP_SDCard_WriteSensorsData(tSDCardWriteData	*Data)
 	if(xSDCardDataWriteQueue!=0)
 		xQueueSendToBack(xSDCardDataWriteQueue,Data,0);
 }
-/*----------------------------------------------------------------------------------------------------*/
-void 	BSP_SDCard_StartBtnState()
-{
 
-		if(HAL_GPIO_ReadPin(GPIOH,GPIO_PIN_12) == GPIO_PIN_SET){
-			if(startBtnPress == 1)return;
-			else startBtnPress = 1;
-
-			if(startBtnState == 0)startBtnState = 1;
-		}
-		else
-		{
-			startBtnPress = 0;
-		}
-
-}
 /*----------------------------------------------------------------------------------------------------*/
 /**
 	* @brief	Функция генерации имен файлов с логами на SD карте
@@ -142,12 +125,21 @@ tSDCardFileNames	*BSP_SDCard_GetNewFileName()
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**
-	* @brief	Основной поток для работы с SD картой
+	* @brief	Запуск потока на запись на SD карту
 	* @param	argument: параметры потока FreeRTOS 
 	* @reval	None
   */
-static tSDCardWriteData	sdWriteData;
-
+void	BSP_SDCard_StartWrite()
+{
+	xSemaphoreGive(xSDWriteProcessSemaphore);
+}
+/*----------------------------------------------------------------------------------------------------*/
+/**
+	* @brief	Основной поток для работы с SD картой
+	* @param	argument: параметры потока FreeRTOS
+	* @reval	None
+  */
+extern tSDCardWriteData	accumData[IMU_LOW_DATA_SIZE] CCM_SRAM;
 void	BSP_SDCard_Task(void const * argument)
 {
 	/*
@@ -157,8 +149,6 @@ void	BSP_SDCard_Task(void const * argument)
 	*/
 	FRESULT 		fResult;
 	FIL 			fFile;
-	portBASE_TYPE 	xStatus;
-	//tSDCardFileNames			*logFileNames = 0;
 
 	FATFS_LinkDriver(&SD_Driver, SDPath);
 	BSP_SD_Init();
@@ -175,53 +165,35 @@ void	BSP_SDCard_Task(void const * argument)
 		f_close(&fFile);
 	}
 
+	xSemaphoreTake( xSDWriteProcessSemaphore, portMAX_DELAY );
 
 	while(1)
 	{
-		xStatus=xQueueReceive(xSDCardDataWriteQueue, &sdWriteData, portMAX_DELAY);
-
-		if (xStatus == pdPASS)
+		xSemaphoreTake( xSDWriteProcessSemaphore, portMAX_DELAY );
 		{
-			//RTC_TimeTypeDef	*rtcTime = BSP_RTC_GetTime();
+			fResult = f_open(&fFile,"senslog.ini",FA_OPEN_APPEND|FA_WRITE);
+			if(fResult == FR_OK){
+				Devices_LedToggle();
 
-			switch(sdWriteData.type)
-			{
-				case E_RANGEFINDER:
+				for(int i = 0;i<IMU_LOW_DATA_SIZE;i++)
 				{
-					fResult = f_open(&fFile,"senslog.ini",FA_OPEN_APPEND|FA_WRITE);
-					if(fResult == FR_OK){
-						//Devices_LedToggle();
-						Devices_LedOn();
-						sprintf(usbOutputBuffer,"%5d,%5d,%5d,",
-																   sdWriteData.sensorsData.ulCenterLidarDistance,
-																   sdWriteData.sensorsData.ulRadarDistance,
-																   sdWriteData.sensorsData.ulSonarDistance);
+					sprintf(usbOutputBuffer,"%5d,%5d,%5d,%5d,%5d,%5d,%0.2f,%0.2f,%f,%f,%f\n",
+							accumData[i].sensorsData.ulCenterLidarDistance,
+							accumData[i].sensorsData.ulLeftLidarDistance,
+							accumData[i].sensorsData.ulRightLidarDistance,
+							accumData[i].sensorsData.ulFrontLidarDistance,
+							accumData[i].sensorsData.ulRadarDistance,
+							accumData[i].sensorsData.ulSonarDistance,
+							accumData[i].imuData.fPitch,
+							accumData[i].imuData.fRoll,
+							accumData[i].fAltitude,
+							accumData[i].fLatitude,
+							accumData[i].fLongitude
+							);
 
-						f_printf(&fFile,"%s",usbOutputBuffer);
-						f_close(&fFile);
-
-						//BSP_Usb_SendString(usbOutputBuffer);
-					}
-					else{
-						//BSP_Usb_SendString("write error sensors\n");
-					}
-				}break;
-
-				case E_GYRO:
-				{
-					fResult = f_open(&fFile,"senslog.ini",FA_OPEN_APPEND|FA_WRITE);
-					if(fResult == FR_OK){
-
-						char	fmtStr[100];
-						Devices_LedOff();
-						sprintf(fmtStr,"%0.2f,%0.2f\n",sdWriteData.imuData.fPitch,sdWriteData.imuData.fRoll);
-						f_printf(&fFile,"%s",fmtStr);
-
-						f_close(&fFile);
-					}
-					else;
-						//BSP_Usb_SendString("write imu error\n");
-				}break;
+					f_printf(&fFile,"%s",usbOutputBuffer);
+				}
+				f_close(&fFile);
 			}
 		}
 	}

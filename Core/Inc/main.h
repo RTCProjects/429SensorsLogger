@@ -53,7 +53,7 @@
 #include <stdint.h>
 
 #define RTC_CLOCK_SOURCE_LSI
-#define CCM_SRAM	__attribute__ ((section(".sram")))
+#define CCM_SRAM	__attribute__ ((section(".ccmram")))
 
 uint32_t	GetRunTimeStatsValue(void);
 void 		SetupRunTimeStatsTimer(void);

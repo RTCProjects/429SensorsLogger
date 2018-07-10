@@ -4,36 +4,24 @@
   * @brief          Модуль для работы с гиродатчиком и акселерометром
 **/
 /*----------------------------------------------------------------------------------------------------*/
+#include <bmp180.h>
 #include "IMU.h"
 #include "bsp_exti.h"
 #include "bsp_usb.h"
 #include "bsp_sdcard.h"
 #include "bsp_usart.h"
-
-#define IMU_LOW_DATA_SIZE 10
-
+/*----------------------------------------------------------------------------------------------------*/
 extern I2C_HandleTypeDef I2C1Handle;
 osThreadId 				IMUDeviceHandle;
 void	IMU_Task(void const * argument);
 
-static float	fTemp1X,fTemp1Y,fTempAz;
-float		fCalibX,fCalibY,fCalibAz;
-uint8_t		uCalibState;
-uint16_t	uCalibCounter;
-
-const uint16_t	CALIB_REQUEST_VAL = 1000;
-
-float	SelfTest[6];
-float 	gyroBias[3], accelBias[3];
 float Ax, Ay, Az, Gx, Gy, Gz;
 
-tIMUData	imuCurrentData;
-tIMULowData	imuLowData[IMU_LOW_DATA_SIZE] CCM_SRAM;
-uint8_t	uIMURdy = 0;
+tSDCardWriteData	accumData[IMU_LOW_DATA_SIZE] CCM_SRAM;	//размер массива равен частоте опроса датчика IMU
+tSDCardWriteData	skifCurrentData;
+
 uint16_t	uIMUCounter = 0;
 uint16_t	uIMUSDCardCounter = 0;
-
-
 
 xSemaphoreHandle xIMURdySemaphore;
 /*----------------------------------------------------------------------------------------------------*/
@@ -47,18 +35,6 @@ void IMU_Init(void)
 	IMUDeviceHandle = osThreadCreate(osThread(IMUTask), NULL);
 
 	vSemaphoreCreateBinary(xIMURdySemaphore);
-
-	fTemp1X= 0;
-	fTemp1Y = 0;
-	fTempAz = 0;
-
-	uCalibState = 1;
-	uCalibCounter = 0;
-	fCalibX = 0;
-	fCalibY = 0;
-	fCalibAz = 0;
-
-	uIMURdy = 0;
 	uIMUCounter = 0;
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -78,7 +54,6 @@ void	IMU_Task(void const * argument)
 	osDelay(10);
 	//	Clear sleep mode bit (6), enable all sensors
 	BSP_I2C_Write_Byte(MPU6050_ADDRESS, PWR_MGMT_1, 0x00);
-
 	devID = BSP_I2C_Read_Byte(MPU6050_ADDRESS, WHO_AM_I_MPU9255);
 
 	if(devID == 0x73)
@@ -92,8 +67,8 @@ void	IMU_Task(void const * argument)
 		//	Configure accelerometers range
 		BSP_I2C_Write_Byte(MPU6050_ADDRESS, ACCEL_CONFIG, ACC_FULL_SCALE_2_G);
 		osDelay(10);
-		// Set 1000Hz INT
-		BSP_I2C_Write_Byte(MPU6050_ADDRESS, SMPLRT_DIV , 0x00);
+		// Set 200Hz INT
+		BSP_I2C_Write_Byte(MPU6050_ADDRESS, SMPLRT_DIV , 0x01);
 		osDelay(10);
 		//	Configuring hardware interrupts on INT pin
 		BSP_I2C_Write_Byte(MPU6050_ADDRESS, INT_ENABLE, DATA_RDY_EN);
@@ -103,6 +78,8 @@ void	IMU_Task(void const * argument)
 	else {
 		Error_Handler();
 	}
+
+	BMP180_Init();
 
 	while(1)
 	{
@@ -115,7 +92,6 @@ void	IMU_Task(void const * argument)
   * @brief 			Функция запроса измеренных данных с IMU датчика
   * @reval			None
   */
-
 void IMU_Calcualte(void)
 {
 
@@ -133,48 +109,43 @@ void IMU_Calcualte(void)
 	pitch = RAD_TO_DEG * pitch;
 	roll = RAD_TO_DEG * roll;
 
-	if(uIMUCounter >= 200){
+	if(uIMUCounter < IMU_LOW_DATA_SIZE)
+	{
+		tSensors *curDistanceData = Devices_GetDataPointer();
+		//
+
+		memcpy(&accumData[uIMUCounter].sensorsData,curDistanceData,sizeof(tSensors));
+
+		accumData[uIMUCounter].imuData.fAz = Az;
+		accumData[uIMUCounter].imuData.fPitch = pitch;
+		accumData[uIMUCounter].imuData.fRoll = roll;
+		accumData[uIMUCounter].fAltitude = 0;
+		accumData[uIMUCounter].fLatitude = 0;
+		accumData[uIMUCounter].fLongitude = 0;
+
+		if(uIMUCounter== IMU_LOW_DATA_SIZE>>1)
+			mainGiveSemaphore();
+
+		uIMUCounter++;
+	}
+	else
+	{
 		uIMUCounter = 0;
-
-		Devices_SensorsDataRequest();
-		IMU_SensorsDataRequest();
-	}
-	if(uIMUSDCardCounter >= 500){
+		memcpy(&skifCurrentData,&accumData[IMU_LOW_DATA_SIZE - 1],sizeof(tSDCardWriteData));
+		//WriteSDCardThread
 		mainGiveSemaphore();
-		uIMUSDCardCounter = 0;
+		BSP_SDCard_StartWrite();
+
 	}
 
-	uIMUCounter++;
+
 	uIMUSDCardCounter++;
-
-	/*
-	memset(&writeData.imuData,0,sizeof(tIMUData));
-							writeData.type = E_GYRO;
-							writeData.imuData.fAz = Az;
-							writeData.imuData.fPitch = Gx;//fTemp1X / M_PI * 180.0f / 72.0f * 90.0f;
-							writeData.imuData.fRoll = Gy;//fTemp1Y / M_PI * 180.0f / 72.0f * 90.0f;
-
-	imuCurrentData.fAz = Az;
-	imuCurrentData.fPitch = Gx;
-	imuCurrentData.fRoll = Gy;
-
-	BSP_SDCard_WriteSensorsData(&writeData);*/
-
-}
-
-void IMU_SensorsDataRequest()
-{
-	static tSDCardWriteData	writeData;
-
-	memset(&writeData.imuData,0,sizeof(tIMUData));
-								writeData.type = E_GYRO;
-								writeData.imuData.fAz = Az;
-								writeData.imuData.fPitch = pitch;//fTemp1X / M_PI * 180.0f / 72.0f * 90.0f;
-								writeData.imuData.fRoll = roll;//fTemp1Y / M_PI * 180.0f / 72.0f * 90.0f;
-
-	//BSP_SDCard_WriteSensorsData(&writeData);
 }
 /*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief 			Прерываение 200Hz с MPU6050
+  * @reval			None
+  */
 void BSP_EXTI5_Callback()
 {
 	portBASE_TYPE 	xTaskWoken;
@@ -198,39 +169,21 @@ void BSP_EXTI5_Callback()
 	gy = (int16_t)Buf[10]<<8 | Buf[11];
 	gz = (int16_t)Buf[12]<<8 | Buf[13];
 
-	Ax = (float)(ax/* - rKoef.fKoef[0]*/) * A_RES;
-	Ay = (float)(ay/* - rKoef.fKoef[1]*/) * A_RES;
-	Az = (float)(az/* - rKoef.fKoef[2]*/) * A_RES;
+	Ax = (float)(ax) * A_RES;
+	Ay = (float)(ay) * A_RES;
+	Az = (float)(az) * A_RES;
 
-	Gx = (float)(gx/* - cKoef.fKoef[0]*/) * G_RES * DEG_TO_RAD;
-	Gy = (float)(gy/* - cKoef.fKoef[1]*/) * G_RES * DEG_TO_RAD;
-	Gz = (float)(gz/* - cKoef.fKoef[2]*/) * G_RES * DEG_TO_RAD;
+	Gx = (float)(gx) * G_RES * DEG_TO_RAD;
+	Gy = (float)(gy) * G_RES * DEG_TO_RAD;
+	Gz = (float)(gz) * G_RES * DEG_TO_RAD;
+
+
+
 
 	xSemaphoreGiveFromISR( xIMURdySemaphore, &xTaskWoken );
 	if( xTaskWoken == pdTRUE){
 			taskYIELD();
 	}
 
-
-
-	/*if(uIMUCounter < IMU_LOW_DATA_SIZE)
-	{
-		imuLowData[uIMUCounter].fAccel[0] = Ax;
-		imuLowData[uIMUCounter].fAccel[1] = Ay;
-		imuLowData[uIMUCounter].fAccel[2] = Az;
-		imuLowData[uIMUCounter].fAccel[0] = Gx;
-		imuLowData[uIMUCounter].fAccel[1] = Gy;
-		imuLowData[uIMUCounter].fAccel[2] = Gz;
-
-		uIMUCounter++;
-
-		writeData.type = E_GYRO;
-	}
-	else
-	{
-
-
-		uIMUCounter = 0;
-	}*/
 }
 /*----------------------------------------------------------------------------------------------------*/

@@ -27,7 +27,7 @@ void mainTask(void const * argument);
 
 xSemaphoreHandle xMainSemaphore;
 
-
+extern float fAltitude;
 /*----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  The application entry point.
@@ -145,9 +145,7 @@ void portClkInit(void)
   * @reval			None
   */
 
-extern tSensors	SensorsData;
-extern float Ax, Ay, Az, Gx, Gy, Gz;
-extern float roll,pitch,yaw;
+extern tSDCardWriteData	skifCurrentData;
 char	strBufOutput[128];
 
 void mainTask(void const * argument)
@@ -166,11 +164,12 @@ void mainTask(void const * argument)
 	for(;;)
 	{
 		xSemaphoreTake(xMainSemaphore,portMAX_DELAY);
-		sprintf(strBufOutput,"Lc%5d Ll%5d Lr%5d Lf%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f\r\n",SensorsData.ulCenterLidarDistance,
-																										SensorsData.ulLeftLidarDistance,
-																										SensorsData.ulRightLidarDistance,
-																										SensorsData.ulFrontLidarDistance,
-																										SensorsData.ulRadarDistance,SensorsData.ulSonarDistance,Az,pitch,roll);
+		sprintf(strBufOutput,"Lc%5d Ll%5d Lr%5d Lf%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f Alt:%f\r\n", skifCurrentData.sensorsData.ulCenterLidarDistance,
+																												skifCurrentData.sensorsData.ulLeftLidarDistance,
+																												skifCurrentData.sensorsData.ulRightLidarDistance,
+																												skifCurrentData.sensorsData.ulFrontLidarDistance,
+																												skifCurrentData.sensorsData.ulRadarDistance,skifCurrentData.sensorsData.ulSonarDistance,
+																												skifCurrentData.imuData.fAz,skifCurrentData.imuData.fPitch,skifCurrentData.imuData.fRoll,0.0f);
 		BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
 	}
 }
