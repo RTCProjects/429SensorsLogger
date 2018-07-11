@@ -4,6 +4,8 @@ uint8_t receiveBuffer[14];
 
 UART_HandleTypeDef bsp_uart1;
 UART_HandleTypeDef bsp_uart5;
+UART_HandleTypeDef bsp_uart7;
+
 
 
 void	BSP_USART_Init()
@@ -40,6 +42,23 @@ void	BSP_WIFI_Init()
 		Error_Handler();
 	}
 }
+
+void	BSP_GPS_UART_Init()
+{
+	bsp_uart7.Instance = UART4;
+	bsp_uart7.Init.BaudRate = 9600;
+	bsp_uart7.Init.WordLength = UART_WORDLENGTH_8B;
+	bsp_uart7.Init.StopBits = UART_STOPBITS_1;
+	bsp_uart7.Init.Parity = UART_PARITY_NONE;
+	bsp_uart7.Init.Mode = UART_MODE_RX;
+	bsp_uart7.Init.HwFlowCtl = UART_HWCONTROL_RTS;
+	bsp_uart7.Init.OverSampling = UART_OVERSAMPLING_16;
+
+	if (HAL_UART_Init(&bsp_uart7) != HAL_OK){
+		HAL_UART_Init(&bsp_uart7);
+	}
+}
+
 void	BSP_WIFI_UARTSend(uint8_t *pDyte,uint16_t	Size)
 {
 	HAL_UART_Transmit(&bsp_uart5,pDyte,Size,5000);

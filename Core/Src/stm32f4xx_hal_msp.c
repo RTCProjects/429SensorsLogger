@@ -52,6 +52,8 @@
 
 extern void _Error_Handler(char *, int);
 extern UART_HandleTypeDef bsp_uart1;
+extern UART_HandleTypeDef bsp_uart7;
+
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
@@ -316,6 +318,22 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 	    GPIO_InitStruct.Pin = GPIO_PIN_12;
 	    GPIO_InitStruct.Alternate = GPIO_AF8_UART5;
 	    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  }
+  if(uartHandle->Instance==UART7)
+  {
+	  __HAL_RCC_UART7_CLK_ENABLE();
+	  __HAL_RCC_GPIOF_CLK_ENABLE();
+	  __DMA1_CLK_ENABLE();
+
+	  	 GPIO_InitStruct.Pin = GPIO_PIN_6;
+	     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	     GPIO_InitStruct.Alternate = GPIO_AF4_UART7;
+	     HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+	     GPIO_InitStruct.Pin = GPIO_PIN_7;
+	     GPIO_InitStruct.Alternate = GPIO_AF4_UART7;
+	     HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
   }
 
 }
