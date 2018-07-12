@@ -35,6 +35,7 @@ typedef struct
 	tSensors	sensorsData;
 	tIMUData	imuData;
 	float		fAltitude;
+	float		fAltitude2;
 	float		fLatitude;
 	float		fLongitude;
 }tSDCardWriteData;

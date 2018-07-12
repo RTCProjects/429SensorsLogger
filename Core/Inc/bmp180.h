@@ -12,7 +12,6 @@
 
 #define BMP180_I2CADDR	0x77
 
-
 void		BMP180_Init(void);
 void 		BMP180_PressureAltitude(uint32_t *Pressure,float *Altitude);
 uint16_t	BMP180_ReadRawTemperature(void);
@@ -21,5 +20,8 @@ int32_t		BMP180_ReadPresusure(void);
 void		BMP180_StartMeasure(void);
 uint32_t	BMP180_GetPressure(void);
 float		BMP180_GetAltitude(void);
+
+uint32_t	BMP180_GetPressure2(void);
+float		BMP180_GetAltitude2(void);
 
 #endif

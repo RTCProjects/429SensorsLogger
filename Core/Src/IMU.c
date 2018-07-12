@@ -23,7 +23,7 @@ tSDCardWriteData	skifCurrentData;
 uint16_t	uBMPCounter = 0;
 uint16_t	uIMUCounter = 0;
 uint16_t	uIMUSDCardCounter = 0;
-static float	fAltitude = 0;
+
 xSemaphoreHandle xIMURdySemaphore;
 /*----------------------------------------------------------------------------------------------------*/
 /**
@@ -50,6 +50,7 @@ void	IMU_Task(void const * argument)
 	uint8_t	devID = 0;
 
 	BSP_I2C_Init();
+	BSP_I2C2_Init();
 	Devices_IMUOff();
 	osDelay(10);
 	Devices_IMUOn();
@@ -135,6 +136,8 @@ void IMU_Calcualte(void)
 		accumData[uIMUCounter].fLatitude = 0;
 		accumData[uIMUCounter].fLongitude = 0;
 		accumData[uIMUCounter].fAltitude = BMP180_GetAltitude();
+		accumData[uIMUCounter].fAltitude2 = BMP180_GetAltitude2();
+
 
 		if(uIMUCounter == IMU_LOW_DATA_SIZE / 2){
 			mainGiveSemaphore();
