@@ -6,6 +6,15 @@
 #include "cmsis_os.h"
 #include <string.h>
 
-uint8_t	NMEA_Parse(uint8_t *inputStr,uint8_t	size);
+#define NMEA_POS_SIZE	26
 
+typedef struct
+{
+	float	fLatitude;
+	float	fLongitude;
+	char	strPosition[NMEA_POS_SIZE];
+}tNMEAPosition;
+
+uint8_t	NMEA_Parse(uint8_t *inputStr,uint8_t	size);
+char	*NMEA_GetPositionString(void);
 #endif

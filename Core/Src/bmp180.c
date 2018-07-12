@@ -28,6 +28,8 @@ float	 fAltitude2;
 uint32_t	uZeroPressure2;
 uint8_t		uZeroCounter2;
 
+tBMP180Sensor	bmpSensor;
+
 void	BMP180_Init()
 {
 	ulPressure = 0;
@@ -52,6 +54,22 @@ void BMP180Task(void const * argument)
 {
 	uint8_t	devID = 0;
 	uint8_t	regByte[2];
+
+	/*devID = BSP_I2C_Read_Byte(BMP180_I2CADDR,WHO_AM_I_BMP280);
+	if(devID == 0x55)
+	{
+		BSP_I2C_Read_Bytes(BMP180_I2CADDR,BMP085_RA_AC1_H,2,(uint8_t*)&bmpSensor.cData.AC1);
+		BSP_I2C_Read_Bytes(BMP180_I2CADDR,BMP085_RA_AC2_H,2,(uint8_t*)&bmpSensor.cData.AC2);
+		BSP_I2C_Read_Bytes(BMP180_I2CADDR,BMP085_RA_AC3_H,2,(uint8_t*)&bmpSensor.cData.AC3);
+		BSP_I2C_Read_Bytes(BMP180_I2CADDR,BMP085_RA_AC4_H,2,(uint8_t*)&bmpSensor.cData.AC4);
+		BSP_I2C_Read_Bytes(BMP180_I2CADDR,BMP085_RA_AC5_H,2,(uint8_t*)&bmpSensor.cData.AC5);
+		BSP_I2C_Read_Bytes(BMP180_I2CADDR,BMP085_RA_AC6_H,2,(uint8_t*)&bmpSensor.cData.AC6);
+		BSP_I2C_Read_Bytes(BMP180_I2CADDR,BMP085_RA_B1_H,2,(uint8_t*)&bmpSensor.cData.B1);
+		BSP_I2C_Read_Bytes(BMP180_I2CADDR,BMP085_RA_B2_H,2,(uint8_t*)&bmpSensor.cData.B2);
+		BSP_I2C_Read_Bytes(BMP180_I2CADDR,BMP085_RA_MC_H,2,(uint8_t*)&bmpSensor.cData.MC);
+		BSP_I2C_Read_Bytes(BMP180_I2CADDR,BMP085_RA_MD_H,2,(uint8_t*)&bmpSensor.cData.MD);
+
+	}*/
 
 	//BMP180 Channel 1
 	devID = BSP_I2C_Read_Byte(BMP180_I2CADDR,WHO_AM_I_BMP280);

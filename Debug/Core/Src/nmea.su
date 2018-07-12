@@ -1,1 +1,2 @@
-nmea.c:4:9:NMEA_Parse	16	static
+nmea.c:5:9:NMEA_Parse	8	static
+nmea.c:28:7:NMEA_GetPositionString	0	static

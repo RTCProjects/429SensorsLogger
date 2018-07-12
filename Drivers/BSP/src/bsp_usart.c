@@ -82,9 +82,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
 	if(UartHandle->Instance == UART7)
 	{
-		//NMEA_Parse(gpsBuffer,NMEA_SIZE);
-		//mainGiveSemaphoreISR();
-
+		NMEA_Parse(gpsBuffer,NMEA_SIZE);
 	}
 }
 

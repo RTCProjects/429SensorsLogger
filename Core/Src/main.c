@@ -148,7 +148,7 @@ void portClkInit(void)
 extern tSDCardWriteData	skifCurrentData;
 extern  uint8_t	gpsBuffer[128];
 
-char	strBufOutput[128];
+char	strBufOutput[200];
 
 void mainTask(void const * argument)
 {		
@@ -168,7 +168,7 @@ void mainTask(void const * argument)
 	for(;;)
 	{
 		xSemaphoreTake(xMainSemaphore,portMAX_DELAY);
-		/*sprintf(strBufOutput,"Lc%5d Ll%5d Lr%5d Lf%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f Alt:%f Alt2:%f\r\n", skifCurrentData.sensorsData.ulCenterLidarDistance,
+		sprintf(strBufOutput,"Lc%5d Ll%5d Lr%5d Lf%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f Alt:%f Alt2:%f NMEA:%s\r\n", skifCurrentData.sensorsData.ulCenterLidarDistance,
 																														skifCurrentData.sensorsData.ulLeftLidarDistance,
 																														skifCurrentData.sensorsData.ulRightLidarDistance,
 																														skifCurrentData.sensorsData.ulFrontLidarDistance,
@@ -176,10 +176,12 @@ void mainTask(void const * argument)
 																														skifCurrentData.sensorsData.ulSonarDistance,
 																														skifCurrentData.imuData.fAz,
 																														skifCurrentData.imuData.fPitch,
-																														skifCurrentData.imuData.fRoll,skifCurrentData.fAltitude,
-																														skifCurrentData.fAltitude2);
-		BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));*/
-		BSP_WIFI_UARTSend((uint8_t*)gpsBuffer,strlen(gpsBuffer));
+																														skifCurrentData.imuData.fRoll,
+																														skifCurrentData.fAltitude,
+																														skifCurrentData.fAltitude2,
+																														skifCurrentData.strNMEAPosition);
+		BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
+		//BSP_WIFI_UARTSend((uint8_t*)gpsBuffer,strlen(gpsBuffer));
 	}
 }
 

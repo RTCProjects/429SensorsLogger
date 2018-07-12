@@ -4,12 +4,14 @@
   * @brief          Модуль для работы с гиродатчиком и акселерометром
 **/
 /*----------------------------------------------------------------------------------------------------*/
-#include <bmp180.h>
+#include "bmp180.h"
 #include "IMU.h"
 #include "bsp_exti.h"
 #include "bsp_usb.h"
 #include "bsp_sdcard.h"
 #include "bsp_usart.h"
+
+#include <string.h>
 /*----------------------------------------------------------------------------------------------------*/
 extern I2C_HandleTypeDef I2C1Handle;
 osThreadId 				IMUDeviceHandle;
@@ -137,6 +139,7 @@ void IMU_Calcualte(void)
 		accumData[uIMUCounter].fLongitude = 0;
 		accumData[uIMUCounter].fAltitude = BMP180_GetAltitude();
 		accumData[uIMUCounter].fAltitude2 = BMP180_GetAltitude2();
+		strcpy(accumData[uIMUCounter].strNMEAPosition,NMEA_GetPositionString());
 
 
 		if(uIMUCounter == IMU_LOW_DATA_SIZE / 2){

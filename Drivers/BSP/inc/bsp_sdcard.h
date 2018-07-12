@@ -16,6 +16,7 @@
 #include "cmsis_os.h"
 #include "devices.h"
 #include "IMU.h"
+#include "nmea.h"
 
 typedef struct sd_info{
 	uint8_t	ocr1[4];
@@ -38,6 +39,7 @@ typedef struct
 	float		fAltitude2;
 	float		fLatitude;
 	float		fLongitude;
+	char		strNMEAPosition[NMEA_POS_SIZE];
 }tSDCardWriteData;
 
 

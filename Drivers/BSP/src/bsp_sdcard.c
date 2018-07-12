@@ -11,7 +11,7 @@
 #include "IMU.h"
 #include <string.h>
 /*----------------------------------------------------------------------------------------------------*/
-static char usbOutputBuffer[128];
+static char usbOutputBuffer[200];
 
 static uint8_t				startBtnState,startBtnPress;
 static SD_CardInfo			sdInfo;
@@ -177,7 +177,7 @@ void	BSP_SDCard_Task(void const * argument)
 
 				for(int i = 0;i<IMU_LOW_DATA_SIZE;i++)
 				{
-					sprintf(usbOutputBuffer,"%5d,%5d,%5d,%5d,%5d,%5d,%0.2f,%0.2f,%0.6f,%0.6f,%0.6f,%0.6f\n",
+					sprintf(usbOutputBuffer,"%5d,%5d,%5d,%5d,%5d,%5d,%0.2f,%0.2f,%0.6f,%0.6f,[%s]\n",
 							accumData[i].sensorsData.ulCenterLidarDistance,
 							accumData[i].sensorsData.ulLeftLidarDistance,
 							accumData[i].sensorsData.ulRightLidarDistance,
@@ -188,8 +188,7 @@ void	BSP_SDCard_Task(void const * argument)
 							accumData[i].imuData.fRoll,
 							accumData[i].fAltitude,
 							accumData[i].fAltitude2,
-							accumData[i].fLatitude,
-							accumData[i].fLongitude
+							accumData[i].strNMEAPosition
 							);
 
 					f_printf(&fFile,"%s",usbOutputBuffer);
