@@ -20,9 +20,10 @@ float Ax, Ay, Az, Gx, Gy, Gz;
 tSDCardWriteData	accumData[IMU_LOW_DATA_SIZE] CCM_SRAM;	//размер массива равен частоте опроса датчика IMU
 tSDCardWriteData	skifCurrentData;
 
+uint16_t	uBMPCounter = 0;
 uint16_t	uIMUCounter = 0;
 uint16_t	uIMUSDCardCounter = 0;
-
+static float	fAltitude = 0;
 xSemaphoreHandle xIMURdySemaphore;
 /*----------------------------------------------------------------------------------------------------*/
 /**
@@ -31,11 +32,12 @@ xSemaphoreHandle xIMURdySemaphore;
   */
 void IMU_Init(void)
 {
-	osThreadDef(IMUTask, IMU_Task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE + 0x200 );
+	osThreadDef(IMUTask, IMU_Task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE + 0x300 );
 	IMUDeviceHandle = osThreadCreate(osThread(IMUTask), NULL);
 
 	vSemaphoreCreateBinary(xIMURdySemaphore);
 	uIMUCounter = 0;
+	uBMPCounter = 0;
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**
@@ -68,7 +70,7 @@ void	IMU_Task(void const * argument)
 		BSP_I2C_Write_Byte(MPU6050_ADDRESS, ACCEL_CONFIG, ACC_FULL_SCALE_2_G);
 		osDelay(10);
 		// Set 200Hz INT
-		BSP_I2C_Write_Byte(MPU6050_ADDRESS, SMPLRT_DIV , 0x01);
+		BSP_I2C_Write_Byte(MPU6050_ADDRESS, SMPLRT_DIV , 0x03);
 		osDelay(10);
 		//	Configuring hardware interrupts on INT pin
 		BSP_I2C_Write_Byte(MPU6050_ADDRESS, INT_ENABLE, DATA_RDY_EN);
@@ -92,9 +94,10 @@ void	IMU_Task(void const * argument)
   * @brief 			Функция запроса измеренных данных с IMU датчика
   * @reval			None
   */
+extern xQueueHandle 		xAltitudeDataQueue;
+
 void IMU_Calcualte(void)
 {
-
 
 	//	Send raw data to the filter
 	MadgwickAHRSupdateIMU(Gx, Gy, Gz, Ax, Ay, Az);
@@ -111,6 +114,15 @@ void IMU_Calcualte(void)
 
 	if(uIMUCounter < IMU_LOW_DATA_SIZE)
 	{
+		if(uBMPCounter < 20)
+		{
+			uBMPCounter++;
+			if(uBMPCounter==20){
+				BMP180_StartMeasure();
+				uBMPCounter = 0;
+			}
+		}
+
 		tSensors *curDistanceData = Devices_GetDataPointer();
 		//
 
@@ -119,14 +131,17 @@ void IMU_Calcualte(void)
 		accumData[uIMUCounter].imuData.fAz = Az;
 		accumData[uIMUCounter].imuData.fPitch = pitch;
 		accumData[uIMUCounter].imuData.fRoll = roll;
-		accumData[uIMUCounter].fAltitude = 0;
+		//accumData[uIMUCounter].fAltitude = 0;
 		accumData[uIMUCounter].fLatitude = 0;
 		accumData[uIMUCounter].fLongitude = 0;
+		accumData[uIMUCounter].fAltitude = BMP180_GetAltitude();
 
-		if(uIMUCounter== IMU_LOW_DATA_SIZE>>1)
+		if(uIMUCounter == IMU_LOW_DATA_SIZE / 2){
 			mainGiveSemaphore();
+		}
 
 		uIMUCounter++;
+
 	}
 	else
 	{

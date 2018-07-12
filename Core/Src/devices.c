@@ -12,6 +12,7 @@
 #include "bsp_exti.h"
 #include "bsp_timers.h"
 #include "bsp_usart.h"
+#include "bmp180.h"
 
 uint8_t receivedDataCounter;
 char receivedData[20];
@@ -46,6 +47,7 @@ void Devices_Init()
 	BSP_EXTI_Init();
 	//Инициализация датчика аксселерометра
 	IMU_Init();
+
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**

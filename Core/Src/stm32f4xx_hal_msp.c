@@ -51,8 +51,7 @@
 #include "cmsis_os.h"
 
 extern void _Error_Handler(char *, int);
-extern UART_HandleTypeDef bsp_uart1;
-extern UART_HandleTypeDef bsp_uart7;
+
 
 /* USER CODE BEGIN 0 */
 
@@ -213,6 +212,35 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 	  HAL_NVIC_SetPriority(I2C1_EV_IRQn, 10, 0);
 	  HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
   }
+  if(hi2c->Instance == I2C2)
+  {
+	  /*##-1- Enable GPIO Clocks #################################################*/
+	  /* Enable GPIO TX/RX clock */
+	  __HAL_RCC_GPIOF_CLK_ENABLE();
+	  /*##-2- Configure peripheral GPIO ##########################################*/
+	  /* I2C TX GPIO pin configuration  */
+	  GPIO_InitStruct.Pin       = GPIO_PIN_0;
+	  GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;
+	  GPIO_InitStruct.Pull      = GPIO_PULLUP;
+	  GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+	  GPIO_InitStruct.Alternate = GPIO_AF4_I2C2;
+	  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+	  /* I2C RX GPIO pin configuration  */
+	  GPIO_InitStruct.Pin = GPIO_PIN_1;
+	  GPIO_InitStruct.Alternate = GPIO_AF4_I2C2;
+	  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+	  /*##-3- Enable I2C peripherals Clock #######################################*/
+	  /* Enable I2C1 clock */
+	  __HAL_RCC_I2C2_CLK_ENABLE();
+	  /*##-4- Configure the NVIC for I2C #########################################*/
+	  /* NVIC for I2C1 */
+	  HAL_NVIC_SetPriority(I2C2_ER_IRQn, 9, 1);
+	  HAL_NVIC_EnableIRQ(I2C2_ER_IRQn);
+	  HAL_NVIC_SetPriority(I2C2_EV_IRQn, 10, 1);
+	  HAL_NVIC_EnableIRQ(I2C2_EV_IRQn);
+  }
 }
 
 /**
@@ -276,8 +304,9 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef *hrtc)
 
 void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 {
-
+  static DMA_HandleTypeDef HDMAUartRx;
   GPIO_InitTypeDef GPIO_InitStruct;
+
   if(uartHandle->Instance==USART1)
   {
     /* USART1 clock enable */
@@ -328,12 +357,39 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 	  	 GPIO_InitStruct.Pin = GPIO_PIN_6;
 	     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
 	     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	     GPIO_InitStruct.Alternate = GPIO_AF4_UART7;
+	     GPIO_InitStruct.Alternate = GPIO_AF8_UART7;
 	     HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
 	     GPIO_InitStruct.Pin = GPIO_PIN_7;
-	     GPIO_InitStruct.Alternate = GPIO_AF4_UART7;
+	     GPIO_InitStruct.Alternate = GPIO_AF8_UART7;
 	     HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+	     HDMAUartRx.Instance                 = DMA1_Stream3;
+
+	     HDMAUartRx.Init.Channel             = DMA_CHANNEL_5;
+	     HDMAUartRx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
+	     HDMAUartRx.Init.PeriphInc           = DMA_PINC_DISABLE;
+	     HDMAUartRx.Init.MemInc              = DMA_MINC_ENABLE;
+	     HDMAUartRx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+	     HDMAUartRx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+	     HDMAUartRx.Init.Mode                = DMA_CIRCULAR;
+	     HDMAUartRx.Init.Priority            = DMA_PRIORITY_VERY_HIGH;
+	     HDMAUartRx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+	     //hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
+	     HDMAUartRx.Init.MemBurst            = DMA_MBURST_INC4;
+	     HDMAUartRx.Init.PeriphBurst         = DMA_PBURST_INC4;
+
+	     HAL_DMA_Init(&HDMAUartRx);
+	     /* Associate the initialized DMA handle to the the UART handle */
+	     __HAL_LINKDMA(uartHandle, hdmarx, HDMAUartRx);
+
+	     /*##-4- Configure the NVIC for DMA #########################################*/
+	     /* NVIC configuration for DMA transfer complete interrupt (USARTx_TX) */
+	     HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 11, 0);
+	     HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
+
+	     HAL_NVIC_SetPriority(UART7_IRQn, 11, 1);
+	     HAL_NVIC_EnableIRQ(UART7_IRQn);
   }
 
 }

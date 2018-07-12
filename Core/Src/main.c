@@ -146,6 +146,8 @@ void portClkInit(void)
   */
 
 extern tSDCardWriteData	skifCurrentData;
+extern  uint8_t	gpsBuffer[128];
+
 char	strBufOutput[128];
 
 void mainTask(void const * argument)
@@ -161,6 +163,8 @@ void mainTask(void const * argument)
 	//инициализация UART для WiFi модуля
 	BSP_WIFI_Init();
 
+	BSP_GPS_UART_Init();
+
 	for(;;)
 	{
 		xSemaphoreTake(xMainSemaphore,portMAX_DELAY);
@@ -168,9 +172,13 @@ void mainTask(void const * argument)
 																												skifCurrentData.sensorsData.ulLeftLidarDistance,
 																												skifCurrentData.sensorsData.ulRightLidarDistance,
 																												skifCurrentData.sensorsData.ulFrontLidarDistance,
-																												skifCurrentData.sensorsData.ulRadarDistance,skifCurrentData.sensorsData.ulSonarDistance,
-																												skifCurrentData.imuData.fAz,skifCurrentData.imuData.fPitch,skifCurrentData.imuData.fRoll,0.0f);
+																												skifCurrentData.sensorsData.ulRadarDistance,
+																												skifCurrentData.sensorsData.ulSonarDistance,
+																												skifCurrentData.imuData.fAz,
+																												skifCurrentData.imuData.fPitch,
+																												skifCurrentData.imuData.fRoll,skifCurrentData.fAltitude);
 		BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
+		//BSP_WIFI_UARTSend((uint8_t*)gpsBuffer,strlen(gpsBuffer));
 	}
 }
 
@@ -179,6 +187,16 @@ void mainGiveSemaphore()
 	xSemaphoreGive(xMainSemaphore);
 }
 /*----------------------------------------------------------------------------------------------------*/
+void mainGiveSemaphoreISR()
+{
+	portBASE_TYPE 	xTaskWoken;
+	xSemaphoreGiveFromISR( xMainSemaphore, &xTaskWoken );
+	if( xTaskWoken == pdTRUE){
+			taskYIELD();
+	}
+}
+/*----------------------------------------------------------------------------------------------------*/
+
 /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM1 interrupt took place, inside

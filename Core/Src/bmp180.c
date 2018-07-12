@@ -4,64 +4,182 @@ __IO int16_t AC1 = 0, AC2 = 0, AC3 = 0;
 __IO uint16_t AC4 = 0, AC5 = 0, AC6 = 0;
 __IO int16_t B1 = 0, B2 = 0, MB = 0, MC = 0, MD = 0;
 
+__IO int16_t AC1_2 = 0, AC2_2 = 0, AC3_2 = 0;
+__IO uint16_t AC4_2 = 0, AC5_2 = 0, AC6_2 = 0;
+__IO int16_t B1_2 = 0, B2_2 = 0, MB_2 = 0, MC_2 = 0, MD_2 = 0;
+
+
+
+osThreadId 			altitudeTaskHandle;
+xSemaphoreHandle 	xAltitudeSemaphore;
+xQueueHandle 		xAltitudeDataQueue;
+
+void BMP180Task(void const * argument);
+
+uint32_t ulPressure;
+float	 fAltitude;
+
+uint32_t	uZeroPressure;
+uint8_t		uZeroCounter;
+
 void	BMP180_Init()
+{
+	ulPressure = 0;
+	fAltitude = 0;
+	uZeroCounter = 0;
+	uZeroPressure = 0;
+
+	osThreadDef(altitudeTask, BMP180Task, osPriorityRealtime, 0, configMINIMAL_STACK_SIZE + 0x100);
+	altitudeTaskHandle = osThreadCreate(osThread(altitudeTask), NULL);
+
+	xAltitudeDataQueue = xQueueCreate(1, sizeof(uint32_t));
+
+	vSemaphoreCreateBinary(xAltitudeSemaphore);
+}
+
+void BMP180Task(void const * argument)
 {
 	uint8_t	devID = 0;
 	uint8_t	regByte[2];
 
-
+	//BMP180 Channel 1
 	devID = BSP_I2C_Read_Byte(BMP180_I2CADDR,WHO_AM_I_BMP280);
-	if(devID == 0x55){
+	if(devID == 0x55)
+	{
 		regByte[1] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC1_H);
 		regByte[0] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC1_L);
 		AC1 = regByte[1] << 8 | regByte[0];
+		osDelay(10);
 
 		regByte[1] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC2_H);
 		regByte[0] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC2_L);
 		AC2 = regByte[1] << 8 | regByte[0];
+		osDelay(10);
 
 		regByte[1] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC3_H);
 		regByte[0] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC3_L);
 		AC3 = regByte[1] << 8 | regByte[0];
+		osDelay(10);
 
 		regByte[1] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC4_H);
 		regByte[0] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC4_L);
 		AC4 = regByte[1] << 8 | regByte[0];
+		osDelay(10);
 
 		regByte[1] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC5_H);
 		regByte[0] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC6_L);
 		AC5 = regByte[1] << 8 | regByte[0];
+		osDelay(10);
 
 		regByte[1] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC6_H);
 		regByte[0] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC6_L);
 		AC6 = regByte[1] << 8 | regByte[0];
+		osDelay(10);
 
 		regByte[1] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_B1_H);
 		regByte[0] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_B1_L);
 		B1 = regByte[1] << 8 | regByte[0];
+		osDelay(10);
 
 		regByte[1] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_B2_H);
 		regByte[0] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_B2_L);
 		B2 = regByte[1] << 8 | regByte[0];
+		osDelay(10);
 
 		regByte[1] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_MC_H);
 		regByte[0] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_MC_L);
 		MC = regByte[1] << 8 | regByte[0];
+		osDelay(10);
 
 		regByte[1] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_MD_H);
 		regByte[0] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_MD_L);
 		MD = regByte[1] << 8 | regByte[0];
+		osDelay(10);
+
 	}
 	else
 	{
 		Error_Handler();
 	}
+	//BMP180 Channel 2
+		devID = BSP_I2C2_Read_Byte(BMP180_I2CADDR,WHO_AM_I_BMP280);
+		if(devID == 0x55)
+		{
+			regByte[1] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC1_H);
+			regByte[0] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC1_L);
+			AC1_2 = regByte[1] << 8 | regByte[0];
+			osDelay(10);
+
+			regByte[1] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC2_H);
+			regByte[0] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC2_L);
+			AC2_2 = regByte[1] << 8 | regByte[0];
+			osDelay(10);
+
+			regByte[1] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC3_H);
+			regByte[0] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC3_L);
+			AC3_2 = regByte[1] << 8 | regByte[0];
+			osDelay(10);
+
+			regByte[1] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC4_H);
+			regByte[0] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC4_L);
+			AC4_2 = regByte[1] << 8 | regByte[0];
+			osDelay(10);
+
+			regByte[1] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC5_H);
+			regByte[0] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC6_L);
+			AC5_2 = regByte[1] << 8 | regByte[0];
+			osDelay(10);
+
+			regByte[1] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC6_H);
+			regByte[0] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC6_L);
+			AC6_2 = regByte[1] << 8 | regByte[0];
+			osDelay(10);
+
+			regByte[1] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_B1_H);
+			regByte[0] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_B1_L);
+			B1_2 = regByte[1] << 8 | regByte[0];
+			osDelay(10);
+
+			regByte[1] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_B2_H);
+			regByte[0] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_B2_L);
+			B2_2 = regByte[1] << 8 | regByte[0];
+			osDelay(10);
+
+			regByte[1] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_MC_H);
+			regByte[0] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_MC_L);
+			MC_2 = regByte[1] << 8 | regByte[0];
+			osDelay(10);
+
+			regByte[1] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_MD_H);
+			regByte[0] = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_MD_L);
+			MD_2 = regByte[1] << 8 | regByte[0];
+			osDelay(10);
+
+		}
+		else
+		{
+			Error_Handler();
+		}
+
+	xSemaphoreTake( xAltitudeSemaphore, portMAX_DELAY );
+	while(1)
+	{
+		xSemaphoreTake( xAltitudeSemaphore, portMAX_DELAY );
+		BMP180_PressureAltitude(&ulPressure,&fAltitude);
+		/*if(xAltitudeDataQueue!=0)
+				xQueueSendToBack(xAltitudeDataQueue,&ulPressure,0);*/
+	}
+}
+
+void	BMP180_StartMeasure()
+{
+	xSemaphoreGive(xAltitudeSemaphore);
 }
 
 int16_t	BMP180_MeasureT()
 {
 	uint16_t	regByte[2];
-	int16_t	UT = 0;
+	int16_t		UT = 0;
 
 	BSP_I2C_Write_Byte(BMP180_I2CADDR,BMP085_RA_CONTROL,BMP085_MODE_TEMPERATURE);
 	vTaskDelay(5);
@@ -76,25 +194,37 @@ int16_t	BMP180_MeasureT()
 
 int32_t BMP180_MeasureP(uint8_t oss)
 {
-	uint16_t	regByte[3];
-	int32_t		PT = 0;
+
+	__IO uint8_t	regByte[3];
+	__IO int32_t		PT = 0;
 
 	BSP_I2C_Write_Byte(BMP180_I2CADDR,BMP085_RA_CONTROL,BMP085_MODE_PRESSURE_0 + (oss << 6));
-	vTaskDelay(5);
+	vTaskDelay(8);
 
-	regByte[2] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_MSB);
+	/*regByte[2] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_MSB);
 	regByte[1] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_LSB);
-	regByte[0] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_XLSB);
+	regByte[0] = BSP_I2C_Read_Byte(BMP180_I2CADDR,BMP085_RA_XLSB);*/
+	BSP_I2C_Read_Bytes(BMP180_I2CADDR,BMP085_RA_MSB,3,(uint8_t*)regByte);
 
-	PT = ((regByte[2] << 16) | (regByte[1] << 8) | regByte[0]) >> (8 - oss);
+	PT = (int32_t)((regByte[0] << 16) | (regByte[1] << 8) | regByte[2]) >> (8 - oss);
 
 	return PT;
 }
 
-float BMP180_Altitude()
+uint32_t BMP180_GetPressure()
+{
+	/*static uint32_t uResult = 0;
+		xQueueReceive(xAltitudeDataQueue,&uResult,0);*/
+	return ulPressure;
+}
+float	BMP180_GetAltitude()
+{
+	return fAltitude;
+}
+
+void BMP180_PressureAltitude(uint32_t *Pressure,float *Altitude)
 {
 	uint8_t	oss = 0;
-	float	fAltitude = 0;
 
 	__IO int16_t UT =	BMP180_MeasureT();
 	__IO int32_t UP =	BMP180_MeasureP(oss);
@@ -126,11 +256,21 @@ float BMP180_Altitude()
 	X2 = (-7357 * p) / 65536;
 	p = p + (X1 + X2 + 3791) / 16;
 
+	*Pressure = p;
 
+	*Altitude = 44330.0f*(1-pow(p/(float)uZeroPressure,1/5.255));
 
-	//fAltitude = 44330.0f*(1-pow(p/101858.0f,1/5.255));
+	if(uZeroCounter < 2){
+		uZeroPressure+=p;
+		uZeroCounter ++;
 
-	return p;
+		if(uZeroCounter == 2){
+			uZeroPressure = uZeroPressure / 2;
+		}
+	*Altitude = 0;
+	}
+
+	//return p;
 }
 
 

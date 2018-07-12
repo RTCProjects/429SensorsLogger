@@ -65,6 +65,7 @@ void 		SetupRunTimeStatsTimer(void);
 #endif
 void _Error_Handler(char *, int);
 void mainGiveSemaphore(void);
+void mainGiveSemaphoreISR(void);
 #define Error_Handler() _Error_Handler(__FILE__, __LINE__)
 #ifdef __cplusplus
 }

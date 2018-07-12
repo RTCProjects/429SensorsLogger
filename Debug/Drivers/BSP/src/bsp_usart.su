@@ -1,6 +1,6 @@
-bsp_usart.c:11:6:BSP_USART_Init	8	static
-bsp_usart.c:30:6:BSP_WIFI_Init	8	static
-bsp_usart.c:46:6:BSP_GPS_UART_Init	8	static
-bsp_usart.c:62:6:BSP_WIFI_UARTSend	0	static
-bsp_usart.c:67:6:HAL_UART_RxCpltCallback	0	static
-bsp_usart.c:72:13:BSP_USART_RxData	0	static
+bsp_usart.c:16:6:BSP_USART_Init	8	static
+bsp_usart.c:35:6:BSP_WIFI_Init	8	static
+bsp_usart.c:51:6:BSP_GPS_UART_Init	16	static
+bsp_usart.c:76:6:BSP_WIFI_UARTSend	0	static
+bsp_usart.c:81:6:HAL_UART_RxCpltCallback	0	static
+bsp_usart.c:91:13:BSP_USART_RxData	0	static

@@ -1,4 +1,9 @@
 #include "bsp_usart.h"
+#include "nmea.h"
+
+#define NMEA_SIZE 128
+
+ uint8_t	gpsBuffer[NMEA_SIZE];
 
 uint8_t receiveBuffer[14];
 
@@ -45,7 +50,7 @@ void	BSP_WIFI_Init()
 
 void	BSP_GPS_UART_Init()
 {
-	bsp_uart7.Instance = UART4;
+	bsp_uart7.Instance = UART7;
 	bsp_uart7.Init.BaudRate = 9600;
 	bsp_uart7.Init.WordLength = UART_WORDLENGTH_8B;
 	bsp_uart7.Init.StopBits = UART_STOPBITS_1;
@@ -54,9 +59,18 @@ void	BSP_GPS_UART_Init()
 	bsp_uart7.Init.HwFlowCtl = UART_HWCONTROL_RTS;
 	bsp_uart7.Init.OverSampling = UART_OVERSAMPLING_16;
 
+
 	if (HAL_UART_Init(&bsp_uart7) != HAL_OK){
-		HAL_UART_Init(&bsp_uart7);
+		Error_Handler();
 	}
+	else{
+		if(HAL_UART_GetState(&bsp_uart7) == HAL_UART_STATE_READY)
+		{
+			memset((uint8_t *)gpsBuffer,0,sizeof(uint8_t) * NMEA_SIZE);
+			HAL_UART_Receive_DMA(&bsp_uart7, (uint8_t *)gpsBuffer,NMEA_SIZE);
+		}
+	}
+
 }
 
 void	BSP_WIFI_UARTSend(uint8_t *pDyte,uint16_t	Size)
@@ -66,7 +80,12 @@ void	BSP_WIFI_UARTSend(uint8_t *pDyte,uint16_t	Size)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
+	if(UartHandle->Instance == UART7)
+	{
+		//NMEA_Parse(gpsBuffer,NMEA_SIZE);
+		//mainGiveSemaphoreISR();
 
+	}
 }
 
 __weak void BSP_USART_RxData(uint8_t rxByte)

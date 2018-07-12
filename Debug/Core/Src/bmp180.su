@@ -1,4 +1,8 @@
-bmp180.c:7:6:BMP180_Init	8	static
-bmp180.c:61:9:BMP180_MeasureT	8	static
-bmp180.c:77:9:BMP180_MeasureP	16	static
-bmp180.c:94:7:BMP180_Altitude	48	static
+bmp180.c:25:6:BMP180_Init	40	static
+bmp180.c:117:6:BMP180_StartMeasure	0	static
+bmp180.c:122:9:BMP180_MeasureT	8	static
+bmp180.c:138:9:BMP180_MeasureP	16	static
+bmp180.c:157:10:BMP180_GetPressure	0	static
+bmp180.c:163:7:BMP180_GetAltitude	0	static
+bmp180.c:168:6:BMP180_PressureAltitude	56	static
+bmp180.c:40:6:BMP180Task	16	static

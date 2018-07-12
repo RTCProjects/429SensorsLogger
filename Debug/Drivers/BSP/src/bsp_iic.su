@@ -1,6 +1,11 @@
-bsp_iic.c:15:6:BSP_I2C_Init	8	static
-bsp_iic.c:33:6:BSP_I2C_DeInit	8	static
-bsp_iic.c:46:9:BSP_I2C_Read_Byte	40	static
-bsp_iic.c:72:6:BSP_I2C_Read_Bytes	40	static
-bsp_iic.c:97:9:BSP_I2C_Write_Byte	24	static
-bsp_iic.c:110:6:I2C_ClearBusyFlagErratum	40	static
+bsp_iic.c:17:6:BSP_I2C_Init	8	static
+bsp_iic.c:35:6:BSP_I2C_DeInit	8	static
+bsp_iic.c:48:9:BSP_I2C_Read_Byte	40	static
+bsp_iic.c:74:6:BSP_I2C_Read_Bytes	40	static
+bsp_iic.c:99:9:BSP_I2C_Write_Byte	24	static
+bsp_iic.c:112:6:I2C_ClearBusyFlagErratum	40	static
+bsp_iic.c:220:6:BSP_I2C2_Init	8	static
+bsp_iic.c:238:6:BSP_I2C2_DeInit	8	static
+bsp_iic.c:251:9:BSP_I2C2_Read_Byte	40	static
+bsp_iic.c:277:6:BSP_I2C2_Read_Bytes	40	static
+bsp_iic.c:302:9:BSP_I2C2_Write_Byte	24	static

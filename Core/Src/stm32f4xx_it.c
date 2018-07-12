@@ -46,7 +46,9 @@ extern PCD_HandleTypeDef 	hpcd_USB_OTG_FS;
 extern TIM_HandleTypeDef	htim7;
 extern TIM_HandleTypeDef 	htim1;
 extern I2C_HandleTypeDef 	I2C1Handle;
+extern I2C_HandleTypeDef 	I2C2Handle;
 extern UART_HandleTypeDef 	bsp_uart1;
+extern UART_HandleTypeDef 	bsp_uart7;
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -219,6 +221,27 @@ void I2C1_EV_IRQHandler(void)
   * @retval None
   * @Note   This function is redefined in "main.h" and related to I2C error
   */
+void I2C2_ER_IRQHandler(void)
+{
+  HAL_I2C_ER_IRQHandler(&I2C2Handle);
+}
+/**
+  * @brief  This function handles I2C event interrupt request.
+  * @param  None
+  * @retval None
+  * @Note   This function is redefined in "main.h" and related to I2C data transmission
+  */
+void I2C2_EV_IRQHandler(void)
+{
+  HAL_I2C_EV_IRQHandler(&I2C2Handle);
+}
+
+/**
+  * @brief  This function handles I2C error interrupt request.
+  * @param  None
+  * @retval None
+  * @Note   This function is redefined in "main.h" and related to I2C error
+  */
 void I2C1_ER_IRQHandler(void)
 {
   HAL_I2C_ER_IRQHandler(&I2C1Handle);
@@ -309,6 +332,24 @@ void USART1_IRQHandler(void)
 	//HAL_UART_IRQHandler(&bsp_uart1);
 }
 
+/**
+  * @brief  This function handles External line 0 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void UART7_IRQHandler(void)
+{
+	HAL_UART_IRQHandler(&bsp_uart7);
+}
+/**
+  * @brief  This function handles DMA1Stream3 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA1_Stream3_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(bsp_uart7.hdmarx);
+}
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
