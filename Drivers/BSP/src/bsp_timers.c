@@ -1,13 +1,21 @@
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @file           bsp_timers.c
+  * @brief          Модуль инициализации и настройки таймеров
+**/
+/*----------------------------------------------------------------------------------------------------*/
 #include "bsp_timers.h"
 
-TIM_HandleTypeDef		Tim2LidarHandle;	//Angle lidar
+TIM_HandleTypeDef		Tim2LidarHandle;	//Front lidar
 TIM_HandleTypeDef		Tim3LidarHandle;	//Center lidar
 TIM_HandleTypeDef		Tim5LidarHandle;	//Left lidar
 TIM_HandleTypeDef		Tim6LidarHandle;	//Right lidar
-
 TIM_HandleTypeDef		Tim4SonarHandle;	//Sonar
-
-//Center Lidar timer
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief  Center Lidar timer
+  * @retval None
+  */
 void	BSP_Timers_TIM3Init()
 {
 	__HAL_RCC_TIM3_CLK_ENABLE();
@@ -26,7 +34,11 @@ void	BSP_Timers_TIM3Init()
 		Error_Handler();
 	}
 }
-//Left Lidar timer
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief  Left Lidar timer
+  * @retval None
+  */
 void	BSP_Timers_TIM5Init()
 {
 	__HAL_RCC_TIM5_CLK_ENABLE();
@@ -45,7 +57,11 @@ void	BSP_Timers_TIM5Init()
 		Error_Handler();
 	}
 }
-//Right Lidar timer
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief  Right Lidar timer
+  * @retval None
+  */
 void	BSP_Timers_TIM6Init()
 {
 	__HAL_RCC_TIM6_CLK_ENABLE();
@@ -64,7 +80,11 @@ void	BSP_Timers_TIM6Init()
 		Error_Handler();
 	}
 }
-//Angle lidar timer
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief  Front Lidar timer
+  * @retval None
+  */
 void	BSP_Timers_TIM2Init()
 {
 	__HAL_RCC_TIM2_CLK_ENABLE();
@@ -83,8 +103,11 @@ void	BSP_Timers_TIM2Init()
 		Error_Handler();
 	}
 }
-
-//Sonar timer
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief  Sonar Lidar timer
+  * @retval None
+  */
 void	BSP_Timers_TIM4Init()
 {
 	__HAL_RCC_TIM4_CLK_ENABLE();
@@ -103,10 +126,13 @@ void	BSP_Timers_TIM4Init()
 		Error_Handler();
 	}
 }
-
-//200Hz timer
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief  200Hz timer
+  * @retval None
+  */
 void	BSP_Timers_TIM8Init()
 {
 
 }
-
+/*----------------------------------------------------------------------------------------------------*/

@@ -17,4 +17,5 @@ typedef struct
 
 uint8_t	NMEA_Parse(uint8_t *inputStr,uint8_t	size);
 char	*NMEA_GetPositionString(void);
+
 #endif

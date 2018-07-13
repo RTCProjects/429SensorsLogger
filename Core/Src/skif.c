@@ -134,8 +134,8 @@ void IMU_Calcualte(void)
 		accumData[uIMUCounter].imuData.fRoll = roll;
 		accumData[uIMUCounter].fLatitude = 0;
 		accumData[uIMUCounter].fLongitude = 0;
-		accumData[uIMUCounter].fAltitude = BMP180_GetAltitude();
-		accumData[uIMUCounter].fAltitude2 = BMP180_GetAltitude2();
+		accumData[uIMUCounter].fAltitude = BMP180_GetAltitude(BMP180_CHANNEL1);
+		accumData[uIMUCounter].fAltitude2 = BMP180_GetAltitude(BMP180_CHANNEL2);
 		strcpy(accumData[uIMUCounter].strNMEAPosition,NMEA_GetPositionString());
 
 		if(uIMUCounter == IMU_LOW_DATA_SIZE * 0.5f){

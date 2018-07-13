@@ -1,7 +1,18 @@
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @file           nmea.c
+  * @brief          Модуль декодирования GNGLL данных с координатами GPS
+**/
+/*----------------------------------------------------------------------------------------------------*/
 #include "nmea.h"
-
 tNMEAPosition	nmeaPosition;
-
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief  Парсинг строки NMEA
+  * @param	GPSBuf: указатель на строку данных
+  * @param	size: длина строки данных
+  * @retval None
+  */
 uint8_t NMEA_Parse(uint8_t *GPSBuf,uint8_t	size)
 {
 
@@ -10,13 +21,7 @@ uint8_t NMEA_Parse(uint8_t *GPSBuf,uint8_t	size)
 		if(GPSBuf[i] == '$' && GPSBuf[i + 1] == 'G' && GPSBuf[i + 2] == 'N' && GPSBuf[i + 3] == 'G' && GPSBuf[i + 4] == 'L' && GPSBuf[i + 5] == 'L'){
 			if(GPSBuf[i + 6] == ',' && GPSBuf[i + 7] != ','){
 				if(size - i > NMEA_POS_SIZE){
-
-					//memset(tempStr,0,sizeof(char) * 26);
 					strncpy((char*)nmeaPosition.strPosition,(char*)&GPSBuf[i+7],NMEA_POS_SIZE);
-					/*for(int j = 0;j<26;j++){
-
-						tempStr[j] = GPSBuf[j+i+7];
-					}*/
 					break;
 				}
 			}
@@ -24,8 +29,13 @@ uint8_t NMEA_Parse(uint8_t *GPSBuf,uint8_t	size)
 	}
 	return 1;
 }
-
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief  Запрос строки с коориднатами
+  * @retval укататель на строку с координатами
+  */
 char	*NMEA_GetPositionString()
 {
 	return nmeaPosition.strPosition;
 }
+/*----------------------------------------------------------------------------------------------------*/

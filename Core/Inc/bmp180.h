@@ -10,12 +10,14 @@
 #include "bsp_iic.h"
 #include "cmsis_os.h"
 
-#define BMP180_I2CADDR	0x77
+#define BMP180_I2CADDR			0x77
+#define BMP180_CHANNELS			2
+#define BMP180_ZEROALT_ITERs	4
 
 typedef enum
 {
-	BMP180_CHANNEL1	= 0x01,
-	BMP180_CHANNEL2 = 0x02
+	BMP180_CHANNEL1	= 0x00,
+	BMP180_CHANNEL2 = 0x01
 }eBMP180Channel;
 
 typedef struct
@@ -38,20 +40,17 @@ typedef struct
 	tBMP180Calibrate	cData;		//calibration data
 	uint32_t			ulPressure;	//pressure in PA
 	float				fAltitude;	//altitude
+	uint32_t			ulZeroPressure;
 	int16_t				UT;			//uncompensation temp
 	int32_t				UP;			//uncompensation pressure
+	uint8_t				oss;
+	uint8_t				uZeroAltCounter;
 }tBMP180Sensor;
 
 void		BMP180_Init(void);
-void 		BMP180_PressureAltitude(uint32_t *Pressure,float *Altitude);
-uint16_t	BMP180_ReadRawTemperature(void);
-uint16_t	BMP180_ReadRawPresure(void);
-int32_t		BMP180_ReadPresusure(void);
+void 		BMP180_CalibrateData(eBMP180Channel ch);
 void		BMP180_StartMeasure(void);
-uint32_t	BMP180_GetPressure(void);
-float		BMP180_GetAltitude(void);
-
-uint32_t	BMP180_GetPressure2(void);
-float		BMP180_GetAltitude2(void);
+uint32_t	BMP180_GetPressure(eBMP180Channel ch);
+float		BMP180_GetAltitude(eBMP180Channel ch);
 
 #endif

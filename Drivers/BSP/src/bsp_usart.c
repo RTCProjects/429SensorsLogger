@@ -109,8 +109,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		NMEA_Parse(gpsBuffer,NMEA_SIZE);
 	}
 }
-
+/*----------------------------------------------------------------------------------------------------*/
 __weak void BSP_USART_RxData(uint8_t rxByte)
 {
 
 }
+/*----------------------------------------------------------------------------------------------------*/
