@@ -4,11 +4,11 @@
   * @brief   This file includes a generic uSD card driver.
 **/
 /*----------------------------------------------------------------------------------------------------*/
+#include <skif.h>
 #include "bsp_sdcard.h"
 #include "bsp_usb.h"
 #include "bsp_rtc.h"
 #include "fatfs.h"
-#include "IMU.h"
 #include <string.h>
 /*----------------------------------------------------------------------------------------------------*/
 static char usbOutputBuffer[200];

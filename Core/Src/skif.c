@@ -4,14 +4,16 @@
   * @brief          Модуль для работы с гиродатчиком и акселерометром
 **/
 /*----------------------------------------------------------------------------------------------------*/
+#include "MadgwickAHRS.h"
+#include "RegisterMap.h"
+#include "math.h"
 #include "bmp180.h"
-#include "IMU.h"
+#include "skif.h"
 #include "bsp_exti.h"
 #include "bsp_usb.h"
+#include "bsp_iic.h"
 #include "bsp_sdcard.h"
 #include "bsp_usart.h"
-
-#include <string.h>
 /*----------------------------------------------------------------------------------------------------*/
 extern I2C_HandleTypeDef I2C1Handle;
 osThreadId 				IMUDeviceHandle;
@@ -51,16 +53,17 @@ void	IMU_Task(void const * argument)
 {
 	uint8_t	devID = 0;
 
-	BSP_I2C_Init();
-	BSP_I2C2_Init();
+	BSP_I2C_Init();		//инициализация I2C 	BMP180 + MPU6050
+	BSP_I2C2_Init();	//инициализация I2C2	BMP180
+	//сброс питания платы акселерометра MPU6050
 	Devices_IMUOff();
-	osDelay(10);
+	osDelay(100);
 	Devices_IMUOn();
-	osDelay(10);
-	//	Clear sleep mode bit (6), enable all sensors
+	osDelay(100);
+
+	//Clear sleep mode bit (6), enable all sensors
 	BSP_I2C_Write_Byte(MPU6050_ADDRESS, PWR_MGMT_1, 0x00);
 	devID = BSP_I2C_Read_Byte(MPU6050_ADDRESS, WHO_AM_I_MPU9255);
-
 	if(devID == 0x73)
 	{
 		//	Set accelerometers low pass filter at 5Hz
@@ -79,12 +82,11 @@ void	IMU_Task(void const * argument)
 		BSP_I2C_Write_Byte(MPU6050_ADDRESS, INT_ENABLE, DATA_RDY_EN);
 		osDelay(10);
 	}
-
 	else {
 		Error_Handler();
 	}
 
-	BMP180_Init();
+	BMP180_Init(); //инициализация барометрических высотомеров
 
 	while(1)
 	{
@@ -99,7 +101,6 @@ void	IMU_Task(void const * argument)
   */
 void IMU_Calcualte(void)
 {
-
 	//	Send raw data to the filter
 	MadgwickAHRSupdateIMU(Gx, Gy, Gz, Ax, Ay, Az);
 
@@ -113,51 +114,44 @@ void IMU_Calcualte(void)
 	pitch = RAD_TO_DEG * pitch;
 	roll = RAD_TO_DEG * roll;
 
+	//отправка на запись на SD карту происходит после заполнения временного буфера данных от акселерометра
 	if(uIMUCounter < IMU_LOW_DATA_SIZE)
 	{
-		if(uBMPCounter < 20)
-		{
+		//барометрический канал опрашивается в 10 раз медленней канала акселерометра
+		if(uBMPCounter < IMU_LOW_DATA_SIZE * 0.1f){
 			uBMPCounter++;
-			if(uBMPCounter==20){
+			if(uBMPCounter==IMU_LOW_DATA_SIZE * 0.1){
 				BMP180_StartMeasure();
 				uBMPCounter = 0;
 			}
 		}
 
 		tSensors *curDistanceData = Devices_GetDataPointer();
-		//
-
 		memcpy(&accumData[uIMUCounter].sensorsData,curDistanceData,sizeof(tSensors));
 
 		accumData[uIMUCounter].imuData.fAz = Az;
 		accumData[uIMUCounter].imuData.fPitch = pitch;
 		accumData[uIMUCounter].imuData.fRoll = roll;
-		//accumData[uIMUCounter].fAltitude = 0;
 		accumData[uIMUCounter].fLatitude = 0;
 		accumData[uIMUCounter].fLongitude = 0;
 		accumData[uIMUCounter].fAltitude = BMP180_GetAltitude();
 		accumData[uIMUCounter].fAltitude2 = BMP180_GetAltitude2();
 		strcpy(accumData[uIMUCounter].strNMEAPosition,NMEA_GetPositionString());
 
-
-		if(uIMUCounter == IMU_LOW_DATA_SIZE / 2){
+		if(uIMUCounter == IMU_LOW_DATA_SIZE * 0.5f){
 			mainGiveSemaphore();
 		}
 
 		uIMUCounter++;
-
 	}
 	else
 	{
 		uIMUCounter = 0;
 		memcpy(&skifCurrentData,&accumData[IMU_LOW_DATA_SIZE - 1],sizeof(tSDCardWriteData));
-		//WriteSDCardThread
 		mainGiveSemaphore();
 		BSP_SDCard_StartWrite();
 
 	}
-
-
 	uIMUSDCardCounter++;
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -196,13 +190,19 @@ void BSP_EXTI5_Callback()
 	Gy = (float)(gy) * G_RES * DEG_TO_RAD;
 	Gz = (float)(gz) * G_RES * DEG_TO_RAD;
 
-
-
-
 	xSemaphoreGiveFromISR( xIMURdySemaphore, &xTaskWoken );
 	if( xTaskWoken == pdTRUE){
 			taskYIELD();
 	}
 
+}
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief 			Запрос указателя на последний элемент массива текущих данных Skif
+  * @reval			None
+  */
+void	*IMU_GetSkifCurrentData()
+{
+	return &skifCurrentData;
 }
 /*----------------------------------------------------------------------------------------------------*/

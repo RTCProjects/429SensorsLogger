@@ -12,7 +12,6 @@ __IO int16_t B1_2 = 0, B2_2 = 0, MB_2 = 0, MC_2 = 0, MD_2 = 0;
 
 osThreadId 			altitudeTaskHandle;
 xSemaphoreHandle 	xAltitudeSemaphore;
-xQueueHandle 		xAltitudeDataQueue;
 
 void BMP180Task(void const * argument);
 
@@ -44,8 +43,6 @@ void	BMP180_Init()
 
 	osThreadDef(altitudeTask, BMP180Task, osPriorityRealtime, 0, configMINIMAL_STACK_SIZE + 0x100);
 	altitudeTaskHandle = osThreadCreate(osThread(altitudeTask), NULL);
-
-	xAltitudeDataQueue = xQueueCreate(1, sizeof(uint32_t));
 
 	vSemaphoreCreateBinary(xAltitudeSemaphore);
 }

@@ -15,7 +15,7 @@
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
 #include "devices.h"
-#include "IMU.h"
+#include <skif.h>
 #include "nmea.h"
 
 typedef struct sd_info{

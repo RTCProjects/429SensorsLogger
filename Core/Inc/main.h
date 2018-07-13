@@ -52,6 +52,7 @@
 #define __MAIN_H__
 #include <stdint.h>
 
+
 #define RTC_CLOCK_SOURCE_LSI
 #define CCM_SRAM	__attribute__ ((section(".ccmram")))
 

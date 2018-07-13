@@ -1,18 +1,26 @@
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @file    bsp_usart.c Модуль инициализации UART
+  * @brief
+**/
+/*----------------------------------------------------------------------------------------------------*/
 #include "bsp_usart.h"
 #include "nmea.h"
 
-#define NMEA_SIZE 128
+#define NMEA_SIZE 	128			//размер GPS буфера
+#define RADAR_SIZE	14			//размер буфера данных радара
 
- uint8_t	gpsBuffer[NMEA_SIZE];
-
-uint8_t receiveBuffer[14];
+uint8_t	gpsBuffer[NMEA_SIZE];
+uint8_t receiveBuffer[RADAR_SIZE];
 
 UART_HandleTypeDef bsp_uart1;
 UART_HandleTypeDef bsp_uart5;
 UART_HandleTypeDef bsp_uart7;
-
-
-
+/*----------------------------------------------------------------------------------------------------*/
+/**
+	* @brief	Инициализация UART1 для приема данных от радара
+	* @reval	None
+	*/
 void	BSP_USART_Init()
 {
 	bsp_uart1.Instance = USART1;
@@ -31,11 +39,15 @@ void	BSP_USART_Init()
 		Error_Handler();
 	}
 }
-
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief	Инициализация UART5 для приема/передачи данных по WiFi
+  * @reval	None
+  */
 void	BSP_WIFI_Init()
 {
 	bsp_uart5.Instance = UART5;
-	bsp_uart5.Init.BaudRate = 57600;
+	bsp_uart5.Init.BaudRate = 57600;///115200;
 	bsp_uart5.Init.WordLength = UART_WORDLENGTH_8B;
 	bsp_uart5.Init.StopBits = UART_STOPBITS_1;
 	bsp_uart5.Init.Parity = UART_PARITY_NONE;
@@ -47,7 +59,11 @@ void	BSP_WIFI_Init()
 		Error_Handler();
 	}
 }
-
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief	Инициализация UART7 для приема данных от GPS
+  * @reval	None
+  */
 void	BSP_GPS_UART_Init()
 {
 	bsp_uart7.Instance = UART7;
@@ -72,12 +88,20 @@ void	BSP_GPS_UART_Init()
 	}
 
 }
-
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief	Отправка пакета данных по WiFi
+  * @reval	None
+  */
 void	BSP_WIFI_UARTSend(uint8_t *pDyte,uint16_t	Size)
 {
 	HAL_UART_Transmit(&bsp_uart5,pDyte,Size,5000);
 }
-
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief	DMA callback от GPS приемника
+  * @reval	None
+  */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
 	if(UartHandle->Instance == UART7)

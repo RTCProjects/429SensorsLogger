@@ -3,6 +3,7 @@
 
 #include "stm32f4xx.h"
 #include "cmsis_os.h"
+#include "bsp_sdcard.h"
 
 typedef struct
 {
