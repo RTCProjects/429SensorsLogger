@@ -19,29 +19,29 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   7 .ccmram       00003840  10000000  08010a40  00040000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  8 .bss          00023e60  20000340  20000340  00050340  2**3
+  8 .bss          00023e88  20000340  20000340  00050340  2**3
                   ALLOC
-  9 ._user_heap_stack 00000400  200241a0  200241a0  00050340  2**0
+  9 ._user_heap_stack 00000400  200241c8  200241c8  00050340  2**0
                   ALLOC
  10 .ARM.attributes 00000030  00000000  00000000  00043840  2**0
                   CONTENTS, READONLY
- 11 .debug_info   00053513  00000000  00000000  00043870  2**0
+ 11 .debug_info   0005351e  00000000  00000000  00043870  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_abbrev 00009ee3  00000000  00000000  00096d83  2**0
+ 12 .debug_abbrev 00009ea0  00000000  00000000  00096d8e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_loc    0001a62f  00000000  00000000  000a0c66  2**0
+ 13 .debug_loc    0001a62f  00000000  00000000  000a0c2e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_aranges 00002168  00000000  00000000  000bb298  2**3
+ 14 .debug_aranges 00002168  00000000  00000000  000bb260  2**3
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_ranges 00002af8  00000000  00000000  000bd400  2**3
+ 15 .debug_ranges 00002af8  00000000  00000000  000bd3c8  2**3
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_line   00015357  00000000  00000000  000bfef8  2**0
+ 16 .debug_line   00015357  00000000  00000000  000bfec0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 17 .debug_str    0000b3e0  00000000  00000000  000d524f  2**0
+ 17 .debug_str    0000b3e0  00000000  00000000  000d5217  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .comment      0000007c  00000000  00000000  000e062f  2**0
+ 18 .comment      0000007c  00000000  00000000  000e05f7  2**0
                   CONTENTS, READONLY
- 19 .debug_frame  00007254  00000000  00000000  000e06ac  2**2
+ 19 .debug_frame  00007254  00000000  00000000  000e0674  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -1308,7 +1308,7 @@ void IMU_Init(void)
  8000fc4:	200003c0 	.word	0x200003c0
 
 08000fc8 <IMU_Calcualte>:
-
+  */
 void IMU_Calcualte(void)
 {
 
@@ -1948,7 +1948,7 @@ void BSP_EXTI5_Callback()
  800155c:	f3af 8000 	nop.w
  8001560:	54442d18 	.word	0x54442d18
  8001564:	400921fb 	.word	0x400921fb
- 8001568:	20022c1c 	.word	0x20022c1c
+ 8001568:	20022c44 	.word	0x20022c44
  800156c:	2000035c 	.word	0x2000035c
  8001570:	40020400 	.word	0x40020400
  8001574:	20022994 	.word	0x20022994
@@ -2281,7 +2281,7 @@ void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, flo
 
 08001898 <BMP180_Init>:
 
-tBMP180Sensor	bmpSensor;
+tBMP180Sensor	bmpSensor[2];
 
 void	BMP180_Init()
 {
@@ -2366,18 +2366,18 @@ void	BMP180_Init()
 }
  8001900:	b006      	add	sp, #24
  8001902:	bd70      	pop	{r4, r5, r6, pc}
- 8001904:	20022a54 	.word	0x20022a54
- 8001908:	20022a78 	.word	0x20022a78
- 800190c:	20022a5c 	.word	0x20022a5c
+ 8001904:	20022a7c 	.word	0x20022a7c
+ 8001908:	20022aa0 	.word	0x20022aa0
+ 800190c:	20022a84 	.word	0x20022a84
  8001910:	0801003c 	.word	0x0801003c
- 8001914:	20022a58 	.word	0x20022a58
- 8001918:	20022a6c 	.word	0x20022a6c
- 800191c:	20022a60 	.word	0x20022a60
- 8001920:	20022a74 	.word	0x20022a74
- 8001924:	20022a70 	.word	0x20022a70
- 8001928:	20022a68 	.word	0x20022a68
- 800192c:	20022a50 	.word	0x20022a50
- 8001930:	20022a64 	.word	0x20022a64
+ 8001914:	20022a80 	.word	0x20022a80
+ 8001918:	20022a94 	.word	0x20022a94
+ 800191c:	20022a88 	.word	0x20022a88
+ 8001920:	20022a9c 	.word	0x20022a9c
+ 8001924:	20022a98 	.word	0x20022a98
+ 8001928:	20022a90 	.word	0x20022a90
+ 800192c:	20022a78 	.word	0x20022a78
+ 8001930:	20022a8c 	.word	0x20022a8c
 
 08001934 <BMP180_StartMeasure>:
 	}
@@ -2393,7 +2393,7 @@ void	BMP180_StartMeasure()
  800193c:	6800      	ldr	r0, [r0, #0]
  800193e:	f009 bbcb 	b.w	800b0d8 <xQueueGenericSend>
  8001942:	bf00      	nop
- 8001944:	20022a64 	.word	0x20022a64
+ 8001944:	20022a8c 	.word	0x20022a8c
 
 08001948 <BMP180_MeasureT>:
 }
@@ -2495,7 +2495,7 @@ float	BMP180_GetAltitude()
  80019c0:	4b01      	ldr	r3, [pc, #4]	; (80019c8 <BMP180_GetAltitude+0x8>)
  80019c2:	ed93 0a00 	vldr	s0, [r3]
  80019c6:	4770      	bx	lr
- 80019c8:	20022a78 	.word	0x20022a78
+ 80019c8:	20022aa0 	.word	0x20022aa0
  80019cc:	00000000 	.word	0x00000000
 
 080019d0 <BMP180_PressureAltitude>:
@@ -2770,9 +2770,9 @@ void BMP180_PressureAltitude(uint32_t *Pressure,float *Altitude)
  8001be8:	200003ec 	.word	0x200003ec
  8001bec:	200003e0 	.word	0x200003e0
  8001bf0:	ffffe343 	.word	0xffffe343
- 8001bf4:	20022a58 	.word	0x20022a58
+ 8001bf4:	20022a80 	.word	0x20022a80
  8001bf8:	3ff00000 	.word	0x3ff00000
- 8001bfc:	20022a5c 	.word	0x20022a5c
+ 8001bfc:	20022a84 	.word	0x20022a84
 
 08001c00 <BMP180_Measure2T>:
 
@@ -2873,7 +2873,7 @@ float	BMP180_GetAltitude2()
  8001c78:	4b01      	ldr	r3, [pc, #4]	; (8001c80 <BMP180_GetAltitude2+0x8>)
  8001c7a:	ed93 0a00 	vldr	s0, [r3]
  8001c7e:	4770      	bx	lr
- 8001c80:	20022a60 	.word	0x20022a60
+ 8001c80:	20022a88 	.word	0x20022a88
  8001c84:	00000000 	.word	0x00000000
 
 08001c88 <BMP180_PressureAltitude2>:
@@ -3148,9 +3148,9 @@ void BMP180_PressureAltitude2(uint32_t *Pressure,float *Altitude)
  8001ea0:	200003ee 	.word	0x200003ee
  8001ea4:	200003e2 	.word	0x200003e2
  8001ea8:	ffffe343 	.word	0xffffe343
- 8001eac:	20022a70 	.word	0x20022a70
+ 8001eac:	20022a98 	.word	0x20022a98
  8001eb0:	3ff00000 	.word	0x3ff00000
- 8001eb4:	20022a74 	.word	0x20022a74
+ 8001eb4:	20022a9c 	.word	0x20022a9c
 
 08001eb8 <BMP180Task>:
 {
@@ -3580,12 +3580,12 @@ void BMP180_PressureAltitude2(uint32_t *Pressure,float *Altitude)
  80021ae:	f7ff fd6b 	bl	8001c88 <BMP180_PressureAltitude2>
  80021b2:	e7ef      	b.n	8002194 <BMP180Task+0x2dc>
 		Error_Handler();
- 80021b4:	2183      	movs	r1, #131	; 0x83
+ 80021b4:	2196      	movs	r1, #150	; 0x96
  80021b6:	481d      	ldr	r0, [pc, #116]	; (800222c <BMP180Task+0x374>)
  80021b8:	f000 fb02 	bl	80027c0 <_Error_Handler>
  80021bc:	e72e      	b.n	800201c <BMP180Task+0x164>
 			Error_Handler();
- 80021be:	21be      	movs	r1, #190	; 0xbe
+ 80021be:	21d1      	movs	r1, #209	; 0xd1
  80021c0:	481a      	ldr	r0, [pc, #104]	; (800222c <BMP180Task+0x374>)
  80021c2:	f000 fafd 	bl	80027c0 <_Error_Handler>
  80021c6:	e7da      	b.n	800217e <BMP180Task+0x2c6>
@@ -3609,11 +3609,11 @@ void BMP180_PressureAltitude2(uint32_t *Pressure,float *Altitude)
  800220c:	200003f2 	.word	0x200003f2
  8002210:	200003f6 	.word	0x200003f6
  8002214:	200003fa 	.word	0x200003fa
- 8002218:	20022a64 	.word	0x20022a64
- 800221c:	20022a78 	.word	0x20022a78
- 8002220:	20022a54 	.word	0x20022a54
- 8002224:	20022a60 	.word	0x20022a60
- 8002228:	20022a6c 	.word	0x20022a6c
+ 8002218:	20022a8c 	.word	0x20022a8c
+ 800221c:	20022aa0 	.word	0x20022aa0
+ 8002220:	20022a7c 	.word	0x20022a7c
+ 8002224:	20022a88 	.word	0x20022a88
+ 8002228:	20022a94 	.word	0x20022a94
  800222c:	080100bf 	.word	0x080100bf
 
 08002230 <Devices_Init>:
@@ -3653,7 +3653,7 @@ void Devices_Init()
  8002258:	e8bd 4008 	ldmia.w	sp!, {r3, lr}
 	IMU_Init();
  800225c:	f7fe be88 	b.w	8000f70 <IMU_Init>
- 8002260:	20022a7c 	.word	0x20022a7c
+ 8002260:	20022aa4 	.word	0x20022aa4
 
 08002264 <Devices_GetDataPointer>:
   * @brief  Функция получения указателя на блок данных расстояния
@@ -3674,8 +3674,8 @@ tSensors	*Devices_GetDataPointer()
 }
  8002274:	4770      	bx	lr
  8002276:	bf00      	nop
- 8002278:	20022a9c 	.word	0x20022a9c
- 800227c:	20022a7c 	.word	0x20022a7c
+ 8002278:	20022ac4 	.word	0x20022ac4
+ 800227c:	20022aa4 	.word	0x20022aa4
 
 08002280 <BSP_EXTI0_Callback>:
   \details Disables IRQ interrupts by setting the I-bit in the CPSR.
@@ -3718,7 +3718,7 @@ void BSP_EXTI0_Callback()//Front Lidar
  80022b0:	625a      	str	r2, [r3, #36]	; 0x24
  80022b2:	e7f1      	b.n	8002298 <BSP_EXTI0_Callback+0x18>
  80022b4:	40022000 	.word	0x40022000
- 80022b8:	20022a9c 	.word	0x20022a9c
+ 80022b8:	20022ac4 	.word	0x20022ac4
 
 080022bc <BSP_EXTI1_Callback>:
   __ASM volatile ("cpsid i" : : : "memory");
@@ -3756,7 +3756,7 @@ void BSP_EXTI1_Callback()//Left Lidar
  80022ec:	625a      	str	r2, [r3, #36]	; 0x24
  80022ee:	e7f1      	b.n	80022d4 <BSP_EXTI1_Callback+0x18>
  80022f0:	40022000 	.word	0x40022000
- 80022f4:	20022a9c 	.word	0x20022a9c
+ 80022f4:	20022ac4 	.word	0x20022ac4
 
 080022f8 <BSP_EXTI2_Callback>:
   __ASM volatile ("cpsid i" : : : "memory");
@@ -3794,7 +3794,7 @@ void BSP_EXTI2_Callback()//Right Lidar
  8002328:	625a      	str	r2, [r3, #36]	; 0x24
  800232a:	e7f1      	b.n	8002310 <BSP_EXTI2_Callback+0x18>
  800232c:	40022000 	.word	0x40022000
- 8002330:	20022a9c 	.word	0x20022a9c
+ 8002330:	20022ac4 	.word	0x20022ac4
 
 08002334 <BSP_EXTI3_Callback>:
   __ASM volatile ("cpsid i" : : : "memory");
@@ -3832,7 +3832,7 @@ void BSP_EXTI3_Callback()//Sonar
  8002364:	625a      	str	r2, [r3, #36]	; 0x24
  8002366:	e7f1      	b.n	800234c <BSP_EXTI3_Callback+0x18>
  8002368:	40022000 	.word	0x40022000
- 800236c:	20022a9c 	.word	0x20022a9c
+ 800236c:	20022ac4 	.word	0x20022ac4
 
 08002370 <BSP_EXTI4_Callback>:
   __ASM volatile ("cpsid i" : : : "memory");
@@ -3870,7 +3870,7 @@ void BSP_EXTI4_Callback()//Center Lidar
  80023a0:	625a      	str	r2, [r3, #36]	; 0x24
  80023a2:	e7f1      	b.n	8002388 <BSP_EXTI4_Callback+0x18>
  80023a4:	40022000 	.word	0x40022000
- 80023a8:	20022a9c 	.word	0x20022a9c
+ 80023a8:	20022ac4 	.word	0x20022ac4
 
 080023ac <BSP_USART_RxData>:
 	__enable_irq();
@@ -3969,14 +3969,14 @@ void BSP_USART_RxData(uint8_t rxByte)
  8002416:	7020      	strb	r0, [r4, #0]
  8002418:	bd10      	pop	{r4, pc}
  800241a:	bf00      	nop
- 800241c:	20022aa8 	.word	0x20022aa8
+ 800241c:	20022ad0 	.word	0x20022ad0
  8002420:	200003fd 	.word	0x200003fd
  8002424:	200003fc 	.word	0x200003fc
  8002428:	200003fe 	.word	0x200003fe
- 800242c:	20022aac 	.word	0x20022aac
+ 800242c:	20022ad4 	.word	0x20022ad4
  8002430:	40011000 	.word	0x40011000
- 8002434:	20022a88 	.word	0x20022a88
- 8002438:	20022a9c 	.word	0x20022a9c
+ 8002434:	20022ab0 	.word	0x20022ab0
+ 8002438:	20022ac4 	.word	0x20022ac4
 
 0800243c <Devices_LedToggle>:
 				}
@@ -4101,8 +4101,8 @@ void mainTask(void const * argument)
  8002500:	e7c4      	b.n	800248c <mainTask+0x24>
  8002502:	bf00      	nop
  8002504:	200229d8 	.word	0x200229d8
- 8002508:	20022af4 	.word	0x20022af4
- 800250c:	20022ab0 	.word	0x20022ab0
+ 8002508:	20022b1c 	.word	0x20022b1c
+ 800250c:	20022ad8 	.word	0x20022ad8
  8002510:	080100e1 	.word	0x080100e1
 
 08002514 <systemClock_Config>:
@@ -4376,8 +4376,8 @@ void mainTask(void const * argument)
  80026e8:	b007      	add	sp, #28
  80026ea:	bd30      	pop	{r4, r5, pc}
  80026ec:	08010050 	.word	0x08010050
- 80026f0:	20022ab4 	.word	0x20022ab4
- 80026f4:	20022ab0 	.word	0x20022ab0
+ 80026f0:	20022adc 	.word	0x20022adc
+ 80026f4:	20022ad8 	.word	0x20022ad8
 
 080026f8 <mainGiveSemaphore>:
 	}
@@ -4393,7 +4393,7 @@ void mainGiveSemaphore()
  8002700:	6800      	ldr	r0, [r0, #0]
  8002702:	f008 bce9 	b.w	800b0d8 <xQueueGenericSend>
  8002706:	bf00      	nop
- 8002708:	20022ab0 	.word	0x20022ab0
+ 8002708:	20022ad8 	.word	0x20022ad8
 
 0800270c <HAL_TIM_PeriodElapsedCallback>:
   */
@@ -4536,7 +4536,7 @@ void SetupRunTimeStatsTimer()
  80027ac:	bd30      	pop	{r4, r5, pc}
  80027ae:	bf00      	nop
  80027b0:	40023800 	.word	0x40023800
- 80027b4:	20022ab8 	.word	0x20022ab8
+ 80027b4:	20022ae0 	.word	0x20022ae0
  80027b8:	40001400 	.word	0x40001400
  80027bc:	00989680 	.word	0x00989680
 
@@ -4616,7 +4616,7 @@ uint8_t NMEA_Parse(uint8_t *GPSBuf,uint8_t	size)
  800281a:	4618      	mov	r0, r3
  800281c:	e7d4      	b.n	80027c8 <NMEA_Parse+0x4>
  800281e:	bf00      	nop
- 8002820:	20022bc4 	.word	0x20022bc4
+ 8002820:	20022bec 	.word	0x20022bec
 
 08002824 <NMEA_GetPositionString>:
 
@@ -4626,7 +4626,7 @@ char	*NMEA_GetPositionString()
 }
  8002824:	4800      	ldr	r0, [pc, #0]	; (8002828 <NMEA_GetPositionString+0x4>)
  8002826:	4770      	bx	lr
- 8002828:	20022bc4 	.word	0x20022bc4
+ 8002828:	20022bec 	.word	0x20022bec
 
 0800282c <HAL_MspInit>:
 /**
@@ -5531,7 +5531,7 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
  8002cc4:	e7fb      	b.n	8002cbe <HAL_InitTick+0x62>
  8002cc6:	bf00      	nop
  8002cc8:	40023800 	.word	0x40023800
- 8002ccc:	20022be0 	.word	0x20022be0
+ 8002ccc:	20022c08 	.word	0x20022c08
  8002cd0:	40010000 	.word	0x40010000
  8002cd4:	000f4240 	.word	0x000f4240
 
@@ -5602,7 +5602,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
  8002ce8:	4801      	ldr	r0, [pc, #4]	; (8002cf0 <TIM1_UP_TIM10_IRQHandler+0x8>)
  8002cea:	f003 bfb1 	b.w	8006c50 <HAL_TIM_IRQHandler>
  8002cee:	bf00      	nop
- 8002cf0:	20022be0 	.word	0x20022be0
+ 8002cf0:	20022c08 	.word	0x20022c08
 
 08002cf4 <OTG_FS_IRQHandler>:
 void OTG_FS_IRQHandler(void)
@@ -5614,7 +5614,7 @@ void OTG_FS_IRQHandler(void)
  8002cf4:	4801      	ldr	r0, [pc, #4]	; (8002cfc <OTG_FS_IRQHandler+0x8>)
  8002cf6:	f002 bd21 	b.w	800573c <HAL_PCD_IRQHandler>
  8002cfa:	bf00      	nop
- 8002cfc:	20023700 	.word	0x20023700
+ 8002cfc:	20023728 	.word	0x20023728
 
 08002d00 <TIM7_IRQHandler>:
   /* USER CODE END OTG_FS_IRQn 1 */
@@ -5626,7 +5626,7 @@ void TIM7_IRQHandler(void)
  8002d00:	4801      	ldr	r0, [pc, #4]	; (8002d08 <TIM7_IRQHandler+0x8>)
  8002d02:	f003 bfa5 	b.w	8006c50 <HAL_TIM_IRQHandler>
  8002d06:	bf00      	nop
- 8002d08:	20022ab8 	.word	0x20022ab8
+ 8002d08:	20022ae0 	.word	0x20022ae0
 
 08002d0c <I2C1_EV_IRQHandler>:
   * @retval None
@@ -5638,7 +5638,7 @@ void I2C1_EV_IRQHandler(void)
  8002d0c:	4801      	ldr	r0, [pc, #4]	; (8002d14 <I2C1_EV_IRQHandler+0x8>)
  8002d0e:	f002 b867 	b.w	8004de0 <HAL_I2C_EV_IRQHandler>
  8002d12:	bf00      	nop
- 8002d14:	20022c1c 	.word	0x20022c1c
+ 8002d14:	20022c44 	.word	0x20022c44
 
 08002d18 <I2C2_ER_IRQHandler>:
   * @retval None
@@ -5650,7 +5650,7 @@ void I2C2_ER_IRQHandler(void)
  8002d18:	4801      	ldr	r0, [pc, #4]	; (8002d20 <I2C2_ER_IRQHandler+0x8>)
  8002d1a:	f002 bbcb 	b.w	80054b4 <HAL_I2C_ER_IRQHandler>
  8002d1e:	bf00      	nop
- 8002d20:	20022c70 	.word	0x20022c70
+ 8002d20:	20022c98 	.word	0x20022c98
 
 08002d24 <I2C2_EV_IRQHandler>:
   * @retval None
@@ -5662,7 +5662,7 @@ void I2C2_EV_IRQHandler(void)
  8002d24:	4801      	ldr	r0, [pc, #4]	; (8002d2c <I2C2_EV_IRQHandler+0x8>)
  8002d26:	f002 b85b 	b.w	8004de0 <HAL_I2C_EV_IRQHandler>
  8002d2a:	bf00      	nop
- 8002d2c:	20022c70 	.word	0x20022c70
+ 8002d2c:	20022c98 	.word	0x20022c98
 
 08002d30 <I2C1_ER_IRQHandler>:
   * @retval None
@@ -5674,7 +5674,7 @@ void I2C1_ER_IRQHandler(void)
  8002d30:	4801      	ldr	r0, [pc, #4]	; (8002d38 <I2C1_ER_IRQHandler+0x8>)
  8002d32:	f002 bbbf 	b.w	80054b4 <HAL_I2C_ER_IRQHandler>
  8002d36:	bf00      	nop
- 8002d38:	20022c1c 	.word	0x20022c1c
+ 8002d38:	20022c44 	.word	0x20022c44
 
 08002d3c <EXTI9_5_IRQHandler>:
   * @param  None
@@ -5821,7 +5821,7 @@ void UART7_IRQHandler(void)
  8002ddc:	4801      	ldr	r0, [pc, #4]	; (8002de4 <UART7_IRQHandler+0x8>)
  8002dde:	f004 bb25 	b.w	800742c <HAL_UART_IRQHandler>
  8002de2:	bf00      	nop
- 8002de4:	20023078 	.word	0x20023078
+ 8002de4:	200230a0 	.word	0x200230a0
 
 08002de8 <DMA1_Stream3_IRQHandler>:
   * @param  None
@@ -5833,7 +5833,7 @@ void DMA1_Stream3_IRQHandler(void)
  8002de8:	4b01      	ldr	r3, [pc, #4]	; (8002df0 <DMA1_Stream3_IRQHandler+0x8>)
  8002dea:	6b58      	ldr	r0, [r3, #52]	; 0x34
  8002dec:	f001 b856 	b.w	8003e9c <HAL_DMA_IRQHandler>
- 8002df0:	20023078 	.word	0x20023078
+ 8002df0:	200230a0 	.word	0x200230a0
 
 08002df4 <SystemInit>:
   */
@@ -6102,7 +6102,7 @@ void	BSP_I2C_Init()
 	  Error_Handler();
  8002f4e:	f7ff bc37 	b.w	80027c0 <_Error_Handler>
  8002f52:	bd08      	pop	{r3, pc}
- 8002f54:	20022c1c 	.word	0x20022c1c
+ 8002f54:	20022c44 	.word	0x20022c44
  8002f58:	40005400 	.word	0x40005400
  8002f5c:	00061a80 	.word	0x00061a80
  8002f60:	08010181 	.word	0x08010181
@@ -6169,7 +6169,7 @@ uint8_t BSP_I2C_Read_Byte(uint8_t addr, uint8_t reg)
  8002fba:	b007      	add	sp, #28
  8002fbc:	bd30      	pop	{r4, r5, pc}
  8002fbe:	bf00      	nop
- 8002fc0:	20022c1c 	.word	0x20022c1c
+ 8002fc0:	20022c44 	.word	0x20022c44
 
 08002fc4 <BSP_I2C_Read_Bytes>:
   * @param		:data - указатель на массив байт
@@ -6229,7 +6229,7 @@ void BSP_I2C_Read_Bytes(uint8_t addr, uint8_t reg,uint16_t	count,uint8_t	*data)
 }
  8003010:	b005      	add	sp, #20
  8003012:	bdf0      	pop	{r4, r5, r6, r7, pc}
- 8003014:	20022c1c 	.word	0x20022c1c
+ 8003014:	20022c44 	.word	0x20022c44
 
 08003018 <BSP_I2C_Write_Byte>:
   * @param		reg: адрес регистра
@@ -6265,7 +6265,7 @@ uint8_t BSP_I2C_Write_Byte(uint8_t addr, uint8_t reg, uint8_t data)
  800303e:	b004      	add	sp, #16
  8003040:	bd10      	pop	{r4, pc}
  8003042:	bf00      	nop
- 8003044:	20022c1c 	.word	0x20022c1c
+ 8003044:	20022c44 	.word	0x20022c44
 
 08003048 <I2C_ClearBusyFlagErratum>:
 /*----------------------------------------------------------------------------------------------------*/
@@ -6559,7 +6559,7 @@ void	BSP_I2C2_Init()
 	  Error_Handler();
  80031b6:	f7ff bb03 	b.w	80027c0 <_Error_Handler>
  80031ba:	bd08      	pop	{r3, pc}
- 80031bc:	20022c70 	.word	0x20022c70
+ 80031bc:	20022c98 	.word	0x20022c98
  80031c0:	40005800 	.word	0x40005800
  80031c4:	00061a80 	.word	0x00061a80
  80031c8:	08010181 	.word	0x08010181
@@ -6626,7 +6626,7 @@ uint8_t BSP_I2C2_Read_Byte(uint8_t addr, uint8_t reg)
  8003222:	b007      	add	sp, #28
  8003224:	bd30      	pop	{r4, r5, pc}
  8003226:	bf00      	nop
- 8003228:	20022c70 	.word	0x20022c70
+ 8003228:	20022c98 	.word	0x20022c98
 
 0800322c <BSP_I2C2_Read_Bytes>:
   * @param		:data - указатель на массив байт
@@ -6686,7 +6686,7 @@ void BSP_I2C2_Read_Bytes(uint8_t addr, uint8_t reg,uint16_t	count,uint8_t	*data)
 }
  8003278:	b005      	add	sp, #20
  800327a:	bdf0      	pop	{r4, r5, r6, r7, pc}
- 800327c:	20022c70 	.word	0x20022c70
+ 800327c:	20022c98 	.word	0x20022c98
 
 08003280 <BSP_I2C2_Write_Byte>:
   * @param		reg: адрес регистра
@@ -6722,7 +6722,7 @@ uint8_t BSP_I2C2_Write_Byte(uint8_t addr, uint8_t reg, uint8_t data)
  80032a6:	b004      	add	sp, #16
  80032a8:	bd10      	pop	{r4, pc}
  80032aa:	bf00      	nop
- 80032ac:	20022c70 	.word	0x20022c70
+ 80032ac:	20022c98 	.word	0x20022c98
 
 080032b0 <BSP_Manchester_SendByte>:
 	* @param	Byte: байт для передачи
@@ -6904,7 +6904,7 @@ uint8_t	BSP_ManToByteDecode(uint32_t Word)
  800337e:	bd10      	pop	{r4, pc}
  8003380:	20000468 	.word	0x20000468
  8003384:	20000470 	.word	0x20000470
- 8003388:	20022cc4 	.word	0x20022cc4
+ 8003388:	20022cec 	.word	0x20022cec
 
 0800338c <TIM6_DAC_IRQHandler>:
 	* @brief	Обработчикр прерывания по переполнению TIM6 - таймер передачи
@@ -7202,7 +7202,7 @@ void	BSP_RTC_Init()
 }
  8003508:	b006      	add	sp, #24
  800350a:	bd10      	pop	{r4, pc}
- 800350c:	20022dc4 	.word	0x20022dc4
+ 800350c:	20022dec 	.word	0x20022dec
  8003510:	40002800 	.word	0x40002800
  8003514:	0801019e 	.word	0x0801019e
 
@@ -7355,7 +7355,7 @@ void	BSP_SDCard_Task(void const * argument)
  8003614:	f006 fb5a 	bl	8009ccc <f_close>
  8003618:	e7ae      	b.n	8003578 <BSP_SDCard_Task+0x60>
  800361a:	bf00      	nop
- 800361c:	20023cf1 	.word	0x20023cf1
+ 800361c:	20023d19 	.word	0x20023d19
  8003620:	080103ec 	.word	0x080103ec
  8003624:	08010218 	.word	0x08010218
  8003628:	20000478 	.word	0x20000478
@@ -7363,7 +7363,7 @@ void	BSP_SDCard_Task(void const * argument)
  8003630:	200006ac 	.word	0x200006ac
  8003634:	080101db 	.word	0x080101db
  8003638:	080101e7 	.word	0x080101e7
- 800363c:	20022de4 	.word	0x20022de4
+ 800363c:	20022e0c 	.word	0x20022e0c
  8003640:	08010219 	.word	0x08010219
  8003644:	200006ec 	.word	0x200006ec
  8003648:	1000002c 	.word	0x1000002c
@@ -7417,11 +7417,11 @@ void	BSP_SDCard_Task(void const * argument)
  800369a:	b007      	add	sp, #28
  800369c:	bd30      	pop	{r4, r5, pc}
  800369e:	bf00      	nop
- 80036a0:	20022dec 	.word	0x20022dec
- 80036a4:	20022de4 	.word	0x20022de4
+ 80036a0:	20022e14 	.word	0x20022e14
+ 80036a4:	20022e0c 	.word	0x20022e0c
  80036a8:	08010064 	.word	0x08010064
- 80036ac:	20022e48 	.word	0x20022e48
- 80036b0:	20022de8 	.word	0x20022de8
+ 80036ac:	20022e70 	.word	0x20022e70
+ 80036b0:	20022e10 	.word	0x20022e10
 
 080036b4 <BSP_SDCard_SPIInit>:
 {
@@ -7473,7 +7473,7 @@ void	BSP_SDCard_Task(void const * argument)
 		Error_Handler();
  80036ee:	f7ff b867 	b.w	80027c0 <_Error_Handler>
  80036f2:	bd08      	pop	{r3, pc}
- 80036f4:	20022df0 	.word	0x20022df0
+ 80036f4:	20022e18 	.word	0x20022e18
  80036f8:	40013400 	.word	0x40013400
  80036fc:	080101bb 	.word	0x080101bb
 
@@ -7486,7 +7486,7 @@ void	BSP_SDCard_Task(void const * argument)
  8003708:	6800      	ldr	r0, [r0, #0]
  800370a:	f007 bce5 	b.w	800b0d8 <xQueueGenericSend>
  800370e:	bf00      	nop
- 8003710:	20022de4 	.word	0x20022de4
+ 8003710:	20022e0c 	.word	0x20022e0c
 
 08003714 <SD_IO_CSState>:
  * @param	state: CS High/Low
@@ -7528,7 +7528,7 @@ void   SD_IO_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t Dat
  800373c:	b003      	add	sp, #12
  800373e:	f85d fb04 	ldr.w	pc, [sp], #4
  8003742:	bf00      	nop
- 8003744:	20022df0 	.word	0x20022df0
+ 8003744:	20022e18 	.word	0x20022e18
 
 08003748 <SD_IO_WriteByte>:
  * @brief	LL функция записи/чтения байта по SPI
@@ -7557,7 +7557,7 @@ uint8_t   SD_IO_WriteByte(uint8_t Data)
  8003768:	b007      	add	sp, #28
  800376a:	f85d fb04 	ldr.w	pc, [sp], #4
  800376e:	bf00      	nop
- 8003770:	20022df0 	.word	0x20022df0
+ 8003770:	20022e18 	.word	0x20022e18
 
 08003774 <SD_IO_Init>:
 {
@@ -7641,7 +7641,7 @@ void	BSP_Timers_TIM3Init()
  80037e2:	f85d fb04 	ldr.w	pc, [sp], #4
  80037e6:	bf00      	nop
  80037e8:	40023800 	.word	0x40023800
- 80037ec:	20022f00 	.word	0x20022f00
+ 80037ec:	20022f28 	.word	0x20022f28
  80037f0:	40000400 	.word	0x40000400
  80037f4:	0801025d 	.word	0x0801025d
 
@@ -7703,7 +7703,7 @@ void	BSP_Timers_TIM5Init()
  8003846:	f85d fb04 	ldr.w	pc, [sp], #4
  800384a:	bf00      	nop
  800384c:	40023800 	.word	0x40023800
- 8003850:	20022e88 	.word	0x20022e88
+ 8003850:	20022eb0 	.word	0x20022eb0
  8003854:	40000c00 	.word	0x40000c00
  8003858:	0801025d 	.word	0x0801025d
 
@@ -7765,7 +7765,7 @@ void	BSP_Timers_TIM6Init()
  80038aa:	f85d fb04 	ldr.w	pc, [sp], #4
  80038ae:	bf00      	nop
  80038b0:	40023800 	.word	0x40023800
- 80038b4:	20022ec4 	.word	0x20022ec4
+ 80038b4:	20022eec 	.word	0x20022eec
  80038b8:	40001000 	.word	0x40001000
  80038bc:	0801025d 	.word	0x0801025d
 
@@ -7826,7 +7826,7 @@ void	BSP_Timers_TIM2Init()
  800390e:	b003      	add	sp, #12
  8003910:	f85d fb04 	ldr.w	pc, [sp], #4
  8003914:	40023800 	.word	0x40023800
- 8003918:	20022f3c 	.word	0x20022f3c
+ 8003918:	20022f64 	.word	0x20022f64
  800391c:	0801025d 	.word	0x0801025d
 
 08003920 <BSP_Timers_TIM4Init>:
@@ -7888,7 +7888,7 @@ void	BSP_Timers_TIM4Init()
  800396e:	f85d fb04 	ldr.w	pc, [sp], #4
  8003972:	bf00      	nop
  8003974:	40023800 	.word	0x40023800
- 8003978:	20022e4c 	.word	0x20022e4c
+ 8003978:	20022e74 	.word	0x20022e74
  800397c:	40000800 	.word	0x40000800
  8003980:	0801025d 	.word	0x0801025d
 
@@ -7949,10 +7949,10 @@ void	BSP_USART_Init()
  80039c4:	f7fe befc 	b.w	80027c0 <_Error_Handler>
  80039c8:	bd08      	pop	{r3, pc}
  80039ca:	bf00      	nop
- 80039cc:	20023038 	.word	0x20023038
+ 80039cc:	20023060 	.word	0x20023060
  80039d0:	40011000 	.word	0x40011000
  80039d4:	0801027d 	.word	0x0801027d
- 80039d8:	200230b8 	.word	0x200230b8
+ 80039d8:	200230e0 	.word	0x200230e0
 
 080039dc <BSP_WIFI_Init>:
 
@@ -7997,7 +7997,7 @@ void	BSP_WIFI_Init()
  8003a08:	f7fe beda 	b.w	80027c0 <_Error_Handler>
  8003a0c:	bd08      	pop	{r3, pc}
  8003a0e:	bf00      	nop
- 8003a10:	20022f78 	.word	0x20022f78
+ 8003a10:	20022fa0 	.word	0x20022fa0
  8003a14:	40005000 	.word	0x40005000
  8003a18:	0801027d 	.word	0x0801027d
 
@@ -8077,9 +8077,9 @@ void	BSP_GPS_UART_Init()
  8003a72:	f003 bc0d 	b.w	8007290 <HAL_UART_Receive_DMA>
  8003a76:	bd38      	pop	{r3, r4, r5, pc}
  8003a78:	40007800 	.word	0x40007800
- 8003a7c:	20023078 	.word	0x20023078
+ 8003a7c:	200230a0 	.word	0x200230a0
  8003a80:	0801027d 	.word	0x0801027d
- 8003a84:	20022fb8 	.word	0x20022fb8
+ 8003a84:	20022fe0 	.word	0x20022fe0
 
 08003a88 <BSP_WIFI_UARTSend>:
 
@@ -8092,7 +8092,7 @@ void	BSP_WIFI_UARTSend(uint8_t *pDyte,uint16_t	Size)
  8003a90:	4801      	ldr	r0, [pc, #4]	; (8003a98 <BSP_WIFI_UARTSend+0x10>)
  8003a92:	f003 bb7d 	b.w	8007190 <HAL_UART_Transmit>
  8003a96:	bf00      	nop
- 8003a98:	20022f78 	.word	0x20022f78
+ 8003a98:	20022fa0 	.word	0x20022fa0
 
 08003a9c <HAL_UART_RxCpltCallback>:
 }
@@ -8112,7 +8112,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
  8003aac:	4770      	bx	lr
  8003aae:	bf00      	nop
  8003ab0:	40007800 	.word	0x40007800
- 8003ab4:	20022fb8 	.word	0x20022fb8
+ 8003ab4:	20022fe0 	.word	0x20022fe0
 
 08003ab8 <BSP_Usb_RxTask>:
 	* @brief	Поток приема байт из очереди в CDC USB
@@ -8151,7 +8151,7 @@ void	BSP_Usb_RxTask(void const * argument)
  8003ae4:	e7ed      	b.n	8003ac2 <BSP_Usb_TxTask+0x6>
  8003ae6:	bf00      	nop
  8003ae8:	200007b4 	.word	0x200007b4
- 8003aec:	200230d0 	.word	0x200230d0
+ 8003aec:	200230f8 	.word	0x200230f8
 
 08003af0 <BSP_Usb_Init>:
 {
@@ -8218,12 +8218,12 @@ void	BSP_Usb_RxTask(void const * argument)
  8003b4e:	b00a      	add	sp, #40	; 0x28
  8003b50:	bd70      	pop	{r4, r5, r6, pc}
  8003b52:	bf00      	nop
- 8003b54:	200230d0 	.word	0x200230d0
- 8003b58:	200230cc 	.word	0x200230cc
+ 8003b54:	200230f8 	.word	0x200230f8
+ 8003b58:	200230f4 	.word	0x200230f4
  8003b5c:	0801029c 	.word	0x0801029c
  8003b60:	08010078 	.word	0x08010078
- 8003b64:	200230d4 	.word	0x200230d4
- 8003b68:	200230c8 	.word	0x200230c8
+ 8003b64:	200230fc 	.word	0x200230fc
+ 8003b68:	200230f0 	.word	0x200230f0
 
 08003b6c <HAL_Init>:
   *         need to ensure that the SysTick time base is always set to 1 millisecond
@@ -8292,7 +8292,7 @@ __weak void HAL_IncTick(void)
  8003baa:	6013      	str	r3, [r2, #0]
  8003bac:	4770      	bx	lr
  8003bae:	bf00      	nop
- 8003bb0:	200230d8 	.word	0x200230d8
+ 8003bb0:	20023100 	.word	0x20023100
  8003bb4:	2000000c 	.word	0x2000000c
 
 08003bb8 <HAL_GetTick>:
@@ -8307,7 +8307,7 @@ __weak uint32_t HAL_GetTick(void)
 }
  8003bbc:	4770      	bx	lr
  8003bbe:	bf00      	nop
- 8003bc0:	200230d8 	.word	0x200230d8
+ 8003bc0:	20023100 	.word	0x20023100
 
 08003bc4 <HAL_Delay>:
   *       implementations in user file.
@@ -19741,7 +19741,7 @@ void MX_USB_DEVICE_Init(void)
  800801c:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
   USBD_Start(&hUsbDeviceFS);
  8008020:	f000 b9aa 	b.w	8008378 <USBD_Start>
- 8008024:	200230dc 	.word	0x200230dc
+ 8008024:	20023104 	.word	0x20023104
  8008028:	20000130 	.word	0x20000130
  800802c:	20000010 	.word	0x20000010
  8008030:	20000120 	.word	0x20000120
@@ -19789,7 +19789,7 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
  800804e:	2000      	movs	r0, #0
  8008050:	bd10      	pop	{r4, pc}
  8008052:	bf00      	nop
- 8008054:	200230dc 	.word	0x200230dc
+ 8008054:	20023104 	.word	0x20023104
 
 08008058 <CDC_Init_FS>:
 {
@@ -19808,9 +19808,9 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
  800806e:	2000      	movs	r0, #0
  8008070:	bd10      	pop	{r4, pc}
  8008072:	bf00      	nop
- 8008074:	200230dc 	.word	0x200230dc
- 8008078:	20023500 	.word	0x20023500
- 800807c:	20023300 	.word	0x20023300
+ 8008074:	20023104 	.word	0x20023104
+ 8008078:	20023528 	.word	0x20023528
+ 800807c:	20023328 	.word	0x20023328
 
 08008080 <CDC_Transmit_FS>:
   * @param  Buf: Buffer of data to be sent
@@ -19849,7 +19849,7 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
  80080a2:	2001      	movs	r0, #1
  80080a4:	bd10      	pop	{r4, pc}
  80080a6:	bf00      	nop
- 80080a8:	200230dc 	.word	0x200230dc
+ 80080a8:	20023104 	.word	0x20023104
 
 080080ac <HAL_PCD_MspInit>:
                        LL Driver Callbacks (PCD -> USB Device Library)
@@ -20185,7 +20185,7 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
 }
  800821c:	2000      	movs	r0, #0
  800821e:	bd08      	pop	{r3, pc}
- 8008220:	20023700 	.word	0x20023700
+ 8008220:	20023728 	.word	0x20023728
  8008224:	080102cb 	.word	0x080102cb
 
 08008228 <USBD_LL_Start>:
@@ -21635,7 +21635,7 @@ uint8_t * USBD_FS_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *l
  8008926:	4620      	mov	r0, r4
  8008928:	bd10      	pop	{r4, pc}
  800892a:	bf00      	nop
- 800892c:	20023af0 	.word	0x20023af0
+ 800892c:	20023b18 	.word	0x20023b18
  8008930:	08010324 	.word	0x08010324
 
 08008934 <USBD_FS_ProductStrDescriptor>:
@@ -21651,7 +21651,7 @@ uint8_t * USBD_FS_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *l
  8008942:	4620      	mov	r0, r4
  8008944:	bd10      	pop	{r4, pc}
  8008946:	bf00      	nop
- 8008948:	20023af0 	.word	0x20023af0
+ 8008948:	20023b18 	.word	0x20023b18
  800894c:	08010337 	.word	0x08010337
 
 08008950 <USBD_FS_SerialStrDescriptor>:
@@ -21679,7 +21679,7 @@ uint8_t * USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
  800895e:	4620      	mov	r0, r4
  8008960:	bd10      	pop	{r4, pc}
  8008962:	bf00      	nop
- 8008964:	20023af0 	.word	0x20023af0
+ 8008964:	20023b18 	.word	0x20023b18
  8008968:	0801034d 	.word	0x0801034d
 
 0800896c <USBD_FS_ConfigStrDescriptor>:
@@ -21707,7 +21707,7 @@ uint8_t * USBD_FS_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
  800897a:	4620      	mov	r0, r4
  800897c:	bd10      	pop	{r4, pc}
  800897e:	bf00      	nop
- 8008980:	20023af0 	.word	0x20023af0
+ 8008980:	20023b18 	.word	0x20023b18
  8008984:	0801030b 	.word	0x0801030b
 
 08008988 <USBD_FS_InterfaceStrDescriptor>:
@@ -21735,7 +21735,7 @@ uint8_t * USBD_FS_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *leng
  8008996:	4620      	mov	r0, r4
  8008998:	bd10      	pop	{r4, pc}
  800899a:	bf00      	nop
- 800899c:	20023af0 	.word	0x20023af0
+ 800899c:	20023b18 	.word	0x20023b18
  80089a0:	08010316 	.word	0x08010316
 
 080089a4 <USBD_CtlSendData>:
@@ -28902,7 +28902,7 @@ BaseType_t xReturn;
  800b52e:	2b08      	cmp	r3, #8
  800b530:	d1f3      	bne.n	800b51a <vQueueAddToRegistry+0x6>
  800b532:	bd30      	pop	{r4, r5, pc}
- 800b534:	2002415c 	.word	0x2002415c
+ 800b534:	20024184 	.word	0x20024184
 
 0800b538 <vQueueUnregisterQueue>:
 /*-----------------------------------------------------------*/
@@ -28945,7 +28945,7 @@ BaseType_t xReturn;
  800b556:	d1f2      	bne.n	800b53e <vQueueUnregisterQueue+0x6>
  800b558:	bd10      	pop	{r4, pc}
  800b55a:	bf00      	nop
- 800b55c:	2002415c 	.word	0x2002415c
+ 800b55c:	20024184 	.word	0x20024184
 
 0800b560 <vQueueDelete>:
 {
@@ -31664,7 +31664,7 @@ LoopFillZerobss:
   ldr  r2, =_sbss
  800c3d0:	20000340 	.word	0x20000340
   ldr  r3, = _ebss
- 800c3d4:	200241a0 	.word	0x200241a0
+ 800c3d4:	200241c8 	.word	0x200241c8
 
 0800c3d8 <ADC_IRQHandler>:
  * @retval None       
@@ -32847,7 +32847,7 @@ Infinite_Loop:
  800ceb2:	b103      	cbz	r3, 800ceb6 <_sbrk_r+0x1a>
  800ceb4:	602b      	str	r3, [r5, #0]
  800ceb6:	bd38      	pop	{r3, r4, r5, pc}
- 800ceb8:	2002419c 	.word	0x2002419c
+ 800ceb8:	200241c4 	.word	0x200241c4
 
 0800cebc <siprintf>:
  800cebc:	b40e      	push	{r1, r2, r3}
@@ -37623,7 +37623,7 @@ Infinite_Loop:
  8010004:	601a      	str	r2, [r3, #0]
  8010006:	4770      	bx	lr
  8010008:	20022954 	.word	0x20022954
- 801000c:	200241a0 	.word	0x200241a0
+ 801000c:	200241c8 	.word	0x200241c8
 
 08010010 <_init>:
  8010010:	b5f8      	push	{r3, r4, r5, r6, r7, lr}

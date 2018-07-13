@@ -135,7 +135,7 @@ errno               0x4               c:/program files (x86)/atollic/truestudio 
 I2C1Handle          0x54              Drivers\BSP\src\bsp_iic.o
 b_gx                0x8               Core\Src\IMU.o
 hpcd_USB_OTG_FS     0x3f0             Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_conf.o
-bmpSensor           0x28              Core\Src\bmp180.o
+bmpSensor           0x50              Core\Src\bmp180.o
 usbTaskRxHandle     0x4               Drivers\BSP\src\bsp_usb.o
 uwTick              0x4               Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal.o
 gy                  0x2               Core\Src\IMU.o
@@ -4094,13 +4094,13 @@ LOAD c:/program files (x86)/atollic/truestudio for stm32 9.0.1/armtools/bin/../l
                 0x10003840                _eccmram = .
                 0x10003840                . = ALIGN (0x4)
 
-.bss            0x20000340    0x23e60
+.bss            0x20000340    0x23e88
                 0x20000340                _sbss = .
                 0x20000340                __bss_start__ = _sbss
  *(.bss)
  .bss           0x20000340       0x1c c:/program files (x86)/atollic/truestudio for stm32 9.0.1/armtools/bin/../lib/gcc/arm-atollic-eabi/6.3.1/armv7e-m/fpu/crtbegin.o
  *(.bss*)
- .bss.i2c1Module.12333
+ .bss.i2c1Module.12332
                 0x2000035c       0x64 Core\Src\IMU.o
  .bss.uBMPCounter
                 0x200003c0        0x2 Core\Src\IMU.o
@@ -4313,99 +4313,99 @@ LOAD c:/program files (x86)/atollic/truestudio for stm32 9.0.1/armtools/bin/../l
                 0x200229d4                mx
                 0x200229d8                skifCurrentData
                 0x20022a20                b_gy
- COMMON         0x20022a28       0x54 Core\Src\bmp180.o
+ COMMON         0x20022a28       0x7c Core\Src\bmp180.o
                 0x20022a28                bmpSensor
-                0x20022a50                xAltitudeDataQueue
-                0x20022a54                ulPressure
-                0x20022a58                uZeroPressure
-                0x20022a5c                uZeroCounter
-                0x20022a60                fAltitude2
-                0x20022a64                xAltitudeSemaphore
-                0x20022a68                altitudeTaskHandle
-                0x20022a6c                ulPressure2
-                0x20022a70                uZeroPressure2
-                0x20022a74                uZeroCounter2
-                0x20022a78                fAltitude
- COMMON         0x20022a7c       0x31 Core\Src\devices.o
-                0x20022a7c                SensorsData
-                0x20022a88                receivedData
-                0x20022a9c                ulDistances
-                0x20022aa8                tempData
-                0x20022aac                receivedDataCounter
- *fill*         0x20022aad        0x3 
- COMMON         0x20022ab0      0x10c Core\Src\main.o
-                0x20022ab0                xMainSemaphore
-                0x20022ab4                defaultTaskHandle
-                0x20022ab8                htim7
-                0x20022af4                strBufOutput
- COMMON         0x20022bbc       0x24 Core\Src\nmea.o
-                0x20022bbc                nmeaPosition
- COMMON         0x20022be0       0x3c Core\Src\stm32f4xx_hal_timebase_TIM.o
-                0x20022be0                htim1
- COMMON         0x20022c1c       0xa8 Drivers\BSP\src\bsp_iic.o
-                0x20022c1c                I2C1Handle
-                0x20022c70                I2C2Handle
- COMMON         0x20022cc4      0x100 Drivers\BSP\src\bsp_manchester.o
-                0x20022cc4                manRxArr
- COMMON         0x20022dc4       0x20 Drivers\BSP\src\bsp_rtc.o
-                0x20022dc4                RtcHandle
- COMMON         0x20022de4       0x68 Drivers\BSP\src\bsp_sdcard.o
-                0x20022de4                xSDWriteProcessSemaphore
-                0x20022de8                uFilesCount
-                0x20022dec                xSDCardDataWriteQueue
-                0x20022df0                spiSDHandle
-                0x20022e48                usbTaskSdCardHandle
- COMMON         0x20022e4c      0x12c Drivers\BSP\src\bsp_timers.o
-                0x20022e4c                Tim4SonarHandle
-                0x20022e88                Tim5LidarHandle
-                0x20022ec4                Tim6LidarHandle
-                0x20022f00                Tim3LidarHandle
-                0x20022f3c                Tim2LidarHandle
- COMMON         0x20022f78      0x14e Drivers\BSP\src\bsp_usart.o
-                0x20022f78                bsp_uart5
-                0x20022fb8                gpsBuffer
-                0x20023038                bsp_uart1
-                0x20023078                bsp_uart7
-                0x200230b8                receiveBuffer
- *fill*         0x200230c6        0x2 
- COMMON         0x200230c8       0x10 Drivers\BSP\src\bsp_usb.o
-                0x200230c8                usbTaskRxHandle
-                0x200230cc                usbRxDataQueue
-                0x200230d0                usbTxDataQueue
-                0x200230d4                usbTaskTxHandle
- COMMON         0x200230d8        0x4 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal.o
-                0x200230d8                uwTick
- COMMON         0x200230dc      0x224 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usb_device.o
-                0x200230dc                hUsbDeviceFS
- COMMON         0x20023300      0x400 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_cdc_if.o
-                0x20023300                UserRxBufferFS
-                0x20023500                UserTxBufferFS
- COMMON         0x20023700      0x3f0 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_conf.o
-                0x20023700                hpcd_USB_OTG_FS
- COMMON         0x20023af0      0x200 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_desc.o
-                0x20023af0                USBD_StrDesc
- COMMON         0x20023cf0      0x46c Middlewares\Third_Party\FatFs\src\fatfs.o
-                0x20023cf0                retSD
-                0x20023cf1                SDPath
-                0x20023cf8                SDFile
-                0x20023f28                SDFatFS
- COMMON         0x2002415c       0x40 Middlewares\Third_Party\FreeRTOS\Source\queue.o
-                0x2002415c                xQueueRegistry
- COMMON         0x2002419c        0x4 c:/program files (x86)/atollic/truestudio for stm32 9.0.1/armtools/bin/../lib/gcc/arm-atollic-eabi/6.3.1/../../../../arm-atollic-eabi/lib/armv7e-m/fpu\libc_nano.a(lib_a-reent.o)
-                0x2002419c                errno
-                0x200241a0                . = ALIGN (0x4)
-                0x200241a0                _ebss = .
-                0x200241a0                __bss_end__ = _ebss
+                0x20022a78                xAltitudeDataQueue
+                0x20022a7c                ulPressure
+                0x20022a80                uZeroPressure
+                0x20022a84                uZeroCounter
+                0x20022a88                fAltitude2
+                0x20022a8c                xAltitudeSemaphore
+                0x20022a90                altitudeTaskHandle
+                0x20022a94                ulPressure2
+                0x20022a98                uZeroPressure2
+                0x20022a9c                uZeroCounter2
+                0x20022aa0                fAltitude
+ COMMON         0x20022aa4       0x31 Core\Src\devices.o
+                0x20022aa4                SensorsData
+                0x20022ab0                receivedData
+                0x20022ac4                ulDistances
+                0x20022ad0                tempData
+                0x20022ad4                receivedDataCounter
+ *fill*         0x20022ad5        0x3 
+ COMMON         0x20022ad8      0x10c Core\Src\main.o
+                0x20022ad8                xMainSemaphore
+                0x20022adc                defaultTaskHandle
+                0x20022ae0                htim7
+                0x20022b1c                strBufOutput
+ COMMON         0x20022be4       0x24 Core\Src\nmea.o
+                0x20022be4                nmeaPosition
+ COMMON         0x20022c08       0x3c Core\Src\stm32f4xx_hal_timebase_TIM.o
+                0x20022c08                htim1
+ COMMON         0x20022c44       0xa8 Drivers\BSP\src\bsp_iic.o
+                0x20022c44                I2C1Handle
+                0x20022c98                I2C2Handle
+ COMMON         0x20022cec      0x100 Drivers\BSP\src\bsp_manchester.o
+                0x20022cec                manRxArr
+ COMMON         0x20022dec       0x20 Drivers\BSP\src\bsp_rtc.o
+                0x20022dec                RtcHandle
+ COMMON         0x20022e0c       0x68 Drivers\BSP\src\bsp_sdcard.o
+                0x20022e0c                xSDWriteProcessSemaphore
+                0x20022e10                uFilesCount
+                0x20022e14                xSDCardDataWriteQueue
+                0x20022e18                spiSDHandle
+                0x20022e70                usbTaskSdCardHandle
+ COMMON         0x20022e74      0x12c Drivers\BSP\src\bsp_timers.o
+                0x20022e74                Tim4SonarHandle
+                0x20022eb0                Tim5LidarHandle
+                0x20022eec                Tim6LidarHandle
+                0x20022f28                Tim3LidarHandle
+                0x20022f64                Tim2LidarHandle
+ COMMON         0x20022fa0      0x14e Drivers\BSP\src\bsp_usart.o
+                0x20022fa0                bsp_uart5
+                0x20022fe0                gpsBuffer
+                0x20023060                bsp_uart1
+                0x200230a0                bsp_uart7
+                0x200230e0                receiveBuffer
+ *fill*         0x200230ee        0x2 
+ COMMON         0x200230f0       0x10 Drivers\BSP\src\bsp_usb.o
+                0x200230f0                usbTaskRxHandle
+                0x200230f4                usbRxDataQueue
+                0x200230f8                usbTxDataQueue
+                0x200230fc                usbTaskTxHandle
+ COMMON         0x20023100        0x4 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal.o
+                0x20023100                uwTick
+ COMMON         0x20023104      0x224 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usb_device.o
+                0x20023104                hUsbDeviceFS
+ COMMON         0x20023328      0x400 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_cdc_if.o
+                0x20023328                UserRxBufferFS
+                0x20023528                UserTxBufferFS
+ COMMON         0x20023728      0x3f0 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_conf.o
+                0x20023728                hpcd_USB_OTG_FS
+ COMMON         0x20023b18      0x200 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_desc.o
+                0x20023b18                USBD_StrDesc
+ COMMON         0x20023d18      0x46c Middlewares\Third_Party\FatFs\src\fatfs.o
+                0x20023d18                retSD
+                0x20023d19                SDPath
+                0x20023d20                SDFile
+                0x20023f50                SDFatFS
+ COMMON         0x20024184       0x40 Middlewares\Third_Party\FreeRTOS\Source\queue.o
+                0x20024184                xQueueRegistry
+ COMMON         0x200241c4        0x4 c:/program files (x86)/atollic/truestudio for stm32 9.0.1/armtools/bin/../lib/gcc/arm-atollic-eabi/6.3.1/../../../../arm-atollic-eabi/lib/armv7e-m/fpu\libc_nano.a(lib_a-reent.o)
+                0x200241c4                errno
+                0x200241c8                . = ALIGN (0x4)
+                0x200241c8                _ebss = .
+                0x200241c8                __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x200241a0      0x400
-                0x200241a0                . = ALIGN (0x4)
-                0x200241a0                PROVIDE (end, .)
+                0x200241c8      0x400
+                0x200241c8                . = ALIGN (0x4)
+                0x200241c8                PROVIDE (end, .)
                 [!provide]                PROVIDE (_end, .)
-                0x200241a0                . = (. + _Min_Heap_Size)
-                0x200245a0                . = (. + _Min_Stack_Size)
- *fill*         0x200241a0      0x400 
-                0x200245a0                . = ALIGN (0x4)
+                0x200241c8                . = (. + _Min_Heap_Size)
+                0x200245c8                . = (. + _Min_Stack_Size)
+ *fill*         0x200241c8      0x400 
+                0x200245c8                . = ALIGN (0x4)
 
 /DISCARD/
  libc.a(*)
@@ -4647,121 +4647,121 @@ LOAD c:/program files (x86)/atollic/truestudio for stm32 9.0.1/armtools/bin/../l
                 0x00001759       0x22 c:/program files (x86)/atollic/truestudio for stm32 9.0.1/armtools/bin/../lib/gcc/arm-atollic-eabi/6.3.1/armv7e-m/fpu/crtn.o
 OUTPUT(429SensorsLogger.elf elf32-littlearm)
 
-.debug_info     0x00000000    0x53513
- .debug_info    0x00000000     0x1ee4 Core\Src\IMU.o
- .debug_info    0x00001ee4      0xe60 Core\Src\MadgwickAHRS.o
- .debug_info    0x00002d44     0x1b55 Core\Src\bmp180.o
- .debug_info    0x00004899     0x1229 Core\Src\devices.o
- .debug_info    0x00005ac2     0x289e Core\Src\main.o
- .debug_info    0x00008360      0xa18 Core\Src\nmea.o
- .debug_info    0x00008d78     0x28d4 Core\Src\stm32f4xx_hal_msp.o
- .debug_info    0x0000b64c     0x1405 Core\Src\stm32f4xx_hal_timebase_TIM.o
- .debug_info    0x0000ca51     0x19cc Core\Src\stm32f4xx_it.o
- .debug_info    0x0000e41d      0xd36 Core\Src\system_stm32f4xx.o
- .debug_info    0x0000f153     0x1090 Drivers\BSP\src\bsp_exti.o
- .debug_info    0x000101e3     0x1738 Drivers\BSP\src\bsp_iic.o
- .debug_info    0x0001191b     0x1b9c Drivers\BSP\src\bsp_manchester.o
- .debug_info    0x000134b7      0xf0c Drivers\BSP\src\bsp_rtc.o
- .debug_info    0x000143c3     0x2a72 Drivers\BSP\src\bsp_sdcard.o
- .debug_info    0x00016e35     0x1332 Drivers\BSP\src\bsp_timers.o
- .debug_info    0x00018167     0x10ae Drivers\BSP\src\bsp_usart.o
- .debug_info    0x00019215     0x1203 Drivers\BSP\src\bsp_usb.o
- .debug_info    0x0001a418     0x1260 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal.o
- .debug_info    0x0001b678     0x177a Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_cortex.o
- .debug_info    0x0001cdf2     0x125c Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_dma.o
- .debug_info    0x0001e04e      0xfa2 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_gpio.o
- .debug_info    0x0001eff0     0x3799 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_i2c.o
- .debug_info    0x00022789     0x1c57 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd.o
- .debug_info    0x000243e0      0xdc5 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd_ex.o
- .debug_info    0x000251a5     0x1283 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc.o
- .debug_info    0x00026428      0xff2 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc_ex.o
- .debug_info    0x0002741a     0x1698 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc.o
- .debug_info    0x00028ab2     0x188d Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc_ex.o
- .debug_info    0x0002a33f     0x23d2 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_spi.o
- .debug_info    0x0002c711     0x3ba2 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim.o
- .debug_info    0x000302b3     0x19a5 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim_ex.o
- .debug_info    0x00031c58     0x1ea3 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_uart.o
- .debug_info    0x00033afb     0x1f59 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usb.o
- .debug_info    0x00035a54     0x14f6 Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Src\usbd_cdc.o
- .debug_info    0x00036f4a      0xe80 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usb_device.o
- .debug_info    0x00037dca     0x113e Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_cdc_if.o
- .debug_info    0x00038f08     0x22d2 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_conf.o
- .debug_info    0x0003b1da     0x1466 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_core.o
- .debug_info    0x0003c640     0x1499 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.o
- .debug_info    0x0003dad9      0xd81 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_desc.o
- .debug_info    0x0003e85a      0xfc5 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ioreq.o
- .debug_info    0x0003f81f      0xcc9 Middlewares\Third_Party\FatFs\src\diskio.o
- .debug_info    0x000404e8      0xd5f Middlewares\Third_Party\FatFs\src\fatfs.o
- .debug_info    0x00041247     0x533a Middlewares\Third_Party\FatFs\src\ff.o
- .debug_info    0x00046581      0xcff Middlewares\Third_Party\FatFs\src\ff_gen_drv.o
- .debug_info    0x00047280      0xb5d Middlewares\Third_Party\FatFs\src\option\syscall.o
- .debug_info    0x00047ddd     0x1251 Middlewares\Third_Party\FatFs\src\sd_diskio.o
- .debug_info    0x0004902e     0x1d65 Middlewares\Third_Party\FatFs\src\stm32_adafruit_sd.o
- .debug_info    0x0004ad93     0x2504 Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS\cmsis_os.o
- .debug_info    0x0004d297      0xac0 Middlewares\Third_Party\FreeRTOS\Source\list.o
- .debug_info    0x0004dd57      0xca7 Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang\heap_4.o
- .debug_info    0x0004e9fe      0x531 Middlewares\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM4F\port.o
- .debug_info    0x0004ef2f     0x2082 Middlewares\Third_Party\FreeRTOS\Source\queue.o
- .debug_info    0x00050fb1     0x24fa Middlewares\Third_Party\FreeRTOS\Source\tasks.o
- .debug_info    0x000534ab       0x68 startup\startup_stm32f429xx.o
+.debug_info     0x00000000    0x5351e
+ .debug_info    0x00000000     0x1ed9 Core\Src\IMU.o
+ .debug_info    0x00001ed9      0xe60 Core\Src\MadgwickAHRS.o
+ .debug_info    0x00002d39     0x1b6b Core\Src\bmp180.o
+ .debug_info    0x000048a4     0x1229 Core\Src\devices.o
+ .debug_info    0x00005acd     0x289e Core\Src\main.o
+ .debug_info    0x0000836b      0xa18 Core\Src\nmea.o
+ .debug_info    0x00008d83     0x28d4 Core\Src\stm32f4xx_hal_msp.o
+ .debug_info    0x0000b657     0x1405 Core\Src\stm32f4xx_hal_timebase_TIM.o
+ .debug_info    0x0000ca5c     0x19cc Core\Src\stm32f4xx_it.o
+ .debug_info    0x0000e428      0xd36 Core\Src\system_stm32f4xx.o
+ .debug_info    0x0000f15e     0x1090 Drivers\BSP\src\bsp_exti.o
+ .debug_info    0x000101ee     0x1738 Drivers\BSP\src\bsp_iic.o
+ .debug_info    0x00011926     0x1b9c Drivers\BSP\src\bsp_manchester.o
+ .debug_info    0x000134c2      0xf0c Drivers\BSP\src\bsp_rtc.o
+ .debug_info    0x000143ce     0x2a72 Drivers\BSP\src\bsp_sdcard.o
+ .debug_info    0x00016e40     0x1332 Drivers\BSP\src\bsp_timers.o
+ .debug_info    0x00018172     0x10ae Drivers\BSP\src\bsp_usart.o
+ .debug_info    0x00019220     0x1203 Drivers\BSP\src\bsp_usb.o
+ .debug_info    0x0001a423     0x1260 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal.o
+ .debug_info    0x0001b683     0x177a Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_cortex.o
+ .debug_info    0x0001cdfd     0x125c Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_dma.o
+ .debug_info    0x0001e059      0xfa2 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_gpio.o
+ .debug_info    0x0001effb     0x3799 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_i2c.o
+ .debug_info    0x00022794     0x1c57 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd.o
+ .debug_info    0x000243eb      0xdc5 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd_ex.o
+ .debug_info    0x000251b0     0x1283 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc.o
+ .debug_info    0x00026433      0xff2 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc_ex.o
+ .debug_info    0x00027425     0x1698 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc.o
+ .debug_info    0x00028abd     0x188d Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc_ex.o
+ .debug_info    0x0002a34a     0x23d2 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_spi.o
+ .debug_info    0x0002c71c     0x3ba2 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim.o
+ .debug_info    0x000302be     0x19a5 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim_ex.o
+ .debug_info    0x00031c63     0x1ea3 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_uart.o
+ .debug_info    0x00033b06     0x1f59 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usb.o
+ .debug_info    0x00035a5f     0x14f6 Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Src\usbd_cdc.o
+ .debug_info    0x00036f55      0xe80 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usb_device.o
+ .debug_info    0x00037dd5     0x113e Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_cdc_if.o
+ .debug_info    0x00038f13     0x22d2 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_conf.o
+ .debug_info    0x0003b1e5     0x1466 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_core.o
+ .debug_info    0x0003c64b     0x1499 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.o
+ .debug_info    0x0003dae4      0xd81 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_desc.o
+ .debug_info    0x0003e865      0xfc5 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ioreq.o
+ .debug_info    0x0003f82a      0xcc9 Middlewares\Third_Party\FatFs\src\diskio.o
+ .debug_info    0x000404f3      0xd5f Middlewares\Third_Party\FatFs\src\fatfs.o
+ .debug_info    0x00041252     0x533a Middlewares\Third_Party\FatFs\src\ff.o
+ .debug_info    0x0004658c      0xcff Middlewares\Third_Party\FatFs\src\ff_gen_drv.o
+ .debug_info    0x0004728b      0xb5d Middlewares\Third_Party\FatFs\src\option\syscall.o
+ .debug_info    0x00047de8     0x1251 Middlewares\Third_Party\FatFs\src\sd_diskio.o
+ .debug_info    0x00049039     0x1d65 Middlewares\Third_Party\FatFs\src\stm32_adafruit_sd.o
+ .debug_info    0x0004ad9e     0x2504 Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS\cmsis_os.o
+ .debug_info    0x0004d2a2      0xac0 Middlewares\Third_Party\FreeRTOS\Source\list.o
+ .debug_info    0x0004dd62      0xca7 Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang\heap_4.o
+ .debug_info    0x0004ea09      0x531 Middlewares\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM4F\port.o
+ .debug_info    0x0004ef3a     0x2082 Middlewares\Third_Party\FreeRTOS\Source\queue.o
+ .debug_info    0x00050fbc     0x24fa Middlewares\Third_Party\FreeRTOS\Source\tasks.o
+ .debug_info    0x000534b6       0x68 startup\startup_stm32f429xx.o
 
-.debug_abbrev   0x00000000     0x9ee3
+.debug_abbrev   0x00000000     0x9ea0
  .debug_abbrev  0x00000000      0x2b9 Core\Src\IMU.o
  .debug_abbrev  0x000002b9      0x272 Core\Src\MadgwickAHRS.o
- .debug_abbrev  0x0000052b      0x40a Core\Src\bmp180.o
- .debug_abbrev  0x00000935      0x2a7 Core\Src\devices.o
- .debug_abbrev  0x00000bdc      0x357 Core\Src\main.o
- .debug_abbrev  0x00000f33      0x1f4 Core\Src\nmea.o
- .debug_abbrev  0x00001127      0x291 Core\Src\stm32f4xx_hal_msp.o
- .debug_abbrev  0x000013b8      0x258 Core\Src\stm32f4xx_hal_timebase_TIM.o
- .debug_abbrev  0x00001610      0x28e Core\Src\stm32f4xx_it.o
- .debug_abbrev  0x0000189e      0x1ca Core\Src\system_stm32f4xx.o
- .debug_abbrev  0x00001a68      0x250 Drivers\BSP\src\bsp_exti.o
- .debug_abbrev  0x00001cb8      0x2e8 Drivers\BSP\src\bsp_iic.o
- .debug_abbrev  0x00001fa0      0x3b8 Drivers\BSP\src\bsp_manchester.o
- .debug_abbrev  0x00002358      0x22c Drivers\BSP\src\bsp_rtc.o
- .debug_abbrev  0x00002584      0x462 Drivers\BSP\src\bsp_sdcard.o
- .debug_abbrev  0x000029e6      0x233 Drivers\BSP\src\bsp_timers.o
- .debug_abbrev  0x00002c19      0x234 Drivers\BSP\src\bsp_usart.o
- .debug_abbrev  0x00002e4d      0x27c Drivers\BSP\src\bsp_usb.o
- .debug_abbrev  0x000030c9      0x308 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal.o
- .debug_abbrev  0x000033d1      0x399 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_cortex.o
- .debug_abbrev  0x0000376a      0x34a Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_dma.o
- .debug_abbrev  0x00003ab4      0x268 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_gpio.o
- .debug_abbrev  0x00003d1c      0x3b4 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_i2c.o
- .debug_abbrev  0x000040d0      0x397 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd.o
- .debug_abbrev  0x00004467      0x213 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd_ex.o
- .debug_abbrev  0x0000467a      0x353 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc.o
- .debug_abbrev  0x000049cd      0x225 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc_ex.o
- .debug_abbrev  0x00004bf2      0x2d7 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc.o
- .debug_abbrev  0x00004ec9      0x2e6 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc_ex.o
- .debug_abbrev  0x000051af      0x3ac Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_spi.o
- .debug_abbrev  0x0000555b      0x3ac Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim.o
- .debug_abbrev  0x00005907      0x300 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim_ex.o
- .debug_abbrev  0x00005c07      0x397 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_uart.o
- .debug_abbrev  0x00005f9e      0x380 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usb.o
- .debug_abbrev  0x0000631e      0x2e8 Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Src\usbd_cdc.o
- .debug_abbrev  0x00006606      0x1e0 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usb_device.o
- .debug_abbrev  0x000067e6      0x321 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_cdc_if.o
- .debug_abbrev  0x00006b07      0x2e8 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_conf.o
- .debug_abbrev  0x00006def      0x308 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_core.o
- .debug_abbrev  0x000070f7      0x3aa Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.o
- .debug_abbrev  0x000074a1      0x261 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_desc.o
- .debug_abbrev  0x00007702      0x1da Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ioreq.o
- .debug_abbrev  0x000078dc      0x23d Middlewares\Third_Party\FatFs\src\diskio.o
- .debug_abbrev  0x00007b19      0x1da Middlewares\Third_Party\FatFs\src\fatfs.o
- .debug_abbrev  0x00007cf3      0x417 Middlewares\Third_Party\FatFs\src\ff.o
- .debug_abbrev  0x0000810a      0x2a5 Middlewares\Third_Party\FatFs\src\ff_gen_drv.o
- .debug_abbrev  0x000083af      0x229 Middlewares\Third_Party\FatFs\src\option\syscall.o
- .debug_abbrev  0x000085d8      0x323 Middlewares\Third_Party\FatFs\src\sd_diskio.o
- .debug_abbrev  0x000088fb      0x35d Middlewares\Third_Party\FatFs\src\stm32_adafruit_sd.o
- .debug_abbrev  0x00008c58      0x450 Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS\cmsis_os.o
- .debug_abbrev  0x000090a8      0x1e3 Middlewares\Third_Party\FreeRTOS\Source\list.o
- .debug_abbrev  0x0000928b      0x314 Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang\heap_4.o
- .debug_abbrev  0x0000959f      0x211 Middlewares\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM4F\port.o
- .debug_abbrev  0x000097b0      0x3b6 Middlewares\Third_Party\FreeRTOS\Source\queue.o
- .debug_abbrev  0x00009b66      0x36b Middlewares\Third_Party\FreeRTOS\Source\tasks.o
- .debug_abbrev  0x00009ed1       0x12 startup\startup_stm32f429xx.o
+ .debug_abbrev  0x0000052b      0x3c7 Core\Src\bmp180.o
+ .debug_abbrev  0x000008f2      0x2a7 Core\Src\devices.o
+ .debug_abbrev  0x00000b99      0x357 Core\Src\main.o
+ .debug_abbrev  0x00000ef0      0x1f4 Core\Src\nmea.o
+ .debug_abbrev  0x000010e4      0x291 Core\Src\stm32f4xx_hal_msp.o
+ .debug_abbrev  0x00001375      0x258 Core\Src\stm32f4xx_hal_timebase_TIM.o
+ .debug_abbrev  0x000015cd      0x28e Core\Src\stm32f4xx_it.o
+ .debug_abbrev  0x0000185b      0x1ca Core\Src\system_stm32f4xx.o
+ .debug_abbrev  0x00001a25      0x250 Drivers\BSP\src\bsp_exti.o
+ .debug_abbrev  0x00001c75      0x2e8 Drivers\BSP\src\bsp_iic.o
+ .debug_abbrev  0x00001f5d      0x3b8 Drivers\BSP\src\bsp_manchester.o
+ .debug_abbrev  0x00002315      0x22c Drivers\BSP\src\bsp_rtc.o
+ .debug_abbrev  0x00002541      0x462 Drivers\BSP\src\bsp_sdcard.o
+ .debug_abbrev  0x000029a3      0x233 Drivers\BSP\src\bsp_timers.o
+ .debug_abbrev  0x00002bd6      0x234 Drivers\BSP\src\bsp_usart.o
+ .debug_abbrev  0x00002e0a      0x27c Drivers\BSP\src\bsp_usb.o
+ .debug_abbrev  0x00003086      0x308 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal.o
+ .debug_abbrev  0x0000338e      0x399 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_cortex.o
+ .debug_abbrev  0x00003727      0x34a Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_dma.o
+ .debug_abbrev  0x00003a71      0x268 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_gpio.o
+ .debug_abbrev  0x00003cd9      0x3b4 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_i2c.o
+ .debug_abbrev  0x0000408d      0x397 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd.o
+ .debug_abbrev  0x00004424      0x213 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd_ex.o
+ .debug_abbrev  0x00004637      0x353 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc.o
+ .debug_abbrev  0x0000498a      0x225 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rcc_ex.o
+ .debug_abbrev  0x00004baf      0x2d7 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc.o
+ .debug_abbrev  0x00004e86      0x2e6 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc_ex.o
+ .debug_abbrev  0x0000516c      0x3ac Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_spi.o
+ .debug_abbrev  0x00005518      0x3ac Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim.o
+ .debug_abbrev  0x000058c4      0x300 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim_ex.o
+ .debug_abbrev  0x00005bc4      0x397 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_uart.o
+ .debug_abbrev  0x00005f5b      0x380 Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usb.o
+ .debug_abbrev  0x000062db      0x2e8 Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Src\usbd_cdc.o
+ .debug_abbrev  0x000065c3      0x1e0 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usb_device.o
+ .debug_abbrev  0x000067a3      0x321 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_cdc_if.o
+ .debug_abbrev  0x00006ac4      0x2e8 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_conf.o
+ .debug_abbrev  0x00006dac      0x308 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_core.o
+ .debug_abbrev  0x000070b4      0x3aa Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ctlreq.o
+ .debug_abbrev  0x0000745e      0x261 Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_desc.o
+ .debug_abbrev  0x000076bf      0x1da Middlewares\ST\STM32_USB_Device_Library\Core\Src\usbd_ioreq.o
+ .debug_abbrev  0x00007899      0x23d Middlewares\Third_Party\FatFs\src\diskio.o
+ .debug_abbrev  0x00007ad6      0x1da Middlewares\Third_Party\FatFs\src\fatfs.o
+ .debug_abbrev  0x00007cb0      0x417 Middlewares\Third_Party\FatFs\src\ff.o
+ .debug_abbrev  0x000080c7      0x2a5 Middlewares\Third_Party\FatFs\src\ff_gen_drv.o
+ .debug_abbrev  0x0000836c      0x229 Middlewares\Third_Party\FatFs\src\option\syscall.o
+ .debug_abbrev  0x00008595      0x323 Middlewares\Third_Party\FatFs\src\sd_diskio.o
+ .debug_abbrev  0x000088b8      0x35d Middlewares\Third_Party\FatFs\src\stm32_adafruit_sd.o
+ .debug_abbrev  0x00008c15      0x450 Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS\cmsis_os.o
+ .debug_abbrev  0x00009065      0x1e3 Middlewares\Third_Party\FreeRTOS\Source\list.o
+ .debug_abbrev  0x00009248      0x314 Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang\heap_4.o
+ .debug_abbrev  0x0000955c      0x211 Middlewares\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM4F\port.o
+ .debug_abbrev  0x0000976d      0x3b6 Middlewares\Third_Party\FreeRTOS\Source\queue.o
+ .debug_abbrev  0x00009b23      0x36b Middlewares\Third_Party\FreeRTOS\Source\tasks.o
+ .debug_abbrev  0x00009e8e       0x12 startup\startup_stm32f429xx.o
 
 .debug_loc      0x00000000    0x1a62f
  .debug_loc     0x00000000       0x71 Core\Src\IMU.o
@@ -5045,11 +5045,11 @@ OUTPUT(429SensorsLogger.elf elf32-littlearm)
  .debug_line    0x000152d8       0x7f startup\startup_stm32f429xx.o
 
 .debug_str      0x00000000     0xb3e0
- .debug_str     0x00000000     0x13a3 Core\Src\IMU.o
-                               0x159b (size before relaxing)
- .debug_str     0x000013a3       0xf6 Core\Src\MadgwickAHRS.o
+ .debug_str     0x00000000     0x1390 Core\Src\IMU.o
+                               0x1588 (size before relaxing)
+ .debug_str     0x00001390       0xf6 Core\Src\MadgwickAHRS.o
                                 0x727 (size before relaxing)
- .debug_str     0x00001499      0x217 Core\Src\bmp180.o
+ .debug_str     0x00001486      0x22a Core\Src\bmp180.o
                                 0xb13 (size before relaxing)
  .debug_str     0x000016b0      0x261 Core\Src\devices.o
                                 0xa5f (size before relaxing)

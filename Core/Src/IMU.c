@@ -97,8 +97,6 @@ void	IMU_Task(void const * argument)
   * @brief 			Функция запроса измеренных данных с IMU датчика
   * @reval			None
   */
-extern xQueueHandle 		xAltitudeDataQueue;
-
 void IMU_Calcualte(void)
 {
 

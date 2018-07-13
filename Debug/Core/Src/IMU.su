@@ -1,4 +1,4 @@
 IMU.c:35:6:IMU_Init	40	static
-IMU.c:102:6:IMU_Calcualte	56	static
+IMU.c:100:6:IMU_Calcualte	56	static
 IMU.c:50:6:IMU_Task	8	static
-IMU.c:170:6:BSP_EXTI5_Callback	64	static
+IMU.c:168:6:BSP_EXTI5_Callback	64	static
