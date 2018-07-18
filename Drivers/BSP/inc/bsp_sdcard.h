@@ -8,8 +8,8 @@
 #define SDCARD_WRITE_QUEUE_SIZE	16
 #define SDCARD_FILENAME_MAX_LEN	12
 
-#define DIRNAME_SENSORS			"Sensors"
-#define DIRNAME_IMU				"IMU"
+#define DIRNAME_SENSORS			""
+
 
 #include "main.h"
 #include "stm32f4xx_hal.h"
@@ -40,14 +40,10 @@ typedef struct
 	float		fLatitude;
 	float		fLongitude;
 	char		strNMEAPosition[NMEA_POS_SIZE];
+	char		strNMEAVelocity[NMEA_VEL_SIZE];
 }tSDCardWriteData;
 
 
-typedef struct
-{
-	char	*sensorsFilename;
-	char	*imusensFilename;
-}tSDCardFileNames;
 
 void		BSP_SDCard_Init(void);
 void		BSP_SDCard_WriteSensorsData(tSDCardWriteData	*Data);
@@ -55,5 +51,5 @@ uint16_t	BSP_SDCard_GetFileNumbers(char*);
 void 		BSP_SDCard_SPIInit(uint32_t baudratePrescaler);
 void 		BSP_SDCardSPIDeInit(void);
 void		BSP_SDCard_StartWrite(void);
-tSDCardFileNames		*BSP_SDCard_GetNewFileName(void);
+char		*BSP_SDCard_GetNewFileName(void);
 #endif

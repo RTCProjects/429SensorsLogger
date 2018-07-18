@@ -11,7 +11,7 @@
 #include "fatfs.h"
 #include <string.h>
 /*----------------------------------------------------------------------------------------------------*/
-static char usbOutputBuffer[200];
+static char usbOutputBuffer[300];
 
 static uint8_t				startBtnState,startBtnPress;
 static SD_CardInfo			sdInfo;
@@ -101,27 +101,16 @@ void	BSP_SDCard_WriteSensorsData(tSDCardWriteData	*Data)
 	* @reval	указатель на структуру содержащую именя файлов логов
 	* @note		Memory allocation
   */
-tSDCardFileNames	*BSP_SDCard_GetNewFileName()
+char	*BSP_SDCard_GetNewFileName()
 {
-	static tSDCardFileNames	logFileNames;
+	static char	strFileName[16];
 
-	logFileNames.imusensFilename = (char*)pvPortMalloc(sizeof(char) * SDCARD_FILENAME_MAX_LEN);
-	logFileNames.sensorsFilename = (char*)pvPortMalloc(sizeof(char) * SDCARD_FILENAME_MAX_LEN);
+	uint16_t	uFilesInDir = 0;
 
-	if(!logFileNames.imusensFilename || !logFileNames.imusensFilename)
-		return 0;
+	uFilesInDir = BSP_SDCard_GetFileNumbers(DIRNAME_SENSORS);
+	sprintf(strFileName,"senslog%d.ini",uFilesInDir + 1);
 
-	else{
-		uint16_t	uFilesInDir = 0;
-
-		uFilesInDir = BSP_SDCard_GetFileNumbers(DIRNAME_SENSORS);
-		sprintf(logFileNames.sensorsFilename,"senslog%d.txt",uFilesInDir + 1);
-
-		uFilesInDir = BSP_SDCard_GetFileNumbers(DIRNAME_IMU);
-		sprintf(logFileNames.imusensFilename,"imulog%d.txt", uFilesInDir + 1);
-
-		return &logFileNames;
-	}
+	return strFileName;
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**
@@ -147,6 +136,7 @@ void	BSP_SDCard_Task(void const * argument)
 	Монтирование файловой системы
 	Создание директории
 	*/
+	char			*pFileName;
 	FRESULT 		fResult;
 	FIL 			fFile;
 
@@ -159,7 +149,11 @@ void	BSP_SDCard_Task(void const * argument)
 
 	BSP_SD_GetCardInfo(&sdInfo);
 
-	fResult = f_open(&fFile,"senslog.ini",FA_OPEN_APPEND|FA_WRITE);
+	pFileName = BSP_SDCard_GetNewFileName();
+	if(!pFileName)
+		return;
+
+	fResult = f_open(&fFile,pFileName,FA_OPEN_APPEND|FA_WRITE);
 	if(fResult == FR_OK){
 		f_printf(&fFile,"\r\n--------------------START--------------------\r\n");
 		f_close(&fFile);
@@ -171,13 +165,13 @@ void	BSP_SDCard_Task(void const * argument)
 	{
 		xSemaphoreTake( xSDWriteProcessSemaphore, portMAX_DELAY );
 		{
-			fResult = f_open(&fFile,"senslog.ini",FA_OPEN_APPEND|FA_WRITE);
+			fResult = f_open(&fFile,pFileName,FA_OPEN_APPEND|FA_WRITE);
 			if(fResult == FR_OK){
 				Devices_LedToggle();
 
 				for(int i = 0;i<IMU_LOW_DATA_SIZE;i++)
 				{
-					sprintf(usbOutputBuffer,"%5d,%5d,%5d,%5d,%5d,%5d,%0.2f,%0.2f,%0.6f,%0.6f,[%s]\n",
+					sprintf(usbOutputBuffer,"%5d, %5d, %5d, %5d, %5d, %5d, %0.2f, %0.2f, %0.6f, %0.6f, %s, %s\n",
 							accumData[i].sensorsData.ulCenterLidarDistance,
 							accumData[i].sensorsData.ulLeftLidarDistance,
 							accumData[i].sensorsData.ulRightLidarDistance,
@@ -188,7 +182,8 @@ void	BSP_SDCard_Task(void const * argument)
 							accumData[i].imuData.fRoll,
 							accumData[i].fAltitude,
 							accumData[i].fAltitude2,
-							accumData[i].strNMEAPosition
+							accumData[i].strNMEAPosition,
+							accumData[i].strNMEAVelocity
 							);
 
 					f_printf(&fFile,"%s",usbOutputBuffer);
@@ -241,11 +236,6 @@ void BSP_SDCard_CreateDefaultFolders()
 	fResult = f_stat(DIRNAME_SENSORS,&fInfo);
 	if(fResult != FR_OK)
 		f_mkdir(DIRNAME_SENSORS);
-
-	fResult = f_stat(DIRNAME_IMU,&fInfo);
-	if(fResult != FR_OK)
-		f_mkdir(DIRNAME_IMU);
-
 }
 
 /*----------------------------------------------------------------------------------------------------*/

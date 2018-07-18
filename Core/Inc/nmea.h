@@ -6,16 +6,23 @@
 #include "cmsis_os.h"
 #include <string.h>
 
-#define NMEA_POS_SIZE	26
+#define NMEA_POS_SIZE	27
+#define NMEA_VEL_SIZE	26
+#define NMEA_BUF_SIZE 	128			//размер GPS буфера
 
 typedef struct
 {
 	float	fLatitude;
 	float	fLongitude;
+	float	fVelocity;
+	char	strVelocity[NMEA_VEL_SIZE];
 	char	strPosition[NMEA_POS_SIZE];
+
 }tNMEAPosition;
 
-uint8_t	NMEA_Parse(uint8_t *inputStr,uint8_t	size);
+void	NMEA_Parse();
 char	*NMEA_GetPositionString(void);
-
+char	*NMEA_GetVelocityString(void);
+void	NMEA_RcvByteCallback(uint8_t inputByte);
+uint8_t	*NMEA_GetGPSBuffer(void);
 #endif

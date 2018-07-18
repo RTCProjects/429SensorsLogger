@@ -64,7 +64,7 @@ void BMP180Task(void const * argument)
 			Error_Handler();
 	}
 	//BMP180 Channel 2
-	devID = BSP_I2C2_Read_Byte(BMP180_I2CADDR,WHO_AM_I_BMP280);
+	/*devID = BSP_I2C2_Read_Byte(BMP180_I2CADDR,WHO_AM_I_BMP280);
 	if(devID == 0x55)
 	{
 		bmpSensor[1].cData.AC1 = BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC1_H) << 8 | BSP_I2C2_Read_Byte(BMP180_I2CADDR,BMP085_RA_AC1_L);
@@ -90,14 +90,14 @@ void BMP180Task(void const * argument)
 	}
 	else{
 		Error_Handler();
-	}
+	}*/
 
 	xSemaphoreTake( xAltitudeSemaphore, portMAX_DELAY );
 	while(1)
 	{
 		xSemaphoreTake( xAltitudeSemaphore, portMAX_DELAY );
 		BMP180_CalibrateData(BMP180_CHANNEL1);
-		BMP180_CalibrateData(BMP180_CHANNEL2);
+		//BMP180_CalibrateData(BMP180_CHANNEL2);
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/

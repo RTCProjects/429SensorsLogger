@@ -39,6 +39,7 @@
 /* USER CODE BEGIN 0 */
 #include "bsp_usart.h"
 #include "bsp_exti.h"
+#include "nmea.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -338,8 +339,12 @@ void USART1_IRQHandler(void)
   * @retval None
   */
 void UART7_IRQHandler(void)
-{
-	HAL_UART_IRQHandler(&bsp_uart7);
+{/*
+	HAL_UART_IRQHandler(&bsp_uart7);*/
+	if (UART7->SR & USART_SR_RXNE) {
+		UART7->SR &=~USART_SR_RXNE;
+		NMEA_RcvByteCallback(UART7->DR);
+	}
 }
 /**
   * @brief  This function handles DMA1Stream3 interrupt request.

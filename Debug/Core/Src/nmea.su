@@ -1,2 +1,5 @@
-nmea.c:16:9:NMEA_Parse	8	static
-nmea.c:37:7:NMEA_GetPositionString	0	static
+nmea.c:20:6:NMEA_RcvByteCallback	0	static
+nmea.c:25:6:NMEA_Parse	160	static
+nmea.c:81:7:NMEA_GetPositionString	0	static
+nmea.c:86:7:NMEA_GetVelocityString	0	static
+nmea.c:91:10:NMEA_GetGPSBuffer	0	static

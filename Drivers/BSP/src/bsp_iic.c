@@ -31,7 +31,11 @@ void	BSP_I2C_Init()
 	  Error_Handler();
 	}
 }
-
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief 		I2C Деинициализация
+  * @reval		None
+  */
 void	BSP_I2C_DeInit()
 {
 	if(HAL_I2C_DeInit(&I2C1Handle) != HAL_OK){
@@ -234,7 +238,11 @@ void	BSP_I2C2_Init()
 	  Error_Handler();
 	}
 }
-
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief 		I2C Деинициализация
+  * @reval		None
+  */
 void	BSP_I2C2_DeInit()
 {
 	if(HAL_I2C_DeInit(&I2C2Handle) != HAL_OK){

@@ -54,7 +54,7 @@ extern void _Error_Handler(char *, int);
 
 
 /* USER CODE BEGIN 0 */
-
+static DMA_HandleTypeDef HDMAUartRx;
 /* USER CODE END 0 */
 /**
   * Initializes the Global MSP.
@@ -304,7 +304,7 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef *hrtc)
 
 void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 {
-  static DMA_HandleTypeDef HDMAUartRx;
+
   GPIO_InitTypeDef GPIO_InitStruct;
 
   if(uartHandle->Instance==USART1)
@@ -352,7 +352,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
   {
 	  __HAL_RCC_UART7_CLK_ENABLE();
 	  __HAL_RCC_GPIOF_CLK_ENABLE();
-	  __DMA1_CLK_ENABLE();
+	  //__DMA1_CLK_ENABLE();
 
 	  	 GPIO_InitStruct.Pin = GPIO_PIN_6;
 	     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -364,7 +364,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 	     GPIO_InitStruct.Alternate = GPIO_AF8_UART7;
 	     HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
-	     HDMAUartRx.Instance                 = DMA1_Stream3;
+	     /*HDMAUartRx.Instance                 = DMA1_Stream3;
 
 	     HDMAUartRx.Init.Channel             = DMA_CHANNEL_5;
 	     HDMAUartRx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
@@ -380,13 +380,10 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 	     HDMAUartRx.Init.PeriphBurst         = DMA_PBURST_INC4;
 
 	     HAL_DMA_Init(&HDMAUartRx);
-	     /* Associate the initialized DMA handle to the the UART handle */
 	     __HAL_LINKDMA(uartHandle, hdmarx, HDMAUartRx);
 
-	     /*##-4- Configure the NVIC for DMA #########################################*/
-	     /* NVIC configuration for DMA transfer complete interrupt (USARTx_TX) */
 	     HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 11, 0);
-	     HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
+	     HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);*/
 
 	     HAL_NVIC_SetPriority(UART7_IRQn, 11, 1);
 	     HAL_NVIC_EnableIRQ(UART7_IRQn);
@@ -417,6 +414,20 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
   /* USER CODE END USART1_MspDeInit 1 */
   }
+  if(uartHandle->Instance == UART7)
+  {
+	  __HAL_RCC_UART7_CLK_DISABLE();
+	  __HAL_RCC_UART7_FORCE_RESET();
+	  __HAL_RCC_UART7_RELEASE_RESET();
+
+	  HAL_GPIO_DeInit(GPIOF, GPIO_PIN_6|GPIO_PIN_7);
+	  HAL_NVIC_DisableIRQ(UART7_IRQn);
+
+	  HAL_DMA_DeInit(&HDMAUartRx);
+	  HAL_NVIC_DisableIRQ(DMA1_Stream3_IRQn);
+
+  }
+
 }
 
 /**
@@ -429,15 +440,30 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   */
 void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
 {
-  /*##-1- Reset peripherals ##################################################*/
-	__HAL_RCC_I2C1_FORCE_RESET();
-	__HAL_RCC_I2C1_RELEASE_RESET();
+  if(hi2c->Instance == I2C1)
+  {
+	  /*##-1- Reset peripherals ##################################################*/
+		__HAL_RCC_I2C1_FORCE_RESET();
+		__HAL_RCC_I2C1_RELEASE_RESET();
 
-  /*##-2- Disable peripherals and GPIO Clocks ################################*/
-  /* Configure I2C Tx as alternate function  */
-  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_6);
-  /* Configure I2C Rx as alternate function  */
-  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_7);
+	  /*##-2- Disable peripherals and GPIO Clocks ################################*/
+	  /* Configure I2C Tx as alternate function  */
+	  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_6);
+	  /* Configure I2C Rx as alternate function  */
+	  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_7);
+  }
+  if(hi2c->Instance == I2C2)
+  {
+	  /*##-1- Reset peripherals ##################################################*/
+		__HAL_RCC_I2C2_FORCE_RESET();
+		__HAL_RCC_I2C2_RELEASE_RESET();
+
+	  /*##-2- Disable peripherals and GPIO Clocks ################################*/
+	  /* Configure I2C Tx as alternate function  */
+	  HAL_GPIO_DeInit(GPIOF, GPIO_PIN_0);
+	  /* Configure I2C Rx as alternate function  */
+	  HAL_GPIO_DeInit(GPIOF, GPIO_PIN_1);
+  }
 }
 /**
   * @}

@@ -53,18 +53,25 @@ void	IMU_Task(void const * argument)
 {
 	uint8_t	devID = 0;
 
+	BSP_I2C_DeInit();
+	BSP_I2C2_DeInit();
+
+	osDelay(100);
+	Devices_IMUOff();
+	osDelay(200);
+	Devices_IMUOn();
+	osDelay(200);
+
+
 	BSP_I2C_Init();		//инициализация I2C 	BMP180 + MPU6050
 	BSP_I2C2_Init();	//инициализация I2C2	BMP180
 	//сброс питания платы акселерометра MPU6050
-	Devices_IMUOff();
-	osDelay(100);
-	Devices_IMUOn();
-	osDelay(100);
+
 
 	//Clear sleep mode bit (6), enable all sensors
 	BSP_I2C_Write_Byte(MPU6050_ADDRESS, PWR_MGMT_1, 0x00);
 	devID = BSP_I2C_Read_Byte(MPU6050_ADDRESS, WHO_AM_I_MPU9255);
-	if(devID == 0x73)
+ 	if(devID == 0x73)
 	{
 		//	Set accelerometers low pass filter at 5Hz
 		BSP_I2C_Write_Byte(MPU6050_ADDRESS, CONFIG, 0x06);
@@ -122,6 +129,7 @@ void IMU_Calcualte(void)
 			uBMPCounter++;
 			if(uBMPCounter==IMU_LOW_DATA_SIZE * 0.1){
 				BMP180_StartMeasure();
+				NMEA_Parse();
 				uBMPCounter = 0;
 			}
 		}
@@ -137,6 +145,7 @@ void IMU_Calcualte(void)
 		accumData[uIMUCounter].fAltitude = BMP180_GetAltitude(BMP180_CHANNEL1);
 		accumData[uIMUCounter].fAltitude2 = BMP180_GetAltitude(BMP180_CHANNEL2);
 		strcpy(accumData[uIMUCounter].strNMEAPosition,NMEA_GetPositionString());
+		strcpy(accumData[uIMUCounter].strNMEAVelocity,NMEA_GetVelocityString());
 
 		if(uIMUCounter == IMU_LOW_DATA_SIZE * 0.5f){
 			mainGiveSemaphore();

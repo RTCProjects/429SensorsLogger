@@ -11,6 +11,8 @@
 #include "bsp_usart.h"
 #include "devices.h"
 
+#include <stdlib.h>
+
 TIM_HandleTypeDef	htim7;
 osThreadId 			defaultTaskHandle;
 
@@ -132,7 +134,7 @@ void portClkInit(void)
 extern  uint8_t	gpsBuffer[128];
 void mainTask(void const * argument)
 {		
-	char	strBufOutput[200];
+	char	strBufOutput[300];
 	//инициализация обработчика устройств
 	/* 4 лидара
 	 * 1 - радар
@@ -153,18 +155,19 @@ void mainTask(void const * argument)
 	for(;;)
 	{
 		xSemaphoreTake(xMainSemaphore,portMAX_DELAY);
-		sprintf(strBufOutput,"Lc%5d Ll%5d Lr%5d Lf%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f Alt:%f Alt2:%f NMEA:%s\r\n", pSkifCurrentData->sensorsData.ulCenterLidarDistance,
-																																pSkifCurrentData->sensorsData.ulLeftLidarDistance,
-																																pSkifCurrentData->sensorsData.ulRightLidarDistance,
-																																pSkifCurrentData->sensorsData.ulFrontLidarDistance,
-																																pSkifCurrentData->sensorsData.ulRadarDistance,
-																																pSkifCurrentData->sensorsData.ulSonarDistance,
-																																pSkifCurrentData->imuData.fAz,
-																																pSkifCurrentData->imuData.fPitch,
-																																pSkifCurrentData->imuData.fRoll,
-																																pSkifCurrentData->fAltitude,
-																																pSkifCurrentData->fAltitude2,
-																																pSkifCurrentData->strNMEAPosition);
+		sprintf(strBufOutput,"Lc%5d Ll%5d Lr%5d Lf%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f Alt:%f Alt2:%f NMEA:%s VEL:%s\r\n", pSkifCurrentData->sensorsData.ulCenterLidarDistance,
+																																		pSkifCurrentData->sensorsData.ulLeftLidarDistance,
+																																		pSkifCurrentData->sensorsData.ulRightLidarDistance,
+																																		pSkifCurrentData->sensorsData.ulFrontLidarDistance,
+																																		pSkifCurrentData->sensorsData.ulRadarDistance,
+																																		pSkifCurrentData->sensorsData.ulSonarDistance,
+																																		pSkifCurrentData->imuData.fAz,
+																																		pSkifCurrentData->imuData.fPitch,
+																																		pSkifCurrentData->imuData.fRoll,
+																																		pSkifCurrentData->fAltitude,
+																																		pSkifCurrentData->fAltitude2,
+																																		pSkifCurrentData->strNMEAPosition,
+																																		pSkifCurrentData->strNMEAVelocity);
 		BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
 		//BSP_WIFI_UARTSend((uint8_t*)gpsBuffer,strlen(gpsBuffer));
 	}
@@ -273,7 +276,8 @@ void SetupRunTimeStatsTimer()
 void _Error_Handler(char *file, int line)
 {
   while(1){
-		
+	osDelay(100);
+	Devices_LedToggle();
   }
 }
 /*----------------------------------------------------------------------------------------------------*/

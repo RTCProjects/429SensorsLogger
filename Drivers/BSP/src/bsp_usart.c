@@ -7,10 +7,10 @@
 #include "bsp_usart.h"
 #include "nmea.h"
 
-#define NMEA_SIZE 	128			//размер GPS буфера
+
 #define RADAR_SIZE	14			//размер буфера данных радара
 
-uint8_t	gpsBuffer[NMEA_SIZE];
+
 uint8_t receiveBuffer[RADAR_SIZE];
 
 UART_HandleTypeDef bsp_uart1;
@@ -79,13 +79,12 @@ void	BSP_GPS_UART_Init()
 	if (HAL_UART_Init(&bsp_uart7) != HAL_OK){
 		Error_Handler();
 	}
-	else{
-		if(HAL_UART_GetState(&bsp_uart7) == HAL_UART_STATE_READY)
-		{
-			memset((uint8_t *)gpsBuffer,0,sizeof(uint8_t) * NMEA_SIZE);
-			HAL_UART_Receive_DMA(&bsp_uart7, (uint8_t *)gpsBuffer,NMEA_SIZE);
-		}
+	if(HAL_UART_Receive_IT(&bsp_uart7, (uint8_t *)NMEA_GetGPSBuffer(), 128)!=HAL_OK){
+		Error_Handler();
 	}
+/*
+	memset((uint8_t *)gpsBuffer,0,sizeof(uint8_t) * NMEA_SIZE);
+	HAL_UART_Receive_DMA(&bsp_uart7, (uint8_t *)gpsBuffer,NMEA_SIZE);*/
 
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -104,12 +103,13 @@ void	BSP_WIFI_UARTSend(uint8_t *pDyte,uint16_t	Size)
   */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
-	if(UartHandle->Instance == UART7)
+	/*if(UartHandle->Instance == UART7)
 	{
 		NMEA_Parse(gpsBuffer,NMEA_SIZE);
-	}
+	}*/
 }
 /*----------------------------------------------------------------------------------------------------*/
+
 __weak void BSP_USART_RxData(uint8_t rxByte)
 {
 
