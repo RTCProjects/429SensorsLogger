@@ -21,9 +21,14 @@ void	NMEA_RcvByteCallback(uint8_t inputByte)
 {
 	gpsBuffer[(writeBufInd++)%NMEA_BUF_SIZE] = inputByte;
 }
-
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief 			‘ункци€ парсинга GPS данных
+  * @reval			None
+  */
 void NMEA_Parse()
 {
+	//немного гомнокода
 	uint8_t	GPSBuf[NMEA_BUF_SIZE];
 
 	memcpy((uint8_t*)GPSBuf,(uint8_t*)gpsBuffer,sizeof(uint8_t)*NMEA_BUF_SIZE);
@@ -45,7 +50,8 @@ void NMEA_Parse()
 		}
 	}
 
-	for(uint8_t i = 0;i<NMEA_BUF_SIZE - 7;i++){
+	for(uint8_t i = 0;i<NMEA_BUF_SIZE - 7;i++)
+	{
 		if(GPSBuf[i] == '$' && GPSBuf[i + 1] == 'G' && GPSBuf[i + 2] == 'N' && GPSBuf[i + 3] == 'V' && GPSBuf[i + 4] == 'T' && GPSBuf[i + 5] == 'G')
 				{
 					uint8_t	gpsVelocityInd = i + 7;
@@ -83,12 +89,21 @@ char	*NMEA_GetPositionString()
 	return nmeaPosition.strPosition;
 }
 /*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief  «апрос строки с путевой скоростью
+  * @retval укататель на строку с координатами
+  */
 char	*NMEA_GetVelocityString()
 {
 	return nmeaPosition.strVelocity;
 }
 /*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief  «апрос строки с буфером от GPS приемника
+  * @retval укататель на строку с координатами
+  */
 uint8_t	*NMEA_GetGPSBuffer()
 {
 	return gpsBuffer;
 }
+/*----------------------------------------------------------------------------------------------------*/

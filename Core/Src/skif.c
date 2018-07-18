@@ -128,8 +128,8 @@ void IMU_Calcualte(void)
 		if(uBMPCounter < IMU_LOW_DATA_SIZE * 0.1f){
 			uBMPCounter++;
 			if(uBMPCounter==IMU_LOW_DATA_SIZE * 0.1){
-				BMP180_StartMeasure();
-				NMEA_Parse();
+				BMP180_StartMeasure();	//измерение высоты - 0.1 от 200Hz
+				NMEA_Parse();			//GPS данные - 0.1 от 200Hz
 				uBMPCounter = 0;
 			}
 		}
@@ -147,6 +147,7 @@ void IMU_Calcualte(void)
 		strcpy(accumData[uIMUCounter].strNMEAPosition,NMEA_GetPositionString());
 		strcpy(accumData[uIMUCounter].strNMEAVelocity,NMEA_GetVelocityString());
 
+		//отправка данных по Wi-Fi
 		if(uIMUCounter == IMU_LOW_DATA_SIZE * 0.5f){
 			mainGiveSemaphore();
 		}
