@@ -25,8 +25,6 @@ uint8_t flag4 = 0;
 uint32_t tempData;
 
 uint16_t	ulDistances[6];
-
-
 tSensors	SensorsData;
 /*----------------------------------------------------------------------------------------------------*/
 /**
@@ -35,6 +33,8 @@ tSensors	SensorsData;
   */
 void Devices_Init()
 {
+	receivedDataCounter = 0;
+
 	memset(&SensorsData,0,sizeof(tSensors));
 
 	BSP_Timers_TIM2Init();//Таймер Front lidar
@@ -54,7 +54,10 @@ void Devices_Init()
   */
 tSensors	*Devices_GetDataPointer()
 {
-	memcpy(&SensorsData,ulDistances,sizeof(tSensors));
+	taskENTER_CRITICAL();
+		memcpy(&SensorsData,ulDistances,sizeof(tSensors));
+	taskEXIT_CRITICAL();
+
 	return &SensorsData;
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -152,6 +155,7 @@ void BSP_EXTI4_Callback()//Center Lidar
   */
 void BSP_USART_RxData(uint8_t rxByte)
 {
+	/*
 	tempData = rxByte;
 	if (tempData == 0xAA) {
 		if (flag == 1) {
@@ -169,15 +173,33 @@ void BSP_USART_RxData(uint8_t rxByte)
 
 	if (flag3 == 1) {
 		receivedData[receivedDataCounter] = USART1->DR;
-		receivedDataCounter ++;
+		receivedDataCounter++;
 
 		if (receivedDataCounter > 5) {
 			ulDistances[0] = (receivedData[4] * 256 + receivedData[5]);
+
 			for(uint8_t i = 0; i < 20; i++) {
 				receivedData[i] = 0;
 			}
 			receivedDataCounter  = 0;
 			flag3 = 0;
+		}
+	}*/
+	receivedData[receivedDataCounter] = rxByte;
+	receivedDataCounter++;
+	if(receivedDataCounter>=20)
+		receivedDataCounter = 0;
+
+	if(receivedData[0] == 0xAA && receivedData[1] == 0xAA){
+		if(receivedData[12] == 0x55 && receivedData[13] == 0x55){
+			if(receivedData[2] == 0x0C && receivedData[3] == 0x07){
+				uint8_t	chkSum = 0;
+				for(int i = 4;i<=10;i++)
+					chkSum+=receivedData[i];
+				if(chkSum == receivedData[11]){
+					ulDistances[0] = (receivedData[6] * 0x100 + receivedData[7]);
+				}
+			}
 		}
 	}
 }
