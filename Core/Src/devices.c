@@ -197,7 +197,10 @@ void BSP_USART_RxData(uint8_t rxByte)
 				for(int i = 4;i<=10;i++)
 					chkSum+=receivedData[i];
 				if(chkSum == receivedData[11]){
+					uint32_t uxSavedInterruptStatus = taskENTER_CRITICAL_FROM_ISR();
 					ulDistances[0] = (receivedData[6] * 0x100 + receivedData[7]);
+					taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStatus);
+
 				}
 			}
 		}

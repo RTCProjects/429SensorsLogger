@@ -6,8 +6,8 @@ devices.c:102:6:BSP_EXTI2_Callback	0	static
 devices.c:119:6:BSP_EXTI3_Callback	0	static
 devices.c:137:6:BSP_EXTI4_Callback	0	static
 devices.c:156:6:BSP_USART_RxData	0	static
-devices.c:211:6:Devices_LedToggle	0	static
-devices.c:220:6:Devices_LedOn	0	static
-devices.c:229:6:Devices_LedOff	0	static
-devices.c:238:6:Devices_IMUOn	0	static
-devices.c:247:6:Devices_IMUOff	0	static
+devices.c:214:6:Devices_LedToggle	0	static
+devices.c:223:6:Devices_LedOn	0	static
+devices.c:232:6:Devices_LedOff	0	static
+devices.c:241:6:Devices_IMUOn	0	static
+devices.c:250:6:Devices_IMUOff	0	static
