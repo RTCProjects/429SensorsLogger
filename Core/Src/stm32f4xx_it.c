@@ -38,6 +38,8 @@
 
 /* USER CODE BEGIN 0 */
 #include "bsp_usart.h"
+#include "bsp_exti.h"
+#include "nmea.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -45,7 +47,9 @@ extern PCD_HandleTypeDef 	hpcd_USB_OTG_FS;
 extern TIM_HandleTypeDef	htim7;
 extern TIM_HandleTypeDef 	htim1;
 extern I2C_HandleTypeDef 	I2C1Handle;
+extern I2C_HandleTypeDef 	I2C2Handle;
 extern UART_HandleTypeDef 	bsp_uart1;
+extern UART_HandleTypeDef 	bsp_uart7;
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -218,6 +222,27 @@ void I2C1_EV_IRQHandler(void)
   * @retval None
   * @Note   This function is redefined in "main.h" and related to I2C error
   */
+void I2C2_ER_IRQHandler(void)
+{
+  HAL_I2C_ER_IRQHandler(&I2C2Handle);
+}
+/**
+  * @brief  This function handles I2C event interrupt request.
+  * @param  None
+  * @retval None
+  * @Note   This function is redefined in "main.h" and related to I2C data transmission
+  */
+void I2C2_EV_IRQHandler(void)
+{
+  HAL_I2C_EV_IRQHandler(&I2C2Handle);
+}
+
+/**
+  * @brief  This function handles I2C error interrupt request.
+  * @param  None
+  * @retval None
+  * @Note   This function is redefined in "main.h" and related to I2C error
+  */
 void I2C1_ER_IRQHandler(void)
 {
   HAL_I2C_ER_IRQHandler(&I2C1Handle);
@@ -240,7 +265,10 @@ void EXTI9_5_IRQHandler(void)
   */
 void EXTI4_IRQHandler(void)
 {
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
+  //HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
+  BSP_EXTI4_Callback();
+  EXTI->PR |= EXTI_PR_PR4;
+
 }
 
 /**
@@ -250,7 +278,45 @@ void EXTI4_IRQHandler(void)
   */
 void EXTI3_IRQHandler(void)
 {
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+  //HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+  BSP_EXTI3_Callback();
+  EXTI->PR |= EXTI_PR_PR3;
+}
+
+/**
+  * @brief  This function handles External line 4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI2_IRQHandler(void)
+{
+  //HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+  BSP_EXTI2_Callback();
+  EXTI->PR |= EXTI_PR_PR2;
+}
+
+/**
+  * @brief  This function handles External line 4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI1_IRQHandler(void)
+{
+  //HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+  BSP_EXTI1_Callback();
+  EXTI->PR |= EXTI_PR_PR1;
+}
+
+/**
+  * @brief  This function handles External line 4 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI0_IRQHandler(void)
+{
+  //HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+  BSP_EXTI0_Callback();
+  EXTI->PR |= EXTI_PR_PR0;
 }
 
 /**
@@ -267,6 +333,28 @@ void USART1_IRQHandler(void)
 	//HAL_UART_IRQHandler(&bsp_uart1);
 }
 
+/**
+  * @brief  This function handles External line 0 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void UART7_IRQHandler(void)
+{/*
+	HAL_UART_IRQHandler(&bsp_uart7);*/
+	if (UART7->SR & USART_SR_RXNE) {
+		UART7->SR &=~USART_SR_RXNE;
+		NMEA_RcvByteCallback(UART7->DR);
+	}
+}
+/**
+  * @brief  This function handles DMA1Stream3 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA1_Stream3_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(bsp_uart7.hdmarx);
+}
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */

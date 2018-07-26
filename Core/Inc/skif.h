@@ -1,14 +1,9 @@
-#ifndef IMU_H_
-#define IMU_H_
+#ifndef SKIF_H_
+#define SKIF_H_
 
-#include "MadgwickAHRS.h"
-#include "RegisterMap.h"
-#include "math.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "bsp_iic.h"
 #include "cmsis_os.h"
 
 #define RAD_TO_DEG 180./M_PI
@@ -19,13 +14,12 @@
 #define GYRO_SENS 130
 #define Pi 3.14159265359
 
-#define IMU_QUERY_SIZE	2
+#define IMU_LOW_DATA_SIZE 200
 
 int16_t c_ax, c_ay, c_az, c_gx, c_gy, c_gz;
 int16_t ax, ay, az, gx, gy, gz, mx, my, mz;
 int64_t b_ax, b_ay, b_az, b_gx, b_gy, b_gz;
 float yaw, pitch, roll;
-char TransmitData[100];
 
 typedef struct
 {
@@ -34,15 +28,8 @@ typedef struct
 	float fRoll;
 }tIMUData;
 
-typedef struct
-{
-	float	fAccel[3];
-	float	fGyro[3];
-}tIMULowData;
-
-void 		IMU_Init(void);
-void 		IMU_Calcualte(void);
-void 		IMU_SensorsDataRequest(void);
-tIMUData	IMU_GetCurrentData(void);
+void 	IMU_Init(void);
+void 	IMU_Calcualte(void);
+void	*IMU_GetSkifCurrentData(void);
 
 #endif

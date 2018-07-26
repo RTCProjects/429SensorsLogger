@@ -51,9 +51,10 @@
 #include "cmsis_os.h"
 
 extern void _Error_Handler(char *, int);
-extern UART_HandleTypeDef bsp_uart1;
-/* USER CODE BEGIN 0 */
 
+
+/* USER CODE BEGIN 0 */
+static DMA_HandleTypeDef HDMAUartRx;
 /* USER CODE END 0 */
 /**
   * Initializes the Global MSP.
@@ -211,6 +212,35 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 	  HAL_NVIC_SetPriority(I2C1_EV_IRQn, 10, 0);
 	  HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
   }
+  if(hi2c->Instance == I2C2)
+  {
+	  /*##-1- Enable GPIO Clocks #################################################*/
+	  /* Enable GPIO TX/RX clock */
+	  __HAL_RCC_GPIOF_CLK_ENABLE();
+	  /*##-2- Configure peripheral GPIO ##########################################*/
+	  /* I2C TX GPIO pin configuration  */
+	  GPIO_InitStruct.Pin       = GPIO_PIN_0;
+	  GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;
+	  GPIO_InitStruct.Pull      = GPIO_PULLUP;
+	  GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+	  GPIO_InitStruct.Alternate = GPIO_AF4_I2C2;
+	  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+	  /* I2C RX GPIO pin configuration  */
+	  GPIO_InitStruct.Pin = GPIO_PIN_1;
+	  GPIO_InitStruct.Alternate = GPIO_AF4_I2C2;
+	  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+	  /*##-3- Enable I2C peripherals Clock #######################################*/
+	  /* Enable I2C1 clock */
+	  __HAL_RCC_I2C2_CLK_ENABLE();
+	  /*##-4- Configure the NVIC for I2C #########################################*/
+	  /* NVIC for I2C1 */
+	  HAL_NVIC_SetPriority(I2C2_ER_IRQn, 9, 1);
+	  HAL_NVIC_EnableIRQ(I2C2_ER_IRQn);
+	  HAL_NVIC_SetPriority(I2C2_EV_IRQn, 10, 1);
+	  HAL_NVIC_EnableIRQ(I2C2_EV_IRQn);
+  }
 }
 
 /**
@@ -276,6 +306,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct;
+
   if(uartHandle->Instance==USART1)
   {
     /* USART1 clock enable */
@@ -317,6 +348,46 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 	    GPIO_InitStruct.Alternate = GPIO_AF8_UART5;
 	    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
   }
+  if(uartHandle->Instance==UART7)
+  {
+	  __HAL_RCC_UART7_CLK_ENABLE();
+	  __HAL_RCC_GPIOF_CLK_ENABLE();
+	  //__DMA1_CLK_ENABLE();
+
+	  	 GPIO_InitStruct.Pin = GPIO_PIN_6;
+	     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	     GPIO_InitStruct.Alternate = GPIO_AF8_UART7;
+	     HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+	     GPIO_InitStruct.Pin = GPIO_PIN_7;
+	     GPIO_InitStruct.Alternate = GPIO_AF8_UART7;
+	     HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+	     /*HDMAUartRx.Instance                 = DMA1_Stream3;
+
+	     HDMAUartRx.Init.Channel             = DMA_CHANNEL_5;
+	     HDMAUartRx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
+	     HDMAUartRx.Init.PeriphInc           = DMA_PINC_DISABLE;
+	     HDMAUartRx.Init.MemInc              = DMA_MINC_ENABLE;
+	     HDMAUartRx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+	     HDMAUartRx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+	     HDMAUartRx.Init.Mode                = DMA_CIRCULAR;
+	     HDMAUartRx.Init.Priority            = DMA_PRIORITY_VERY_HIGH;
+	     HDMAUartRx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+	     //hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
+	     HDMAUartRx.Init.MemBurst            = DMA_MBURST_INC4;
+	     HDMAUartRx.Init.PeriphBurst         = DMA_PBURST_INC4;
+
+	     HAL_DMA_Init(&HDMAUartRx);
+	     __HAL_LINKDMA(uartHandle, hdmarx, HDMAUartRx);
+
+	     HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 11, 0);
+	     HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);*/
+
+	     HAL_NVIC_SetPriority(UART7_IRQn, 11, 1);
+	     HAL_NVIC_EnableIRQ(UART7_IRQn);
+  }
 
 }
 
@@ -343,6 +414,20 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
   /* USER CODE END USART1_MspDeInit 1 */
   }
+  if(uartHandle->Instance == UART7)
+  {
+	  __HAL_RCC_UART7_CLK_DISABLE();
+	  __HAL_RCC_UART7_FORCE_RESET();
+	  __HAL_RCC_UART7_RELEASE_RESET();
+
+	  HAL_GPIO_DeInit(GPIOF, GPIO_PIN_6|GPIO_PIN_7);
+	  HAL_NVIC_DisableIRQ(UART7_IRQn);
+
+	  HAL_DMA_DeInit(&HDMAUartRx);
+	  HAL_NVIC_DisableIRQ(DMA1_Stream3_IRQn);
+
+  }
+
 }
 
 /**
@@ -355,15 +440,30 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   */
 void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
 {
-  /*##-1- Reset peripherals ##################################################*/
-	__HAL_RCC_I2C1_FORCE_RESET();
-	__HAL_RCC_I2C1_RELEASE_RESET();
+  if(hi2c->Instance == I2C1)
+  {
+	  /*##-1- Reset peripherals ##################################################*/
+		__HAL_RCC_I2C1_FORCE_RESET();
+		__HAL_RCC_I2C1_RELEASE_RESET();
 
-  /*##-2- Disable peripherals and GPIO Clocks ################################*/
-  /* Configure I2C Tx as alternate function  */
-  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_6);
-  /* Configure I2C Rx as alternate function  */
-  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_7);
+	  /*##-2- Disable peripherals and GPIO Clocks ################################*/
+	  /* Configure I2C Tx as alternate function  */
+	  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_6);
+	  /* Configure I2C Rx as alternate function  */
+	  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_7);
+  }
+  if(hi2c->Instance == I2C2)
+  {
+	  /*##-1- Reset peripherals ##################################################*/
+		__HAL_RCC_I2C2_FORCE_RESET();
+		__HAL_RCC_I2C2_RELEASE_RESET();
+
+	  /*##-2- Disable peripherals and GPIO Clocks ################################*/
+	  /* Configure I2C Tx as alternate function  */
+	  HAL_GPIO_DeInit(GPIOF, GPIO_PIN_0);
+	  /* Configure I2C Rx as alternate function  */
+	  HAL_GPIO_DeInit(GPIOF, GPIO_PIN_1);
+  }
 }
 /**
   * @}

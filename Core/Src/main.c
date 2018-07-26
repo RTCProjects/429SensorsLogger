@@ -4,19 +4,19 @@
   * @brief          Main program body
 **/ 
 /*----------------------------------------------------------------------------------------------------*/
+
+
+/*
+ * Сделать запись в лог трехступенчато с использованием NaN
+ */
 #include "main.h"
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
-#include "fatfs.h"
-
-#include "bsp_usb.h"
 #include "bsp_sdcard.h"
-#include "bsp_manchester.h"
-#include "bsp_rtc.h"
 #include "bsp_usart.h"
-
 #include "devices.h"
-#include "IMU.h"
+
+#include <stdlib.h>
 
 TIM_HandleTypeDef	htim7;
 osThreadId 			defaultTaskHandle;
@@ -26,8 +26,6 @@ void portClkInit(void);
 void mainTask(void const * argument);
 
 xSemaphoreHandle xMainSemaphore;
-
-
 /*----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  The application entry point.
@@ -42,7 +40,6 @@ int main(void)
 
   osThreadDef(defaultTask, mainTask, osPriorityNormal, 0, configMINIMAL_STACK_SIZE + 0x400);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
-
   vSemaphoreCreateBinary(xMainSemaphore);
 	
   osKernelStart();	
@@ -115,20 +112,15 @@ void portClkInit(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
 
-  GPIO_InitTypeDef  GPIO_InitStruct;
-
-   GPIO_InitStruct.Pin       = GPIO_PIN_12;
-   GPIO_InitStruct.Mode      = GPIO_MODE_INPUT;
-   GPIO_InitStruct.Pull      = GPIO_PULLDOWN;
-   GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
-   HAL_GPIO_Init(GPIOH, &GPIO_InitStruct);
-
+   GPIO_InitTypeDef  GPIO_InitStruct;
+   //настройка пина управления питанием внешним светодиодом
    GPIO_InitStruct.Pin       = GPIO_PIN_4;
    GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP;
    GPIO_InitStruct.Pull      = GPIO_PULLDOWN;
    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
+   //настройка пина управления питанием MPU6050
    GPIO_InitStruct.Pin       = GPIO_PIN_10;
    GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_OD;
    GPIO_InitStruct.Pull      = GPIO_NOPULL;
@@ -144,36 +136,68 @@ void portClkInit(void)
   * @param		 	argument: параметры потока FreeRTOS
   * @reval			None
   */
-
-extern tSensors	SensorsData;
-extern float Ax, Ay, Az, Gx, Gy, Gz;
-extern float roll,pitch,yaw;
-char	strBufOutput[128];
-
+extern  uint8_t	gpsBuffer[128];
 void mainTask(void const * argument)
 {		
-	//инициализация RTC
-	BSP_RTC_Init();
-	//инициализация обработчика устройств на шине
+	char	strBufOutput[300];
+	//инициализация обработчика устройств
+	/* 4 лидара
+	 * 1 - радар
+	 * 1 - сонар
+	 * 1 - акселерометр/гироскоп
+	 * инициализация внешних прерываний
+	 */
 	Devices_Init();
-	//инициализация USB
-	BSP_Usb_Init();
 	//инициализация SDCard SPI
 	BSP_SDCard_Init();
 	//инициализация UART для WiFi модуля
 	BSP_WIFI_Init();
+	//инициализация GPS модуля
+	BSP_GPS_UART_Init();
+
+	tSDCardWriteData *pSkifCurrentData = (tSDCardWriteData*)IMU_GetSkifCurrentData();
 
 	for(;;)
 	{
 		xSemaphoreTake(xMainSemaphore,portMAX_DELAY);
-		sprintf(strBufOutput,"L%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f\r\n",SensorsData.ulLidarDistance,SensorsData.ulRadarDistance,SensorsData.ulSonarDistance,Az,pitch,roll);
+		sprintf(strBufOutput,"Lc%5d Ll%5d Lr%5d Lf%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f Alt:%f Alt2:%f NMEA:%s VEL:%s\r\n", pSkifCurrentData->sensorsData.ulCenterLidarDistance,
+																																		pSkifCurrentData->sensorsData.ulLeftLidarDistance,
+																																		pSkifCurrentData->sensorsData.ulRightLidarDistance,
+																																		pSkifCurrentData->sensorsData.ulFrontLidarDistance,
+																																		pSkifCurrentData->sensorsData.ulRadarDistance,
+																																		pSkifCurrentData->sensorsData.ulSonarDistance,
+																																		pSkifCurrentData->imuData.fAz,
+																																		pSkifCurrentData->imuData.fPitch,
+																																		pSkifCurrentData->imuData.fRoll,
+																																		pSkifCurrentData->fAltitude,
+																																		pSkifCurrentData->fAltitude2,
+																																		pSkifCurrentData->strNMEAPosition,
+																																		pSkifCurrentData->strNMEAVelocity);
 		BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
+		//BSP_WIFI_UARTSend((uint8_t*)gpsBuffer,strlen(gpsBuffer));
 	}
 }
-
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief 			Функция запуска потока Main
+  * @reval			None
+  */
 void mainGiveSemaphore()
 {
 	xSemaphoreGive(xMainSemaphore);
+}
+/*----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief 			Функция запуска потока Main из прерывания
+  * @reval			None
+  */
+void mainGiveSemaphoreISR()
+{
+	portBASE_TYPE 	xTaskWoken;
+	xSemaphoreGiveFromISR( xMainSemaphore, &xTaskWoken );
+	if( xTaskWoken == pdTRUE){
+			taskYIELD();
+	}
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**
@@ -257,7 +281,8 @@ void SetupRunTimeStatsTimer()
 void _Error_Handler(char *file, int line)
 {
   while(1){
-		
+	osDelay(100);
+	Devices_LedToggle();
   }
 }
 /*----------------------------------------------------------------------------------------------------*/

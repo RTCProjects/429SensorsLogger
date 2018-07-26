@@ -52,8 +52,9 @@
 #define __MAIN_H__
 #include <stdint.h>
 
+
 #define RTC_CLOCK_SOURCE_LSI
-#define CCM_SRAM	__attribute__ ((section(".sram")))
+#define CCM_SRAM	__attribute__ ((section(".ccmram")))
 
 uint32_t	GetRunTimeStatsValue(void);
 void 		SetupRunTimeStatsTimer(void);
@@ -65,6 +66,7 @@ void 		SetupRunTimeStatsTimer(void);
 #endif
 void _Error_Handler(char *, int);
 void mainGiveSemaphore(void);
+void mainGiveSemaphoreISR(void);
 #define Error_Handler() _Error_Handler(__FILE__, __LINE__)
 #ifdef __cplusplus
 }
