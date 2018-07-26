@@ -95,6 +95,8 @@ void	IMU_Task(void const * argument)
 
 	BMP180_Init(); //инициализация барометрических высотомеров
 
+	printf("skif_task - start\n");
+
 	while(1)
 	{
 		xSemaphoreTake( xIMURdySemaphore, portMAX_DELAY );

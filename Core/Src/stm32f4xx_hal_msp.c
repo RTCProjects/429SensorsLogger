@@ -309,9 +309,10 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
   if(uartHandle->Instance==USART1)
   {
-    /* USART1 clock enable */
+    //Radar data
     __HAL_RCC_USART1_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
+    __DMA2_CLK_ENABLE();
     /**USART1 GPIO Configuration
     PA9     ------> USART1_TX
     PA10     ------> USART1_RX
@@ -325,12 +326,29 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Pin = GPIO_PIN_10;
     GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-    /* USART1 interrupt Init */
+
+    HDMAUartRx.Instance                 = DMA2_Stream2;
+
+	HDMAUartRx.Init.Channel             = DMA_CHANNEL_4;
+	HDMAUartRx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
+	HDMAUartRx.Init.PeriphInc           = DMA_PINC_DISABLE;
+	HDMAUartRx.Init.MemInc              = DMA_MINC_ENABLE;
+	HDMAUartRx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+	HDMAUartRx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+	HDMAUartRx.Init.Mode                = DMA_CIRCULAR;
+	HDMAUartRx.Init.Priority            = DMA_PRIORITY_VERY_HIGH;
+	HDMAUartRx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+	HDMAUartRx.Init.MemBurst            = DMA_MBURST_INC4;
+	HDMAUartRx.Init.PeriphBurst         = DMA_PBURST_INC4;
+
+	HAL_DMA_Init(&HDMAUartRx);
+    __HAL_LINKDMA(uartHandle, hdmarx, HDMAUartRx);
+
+    HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 11, 0);
+    HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
+
     HAL_NVIC_SetPriority(USART1_IRQn, 8, 0);
     HAL_NVIC_EnableIRQ(USART1_IRQn);
-  /* USER CODE BEGIN USART1_MspInit 1 */
-
-  /* USER CODE END USART1_MspInit 1 */
   }
   if(uartHandle->Instance==UART5)
   {
@@ -350,6 +368,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
   }
   if(uartHandle->Instance==UART7)
   {
+	  //GPS DATA
 	  __HAL_RCC_UART7_CLK_ENABLE();
 	  __HAL_RCC_GPIOF_CLK_ENABLE();
 	  //__DMA1_CLK_ENABLE();

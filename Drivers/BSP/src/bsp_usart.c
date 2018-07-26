@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------------------------------*/
 #include "bsp_usart.h"
 #include "nmea.h"
+#include "radar.h"
 
 
 #define RADAR_SIZE	14			//размер буфера данных радара
@@ -35,9 +36,11 @@ void	BSP_USART_Init()
 	if (HAL_UART_Init(&bsp_uart1) != HAL_OK){
 		Error_Handler();
 	}
+	radar_init(&bsp_uart1);
+	/*
 	if(HAL_UART_Receive_IT(&bsp_uart1, (uint8_t *)receiveBuffer, 14)!=HAL_OK){
 		Error_Handler();
-	}
+	}*/
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**
@@ -107,6 +110,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	{
 		NMEA_Parse(gpsBuffer,NMEA_SIZE);
 	}*/
+	if(UartHandle->Instance == USART1)
+	{
+		radar_rx_callback();
+	}
 }
 /*----------------------------------------------------------------------------------------------------*/
 

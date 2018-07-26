@@ -326,11 +326,11 @@ void EXTI0_IRQHandler(void)
   */
 void USART1_IRQHandler(void)
 {
-	if (USART1->SR & USART_SR_RXNE) {
+	//radar irq
+	/*if (USART1->SR & USART_SR_RXNE) {
 			USART1->SR &=~USART_SR_RXNE;
 		BSP_USART_RxData(USART1->DR);
-	}
-	//HAL_UART_IRQHandler(&bsp_uart1);
+	}*/
 }
 
 /**
@@ -351,9 +351,9 @@ void UART7_IRQHandler(void)
   * @param  None
   * @retval None
   */
-void DMA1_Stream3_IRQHandler(void)
+void DMA2_Stream2_IRQHandler(void)
 {
-  HAL_DMA_IRQHandler(bsp_uart7.hdmarx);
+  HAL_DMA_IRQHandler(bsp_uart1.hdmarx);
 }
 /* USER CODE BEGIN 1 */
 

@@ -55,6 +55,7 @@ void Devices_Init()
 tSensors	*Devices_GetDataPointer()
 {
 	taskENTER_CRITICAL();
+
 		memcpy(&SensorsData,ulDistances,sizeof(tSensors));
 	taskEXIT_CRITICAL();
 

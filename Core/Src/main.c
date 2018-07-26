@@ -17,6 +17,7 @@
 #include "devices.h"
 
 #include <stdlib.h>
+#include <stdarg.h>
 
 TIM_HandleTypeDef	htim7;
 osThreadId 			defaultTaskHandle;
@@ -157,6 +158,8 @@ void mainTask(void const * argument)
 
 	tSDCardWriteData *pSkifCurrentData = (tSDCardWriteData*)IMU_GetSkifCurrentData();
 
+	printf("mainTask - start\n");
+
 	for(;;)
 	{
 		xSemaphoreTake(xMainSemaphore,portMAX_DELAY);
@@ -175,6 +178,7 @@ void mainTask(void const * argument)
 																																		pSkifCurrentData->strNMEAVelocity);
 		BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
 		//BSP_WIFI_UARTSend((uint8_t*)gpsBuffer,strlen(gpsBuffer));
+
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -200,6 +204,7 @@ void mainGiveSemaphoreISR()
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/
+
 /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM1 interrupt took place, inside
