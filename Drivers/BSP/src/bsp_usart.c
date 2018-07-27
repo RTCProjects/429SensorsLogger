@@ -33,14 +33,11 @@ void	BSP_USART_Init()
 	bsp_uart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
 	bsp_uart1.Init.OverSampling = UART_OVERSAMPLING_16;
 
-	if (HAL_UART_Init(&bsp_uart1) != HAL_OK){
-		Error_Handler();
+	if (HAL_UART_Init(&bsp_uart1) != HAL_OK) {
+		_Error_Handler("bsp_usart.c",37);
 	}
+
 	radar_init(&bsp_uart1);
-	/*
-	if(HAL_UART_Receive_IT(&bsp_uart1, (uint8_t *)receiveBuffer, 14)!=HAL_OK){
-		Error_Handler();
-	}*/
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**
@@ -59,7 +56,7 @@ void	BSP_WIFI_Init()
 	bsp_uart5.Init.OverSampling = UART_OVERSAMPLING_16;
 
 	if (HAL_UART_Init(&bsp_uart5) != HAL_OK){
-		Error_Handler();
+		_Error_Handler("bsp_usart.c",62);
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -80,10 +77,10 @@ void	BSP_GPS_UART_Init()
 
 
 	if (HAL_UART_Init(&bsp_uart7) != HAL_OK){
-		Error_Handler();
+		_Error_Handler("bsp_usart.c",83);
 	}
 	if(HAL_UART_Receive_IT(&bsp_uart7, (uint8_t *)NMEA_GetGPSBuffer(), 128)!=HAL_OK){
-		Error_Handler();
+		_Error_Handler("bsp_usart.c",86);
 	}
 /*
 	memset((uint8_t *)gpsBuffer,0,sizeof(uint8_t) * NMEA_SIZE);

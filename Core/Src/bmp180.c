@@ -61,7 +61,7 @@ void BMP180Task(void const * argument)
 		osDelay(10);
 	}
 	else{
-			Error_Handler();
+		_Error_Handler("bmp180.c",64);
 	}
 	//BMP180 Channel 2
 	/*devID = BSP_I2C2_Read_Byte(BMP180_I2CADDR,WHO_AM_I_BMP280);

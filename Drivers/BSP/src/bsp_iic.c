@@ -28,7 +28,7 @@ void	BSP_I2C_Init()
 	I2C1Handle.Init.OwnAddress2     = 0;
 
 	if(HAL_I2C_Init(&I2C1Handle) != HAL_OK){
-	  Error_Handler();
+		_Error_Handler("bsp_iic.c",31);
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -39,7 +39,7 @@ void	BSP_I2C_Init()
 void	BSP_I2C_DeInit()
 {
 	if(HAL_I2C_DeInit(&I2C1Handle) != HAL_OK){
-		 Error_Handler();
+		_Error_Handler("bsp_iic.c",42);
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -235,7 +235,7 @@ void	BSP_I2C2_Init()
 	I2C2Handle.Init.OwnAddress2     = 0;
 
 	if(HAL_I2C_Init(&I2C2Handle) != HAL_OK){
-	  Error_Handler();
+	  _Error_Handler("bsp_iic.c",238);
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -246,7 +246,7 @@ void	BSP_I2C2_Init()
 void	BSP_I2C2_DeInit()
 {
 	if(HAL_I2C_DeInit(&I2C2Handle) != HAL_OK){
-		 Error_Handler();
+		_Error_Handler("bsp_iic.c",249);
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/

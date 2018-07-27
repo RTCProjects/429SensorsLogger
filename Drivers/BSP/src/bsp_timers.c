@@ -28,10 +28,10 @@ void	BSP_Timers_TIM3Init()
 	Tim3LidarHandle.Init.CounterMode   = TIM_COUNTERMODE_UP;
 
 	if(HAL_TIM_Base_Init(&Tim3LidarHandle) != HAL_OK){
-		Error_Handler();
+		_Error_Handler("bsp_timers.c",31);
 	}
 	if(HAL_TIM_Base_Start(&Tim3LidarHandle) != HAL_OK){
-		Error_Handler();
+		_Error_Handler("bsp_timers.c",34);
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -51,10 +51,10 @@ void	BSP_Timers_TIM5Init()
 	Tim5LidarHandle.Init.CounterMode   = TIM_COUNTERMODE_UP;
 
 	if(HAL_TIM_Base_Init(&Tim5LidarHandle) != HAL_OK){
-		Error_Handler();
+		_Error_Handler("bsp_timers.c",54);
 	}
 	if(HAL_TIM_Base_Start(&Tim5LidarHandle) != HAL_OK){
-		Error_Handler();
+		_Error_Handler("bsp_timers.c",57);
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -74,10 +74,10 @@ void	BSP_Timers_TIM6Init()
 	Tim6LidarHandle.Init.CounterMode   = TIM_COUNTERMODE_UP;
 
 	if(HAL_TIM_Base_Init(&Tim6LidarHandle) != HAL_OK){
-		Error_Handler();
+		_Error_Handler("bsp_timers.c",77);
 	}
 	if(HAL_TIM_Base_Start(&Tim6LidarHandle) != HAL_OK){
-		Error_Handler();
+		_Error_Handler("bsp_timers.c",80);
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -97,10 +97,10 @@ void	BSP_Timers_TIM2Init()
 	Tim2LidarHandle.Init.CounterMode   = TIM_COUNTERMODE_UP;
 
 	if(HAL_TIM_Base_Init(&Tim2LidarHandle) != HAL_OK){
-		Error_Handler();
+		_Error_Handler("bsp_timers.c",100);
 	}
 	if(HAL_TIM_Base_Start(&Tim2LidarHandle) != HAL_OK){
-		Error_Handler();
+		_Error_Handler("bsp_timers.c",103);
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -120,10 +120,10 @@ void	BSP_Timers_TIM4Init()
 	Tim4SonarHandle.Init.CounterMode   = TIM_COUNTERMODE_UP;
 
 	if(HAL_TIM_Base_Init(&Tim4SonarHandle) != HAL_OK){
-		Error_Handler();
+		_Error_Handler("bsp_timers.c",123);
 	}
 	if(HAL_TIM_Base_Start(&Tim4SonarHandle) != HAL_OK){
-		Error_Handler();
+		_Error_Handler("bsp_timers.c",126);
 	}
 }
 /*----------------------------------------------------------------------------------------------------*/

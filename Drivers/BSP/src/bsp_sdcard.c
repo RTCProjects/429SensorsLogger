@@ -71,7 +71,7 @@ void BSP_SDCard_SPIInit(uint32_t	baudratePrescaler)
 
 	if(HAL_SPI_Init(&spiSDHandle) != HAL_OK){
 		/* Initialization Error */
-		Error_Handler();
+		_Error_Handler("bsp_sdcard.c",74);
 	  }
 }
 /*----------------------------------------------------------------------------------------------------*/
@@ -144,7 +144,7 @@ void	BSP_SDCard_Task(void const * argument)
 	BSP_SD_Init();
 
 	if(f_mount(&fileSystem, "", 0) != FR_OK){
-			Error_Handler();
+		_Error_Handler("bsp_sdcard.c",147);
 	}
 
 	BSP_SD_GetCardInfo(&sdInfo);

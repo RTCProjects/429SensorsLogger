@@ -91,7 +91,7 @@ void	IMU_Task(void const * argument)
 		osDelay(10);
 	}
 	else {
-		Error_Handler();
+		_Error_Handler("skif.c",94);
 	}
 
 	BMP180_Init(); //инициализация барометрических высотомеров
