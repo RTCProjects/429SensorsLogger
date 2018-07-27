@@ -35,6 +35,7 @@ typedef struct
 	eSensorType	type;
 	tSensors	sensorsData;
 	tIMUData	imuData;
+	uint8_t		uRadarVspeed;
 	float		fAltitude;
 	float		fAltitude2;
 	float		fLatitude;

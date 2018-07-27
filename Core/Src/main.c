@@ -285,6 +285,8 @@ void SetupRunTimeStatsTimer()
   */
 void _Error_Handler(char *file, int line)
 {
+  printf("Error handler in %file on %d line\n");
+
   while(1){
 	osDelay(100);
 	Devices_LedToggle();

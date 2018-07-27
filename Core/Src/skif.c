@@ -9,6 +9,7 @@
 #include "math.h"
 #include "bmp180.h"
 #include "skif.h"
+#include "radar.h"
 #include "bsp_exti.h"
 #include "bsp_usb.h"
 #include "bsp_iic.h"
@@ -139,6 +140,11 @@ void IMU_Calcualte(void)
 		tSensors *curDistanceData = Devices_GetDataPointer();
 		memcpy(&accumData[uIMUCounter].sensorsData,curDistanceData,sizeof(tSensors));
 
+		/**
+		 * calc radar distance
+		 */
+		accumData[uIMUCounter].uRadarVspeed = radar_get_targetdata()->vspeed;
+		accumData[uIMUCounter].sensorsData.ulRadarDistance = radar_get_targetdata()->distance;
 		accumData[uIMUCounter].imuData.fAz = Az;
 		accumData[uIMUCounter].imuData.fPitch = pitch;
 		accumData[uIMUCounter].imuData.fRoll = roll;
