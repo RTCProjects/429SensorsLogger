@@ -14,15 +14,6 @@
 #include "bsp_usart.h"
 #include "bmp180.h"
 
-uint8_t receivedDataCounter;
-char receivedData[20];
-
-uint8_t flag = 0;
-uint8_t flag2 = 0;
-uint8_t flag3 = 0;
-uint8_t flag4 = 0;
-
-uint32_t tempData;
 
 uint16_t	ulDistances[6];
 tSensors	SensorsData;
@@ -33,8 +24,6 @@ tSensors	SensorsData;
   */
 void Devices_Init()
 {
-	receivedDataCounter = 0;
-
 	memset(&SensorsData,0,sizeof(tSensors));
 
 	BSP_Timers_TIM2Init();//Таймер Front lidar
@@ -55,7 +44,6 @@ void Devices_Init()
 tSensors	*Devices_GetDataPointer()
 {
 	taskENTER_CRITICAL();
-
 		memcpy(&SensorsData,ulDistances,sizeof(tSensors));
 	taskEXIT_CRITICAL();
 

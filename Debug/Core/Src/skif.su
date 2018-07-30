@@ -1,5 +1,5 @@
-skif.c:47:6:IMU_Init	40	static
-skif.c:132:6:IMU_Calcualte	64	static
-skif.c:62:6:IMU_Task	8	static
-skif.c:221:6:IMU_ExternalISR	64	static
-skif.c:263:7:IMU_GetSkifCurrentData	0	static
+skif.c:56:6:IMU_Init	40	static
+skif.c:128:6:IMU_Calcualte	64	static
+skif.c:71:6:IMU_Task	8	static
+skif.c:215:6:IMU_ExternalISR	64	static
+skif.c:257:7:IMU_GetSkifCurrentData	0	static

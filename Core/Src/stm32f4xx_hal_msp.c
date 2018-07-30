@@ -268,14 +268,14 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef *hrtc)
   RCC_OscInitStruct.LSIState = RCC_LSI_OFF;
   if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-    Error_Handler();
+    _Error_Handler("xx_msp.c",271);
   }
 
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
   if(HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
-    Error_Handler();
+	  _Error_Handler("xx_msp.c",278);
   }
 #elif defined (RTC_CLOCK_SOURCE_LSI)
   RCC_OscInitStruct.OscillatorType =  RCC_OSCILLATORTYPE_LSI | RCC_OSCILLATORTYPE_LSE;
@@ -284,14 +284,14 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef *hrtc)
   RCC_OscInitStruct.LSEState = RCC_LSE_OFF;
   if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-    Error_Handler();
+	  _Error_Handler("xx_msp.c",287);
   }
 
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
   if(HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
-    Error_Handler();
+	  _Error_Handler("xx_msp.c",294);
   }
 #else
 #error Please select the RTC Clock source inside the main.h file

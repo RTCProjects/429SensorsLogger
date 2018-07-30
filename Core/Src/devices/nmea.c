@@ -32,7 +32,8 @@ void NMEA_Parse()
 	uint8_t	GPSBuf[NMEA_BUF_SIZE];
 
 	memcpy((uint8_t*)GPSBuf,(uint8_t*)gpsBuffer,sizeof(uint8_t)*NMEA_BUF_SIZE);
-
+	//теперь очень много гомнокода
+	//TODO в идеале переписать прием данных от GPS на DMA, как сделано в радаре + сделать номральный парсер NMEA180 на основе sscanf
 	for(uint8_t i = 0;i<NMEA_BUF_SIZE - 7;i++)
 	{
 		if(GPSBuf[i] == '$' && GPSBuf[i + 1] == 'G' && GPSBuf[i + 2] == 'N' && GPSBuf[i + 3] == 'G' && GPSBuf[i + 4] == 'L' && GPSBuf[i + 5] == 'L')

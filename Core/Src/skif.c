@@ -20,21 +20,30 @@ extern I2C_HandleTypeDef I2C1Handle;
 osThreadId 				IMUDeviceHandle;
 void	IMU_Task(void const * argument);
 
+//значения углов
+float fNewAx = 0, fOldAx = 0;
+float fNewAy = 0, fOldAy = 0;
+//к-т фильтра калмана
+float K = 0.05f;
+//сырые данные от IMU6050
 float Ax, Ay, Az, Gx, Gy, Gz;
+//корректировка ускорений
 float mAx, mAy, mAz;
-
+//таблица значений для корректировки ускорений
 const float k_offsetx = 1.0f, k_offsety = 1.0f, k_offsetz = 1.0f;
 const float kx1 = 0.998861465243721f,  kx2 = 0.002440092241872f,  kx3 = -0.019185983660316f;
 const float ky1 = -0.003995052213048f, ky2 = 0.998301725777487f,  ky3 = 0.007573822958361f;
 const float kz1 = -0.008787429652340f, kz2 = -0.008839325773609f, kz3 = 0.992047478932301f;
 
-
 tSDCardWriteData	accumData[IMU_LOW_DATA_SIZE] CCM_SRAM;	//размер массива равен частоте опроса датчика IMU
-tSDCardWriteData	skifCurrentData;
+tSDCardWriteData	skifCurrentData;	//текущие данные скиф
 
+//набор счетчиков
 uint16_t	uBMPCounter = 0;
 uint16_t	uIMUCounter = 0;
 uint16_t	uIMUSDCardCounter = 0;
+//время выполнения таска скиф
+uint16_t	ulTickNew = 0, ulTickOld;
 
 xSemaphoreHandle xIMURdySemaphore;
 
@@ -65,7 +74,7 @@ void	IMU_Task(void const * argument)
 
 	BSP_I2C_DeInit();
 	BSP_I2C2_DeInit();
-
+	//сброс питания платы акселерометра MPU6050
 	osDelay(100);
 	Devices_IMUOff();
 	osDelay(200);
@@ -75,8 +84,6 @@ void	IMU_Task(void const * argument)
 
 	BSP_I2C_Init();		//инициализация I2C 	BMP180 + MPU6050
 	BSP_I2C2_Init();	//инициализация I2C2	BMP180
-	//сброс питания платы акселерометра MPU6050
-
 
 	//Clear sleep mode bit (6), enable all sensors
 	BSP_I2C_Write_Byte(MPU6050_ADDRESS, PWR_MGMT_1, 0x00);
@@ -113,22 +120,11 @@ void	IMU_Task(void const * argument)
 		IMU_Calcualte();
 	}
 }
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
-  * @brief 			Функция запроса измеренных данных с IMU датчика
+  * @brief 			Таск расчёта углов и ускорений + семафорим для записи на СД карту
   * @reval			None
   */
-float fNewAx = 0, fOldAx = 0;
-float fNewAy = 0, fOldAy = 0;
-
-uint16_t	ulTickNew = 0, ulTickOld;
-
-//const float K = 0.05f;
-
-__IO float K = 0.05f;
-
-
-
 void IMU_Calcualte(void)
 {
 	//	Send raw data to the filter
@@ -163,8 +159,6 @@ void IMU_Calcualte(void)
 	pitch = RAD_TO_DEG * fNewAx;//pitch;
 	roll = RAD_TO_DEG * fNewAy;
 
-	//printf("%0.2f %0.2f %0.2f\r\n",pitch,roll,mAz);
-
 	//отправка на запись на SD карту происходит после заполнения временного буфера данных от акселерометра
 	if(uIMUCounter < IMU_LOW_DATA_SIZE)
 	{
@@ -189,14 +183,14 @@ void IMU_Calcualte(void)
 		accumData[uIMUCounter].imuData.fAz = mAz;
 		accumData[uIMUCounter].imuData.fPitch = pitch;
 		accumData[uIMUCounter].imuData.fRoll = roll;
-		accumData[uIMUCounter].fLatitude = 0;
-		accumData[uIMUCounter].fLongitude = 0;
+		accumData[uIMUCounter].fLatitude = 0;	//заглушка числового значения широты
+		accumData[uIMUCounter].fLongitude = 0;	//заглушка числового значения долготы
 		accumData[uIMUCounter].fAltitude = BMP180_GetAltitude(BMP180_CHANNEL1);
 		accumData[uIMUCounter].fAltitude2 = BMP180_GetAltitude(BMP180_CHANNEL2);
 		strcpy(accumData[uIMUCounter].strNMEAPosition,NMEA_GetPositionString());
 		strcpy(accumData[uIMUCounter].strNMEAVelocity,NMEA_GetVelocityString());
 
-		//отправка данных по Wi-Fi
+		//отправка данных по Wi-Fi 2Hz
 		if(uIMUCounter == IMU_LOW_DATA_SIZE * 0.5f){
 			mainGiveSemaphore();
 		}

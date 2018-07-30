@@ -77,7 +77,6 @@ void	radar_package_analysis(radar_rx_buffer_t	*radar_rx_buffer)
 					{
 						case RADAR_SENSOR_BACK_MSGID: {
 							memcpy((uint8_t*)&target_sensor_version,(uint8_t*)&radar_package.data,sizeof(radar_target_sensor_version_msg_t));
-							__IO uint8_t	foobar1 = 0;
 						}break;
 
 						case RADAR_SENSOR_STATUS_MSGID: {
@@ -116,8 +115,8 @@ void	radar_package_analysis(radar_rx_buffer_t	*radar_rx_buffer)
 radar_queue_data_t		*radar_get_targetdata()
 {
 	//TODO проверять статус запроса из очереди и произвоидть копирование струтуры на стеке
-	portBASE_TYPE os_xstatus;
-	os_xstatus = xQueueReceive(os_data_query, &target_distance, 0);
+	//portBASE_TYPE os_xstatus;
+	/*os_xstatus = */xQueueReceive(os_data_query, &target_distance, 0);
 
 	return &target_distance;
 }
