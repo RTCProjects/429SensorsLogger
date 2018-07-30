@@ -5,7 +5,7 @@
 **/
 /*----------------------------------------------------------------------------------------------------*/
 #include "bsp_usart.h"
-#include "nmea.h"
+#include "gps.h"
 #include "radar.h"
 
 UART_HandleTypeDef bsp_uart1;
@@ -84,21 +84,21 @@ void	BSP_GPS_UART_Init()
   */
 void	BSP_WIFI_UARTSend(uint8_t *pDyte,uint16_t	Size)
 {
-	HAL_UART_Transmit(&bsp_uart5,pDyte,Size,5000);
+	/**
+	 * TODO отправка данных в WiFi - UART bridge осуществялется поллингом в теле главного таска mainTask.
+	 * Если WiFi выводить в продакшн, то реализацию передачи данных по WiFi необходимо сделать в виде
+	 * отдельного таска c передачей буфера по DMA, по аналогии с radar.c.
+	 */
+	HAL_UART_Transmit(&bsp_uart5, pDyte, Size, UART_WIFI_POLLING_TIMEOUT);
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**
-  * @brief	DMA callback от GPS приемника
+  * @brief	DMA callback от радара
   * @reval	None
   */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
-	/*if(UartHandle->Instance == UART7)
-	{
-		NMEA_Parse(gpsBuffer,NMEA_SIZE);
-	}*/
-	if(UartHandle->Instance == USART1)
-	{
+	if(UartHandle->Instance == USART1) {
 		radar_rx_callback();
 	}
 }

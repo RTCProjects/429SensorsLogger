@@ -1,12 +1,12 @@
 #ifndef _BSP_DRIVER_SPI_H
 #define _BSP_DRIVER_SPI_H
 
-#define SPI_OK			0x00
-#define SPI_ERROR	 	0x01
+#define SPI_OK					0x00
+#define SPI_ERROR	 			0x01
 
-#define TIMEOUT					100
 #define SDCARD_WRITE_QUEUE_SIZE	16
-#define SDCARD_FILENAME_MAX_LEN	12
+#define SDCARD_FILENAME_MAX_LEN	32
+#define SDCARD_LOGDATA_SIZE		300
 
 #define DIRNAME_SENSORS			""
 
@@ -15,24 +15,22 @@
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
 #include "devices.h"
-#include <skif.h>
-#include "nmea.h"
+#include "skif.h"
+#include "gps.h"
+
+/**
+ * Struct/enum section
+ **/
 
 typedef struct sd_info{
 	uint8_t	ocr1[4];
 	uint8_t	ocr2[4];
   uint8_t type;
-}sd_info_ptr;
-
-typedef enum
-{
-	E_RANGEFINDER = 0x01,
-	E_GYRO		  = 0x02
-}eSensorType;
+}sd_info_ptr;	//информация о SD карте
 
 typedef struct
 {
-	eSensorType	type;
+
 	tSensors	sensorsData;
 	tIMUData	imuData;
 	uint8_t		uRadarVspeed;
@@ -42,9 +40,11 @@ typedef struct
 	float		fLongitude;
 	char		strNMEAPosition[NMEA_POS_SIZE];
 	char		strNMEAVelocity[NMEA_VEL_SIZE];
-}tSDCardWriteData;
+}tSDCardWriteData;	//формат записи лога на SD карту
 
-
+/**
+ * Func section
+ **/
 
 void		BSP_SDCard_Init(void);
 void		BSP_SDCard_WriteSensorsData(tSDCardWriteData	*Data);
@@ -53,4 +53,11 @@ void 		BSP_SDCard_SPIInit(uint32_t baudratePrescaler);
 void 		BSP_SDCardSPIDeInit(void);
 void		BSP_SDCard_StartWrite(void);
 char		*BSP_SDCard_GetNewFileName(void);
+
+/**
+ * Extern section
+ **/
+
+extern tSDCardWriteData	accumData[IMU_LOW_DATA_SIZE] CCM_SRAM;
+
 #endif

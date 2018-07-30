@@ -39,7 +39,7 @@
 /* USER CODE BEGIN 0 */
 #include "bsp_usart.h"
 #include "bsp_exti.h"
-#include "nmea.h"
+#include "gps.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/

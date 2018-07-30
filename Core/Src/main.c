@@ -1,14 +1,9 @@
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
-  * @file           main.c
+  * @file           main.c Модуль инициализации модулей МК/RTOS и запуск задач
   * @brief          Main program body
 **/ 
-/*----------------------------------------------------------------------------------------------------*/
-
-
-/*
- * Сделать запись в лог трехступенчато с использованием NaN
- */
+/**----------------------------------------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
@@ -18,16 +13,25 @@
 
 #include <stdlib.h>
 #include <stdarg.h>
+/****************************
+ * 		WiFi - UART bridge
+ * IP: 			192.168.0.1
+ * Port: 		9876
+ * AP:			SkifMPUWiFi
+ * Pass:		qwerty123
+ * UARTSpd:		57600
+ ****************************/
+#define	MAIN_STROUTPUT_SIZE		300		//длина строки вывода в WiFi socket
 
-TIM_HandleTypeDef	htim7;
+TIM_HandleTypeDef	htim7;				//temp таймердля вычисления % загрузки ЦП каждым таском
 osThreadId 			defaultTaskHandle;
 
-void systemClock_Config(void);
-void portClkInit(void);
+void systemClock_Config(void);			//инициализация RCC
+void portClkInit(void);					//инициализация портов
 void mainTask(void const * argument);
 
-xSemaphoreHandle xMainSemaphore;
-/*----------------------------------------------------------------------------------------------------*/
+xSemaphoreHandle xMainSemaphore;		//семафор разблокировки mainTask
+/**----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  The application entry point.
   * @retval None
@@ -39,13 +43,15 @@ int main(void)
   systemClock_Config();
   portClkInit();
 
+  //создание процесса mainTask
   osThreadDef(main_task_rtos, mainTask, osPriorityNormal, 0, configMINIMAL_STACK_SIZE + 0x400);
   defaultTaskHandle = osThreadCreate(osThread(main_task_rtos), NULL);
+  //создание семафора блокировки таска
   vSemaphoreCreateBinary(xMainSemaphore);
-	
+  //запуск RTOS
   osKernelStart();	
 }
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
   * @brief 	System Clock Configuration
   * @retval None
@@ -98,7 +104,7 @@ void systemClock_Config(void)
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
 }
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
 	* @brief 		Подключение IO(A,C,D,H) к APB
 	* @param 		None
@@ -121,26 +127,26 @@ void portClkInit(void)
    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-   //настройка пина управления питанием MPU6050
+   //настройка пина управления питанием MPU6050 и BMP180
    GPIO_InitStruct.Pin       = GPIO_PIN_10;
    GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_OD;
    GPIO_InitStruct.Pull      = GPIO_NOPULL;
    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
    HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
+   //все выключено
    HAL_GPIO_WritePin(GPIOG,GPIO_PIN_10,GPIO_PIN_RESET);
    HAL_GPIO_WritePin(GPIOD,GPIO_PIN_4,GPIO_PIN_RESET);
 }
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /** 
   * @brief 			Главный поток программы.
   * @param		 	argument: параметры потока FreeRTOS
   * @reval			None
   */
-extern  uint8_t	gpsBuffer[128];
 void mainTask(void const * argument)
 {		
-	char	strBufOutput[300];
+	char	str_output[MAIN_STROUTPUT_SIZE];
 	//инициализация обработчика устройств
 	/* 4 лидара
 	 * 1 - радар
@@ -155,15 +161,16 @@ void mainTask(void const * argument)
 	BSP_WIFI_Init();
 	//инициализация GPS модуля
 	BSP_GPS_UART_Init();
-
+	//получаем указатель на структуру последних актуальных данных
 	tSDCardWriteData *pSkifCurrentData = (tSDCardWriteData*)IMU_GetSkifCurrentData();
 
 	printf("mainTask - start\n");
 
 	for(;;)
 	{
+		//блокируем таск
 		xSemaphoreTake(xMainSemaphore,portMAX_DELAY);
-		sprintf(strBufOutput,"Lc%5d Ll%5d Lr%5d Lf%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f Alt:%f Alt2:%f NMEA:%s VEL:%s\r\n",  pSkifCurrentData->sensorsData.ulCenterLidarDistance,
+		sprintf(str_output,"Lc%5d Ll%5d Lr%5d Lf%5d R%5d S%5d\r\nAz:%0.2f Pitch:%0.2f Roll:%0.2f Alt:%f Alt2:%f NMEA:%s VEL:%s\r\n",  	pSkifCurrentData->sensorsData.ulCenterLidarDistance,
 																																		pSkifCurrentData->sensorsData.ulLeftLidarDistance,
 																																		pSkifCurrentData->sensorsData.ulRightLidarDistance,
 																																		pSkifCurrentData->sensorsData.ulFrontLidarDistance,
@@ -176,19 +183,20 @@ void mainTask(void const * argument)
 																																		pSkifCurrentData->fAltitude2,
 																																		pSkifCurrentData->strNMEAPosition,
 																																		pSkifCurrentData->strNMEAVelocity);
-		BSP_WIFI_UARTSend((uint8_t*)strBufOutput,strlen(strBufOutput));
+		BSP_WIFI_UARTSend((uint8_t*)str_output,strlen(str_output));
 	}
 }
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
   * @brief 			Функция запуска потока Main
   * @reval			None
   */
 void mainGiveSemaphore()
 {
+	//разблокируем таск
 	xSemaphoreGive(xMainSemaphore);
 }
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
   * @brief 			Функция запуска потока Main из прерывания
   * @reval			None
@@ -201,8 +209,7 @@ void mainGiveSemaphoreISR()
 			taskYIELD();
 	}
 }
-/*----------------------------------------------------------------------------------------------------*/
-
+/**----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM1 interrupt took place, inside
@@ -222,15 +229,19 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  ulHighFrequencyTimerTicks++;
   }
 }
-/*
- *
+/**----------------------------------------------------------------------------------------------------*/
+/**
+ * @brief 	Значение временной статистики для каждого таска
+ * @retval	время выполнения в тиках
  */
 uint32_t	GetRunTimeStatsValue()
 {
 	return ulHighFrequencyTimerTicks;
 }
-/*
- *
+/**----------------------------------------------------------------------------------------------------*/
+/**
+ * @brief 	Инициализация таймера TIM7 на базе которого строится подсчёт % загрузки ЦП задачами
+ * @retval	время выполнения в тиках
  */
 void SetupRunTimeStatsTimer()
 {
@@ -283,12 +294,13 @@ void SetupRunTimeStatsTimer()
   */
 void _Error_Handler(char *file, int line)
 {
-  printf("Error handler in %s file on %d line\n",file,line);
-
-  while(1){
-	osDelay(100);
-	Devices_LedToggle();
-  }
+	//По SWV покажем где всё плохо
+	printf("Error handler in %s file on %d line\n",file,line);
+	//Быстро помигаем, что всё плохо
+	while(1) {
+		osDelay(100);
+		Devices_LedToggle();
+	}
 }
 /*----------------------------------------------------------------------------------------------------*/
 #ifdef  USE_FULL_ASSERT

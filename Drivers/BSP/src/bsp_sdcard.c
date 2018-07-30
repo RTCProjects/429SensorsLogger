@@ -1,19 +1,24 @@
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
   * @file    bsp_driver_spi.c Драйвер для работы с SD картой по SPI
   * @brief   This file includes a generic uSD card driver.
-**/
-/*----------------------------------------------------------------------------------------------------*/
+  * 		 в качестве низкого уровня обмена по SPI между картой и контроллером используется
+  * 		 модуль stm32_adafruit_sd.c, реализующий программный LL слой эмуляции SD интерфейса
+  * 		 через SPI.
+  * 		 TODO в перспективе, заменить SPI шилд SD карты на SDIO подключение и исполльзовать
+  * 		 аппаратный SDIO stm32 c чтением/записью по DMA
+*/
+/**----------------------------------------------------------------------------------------------------*/
 #include <skif.h>
 #include "bsp_sdcard.h"
 #include "bsp_usb.h"
 #include "bsp_rtc.h"
 #include "fatfs.h"
 #include <string.h>
-/*----------------------------------------------------------------------------------------------------*/
-static char usbOutputBuffer[300];
+/**----------------------------------------------------------------------------------------------------*/
+static const char str_start_label[] = "\r\n--------------------START--------------------\r\n";
+static char str_skif_logdata[SDCARD_LOGDATA_SIZE];
 
-static uint8_t				startBtnState,startBtnPress;
 static SD_CardInfo			sdInfo;
 static FATFS				fileSystem;
 
@@ -21,13 +26,13 @@ SPI_HandleTypeDef 		spiSDHandle;
 osThreadId 				usbTaskSdCardHandle;
 xQueueHandle 			xSDCardDataWriteQueue;
 
-uint32_t				uFilesCount;
+
 
 void	BSP_SDCard_Task(void const * argument);
 void 	BSP_SDCard_CreateDefaultFolders(void);
 
 xSemaphoreHandle xSDWriteProcessSemaphore;
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  Initializes the SD card device.
   * @retval SD status
@@ -38,16 +43,15 @@ void	BSP_SDCard_Init()
 	xSDCardDataWriteQueue = xQueueCreate(SDCARD_WRITE_QUEUE_SIZE, sizeof(tSDCardWriteData));
 	vSemaphoreCreateBinary(xSDWriteProcessSemaphore);
 	
-	osThreadDef(SDCardTask, BSP_SDCard_Task, /*osPriorityAboveNormal*/ osPriorityRealtime, 0, configMINIMAL_STACK_SIZE + 0x400);
-	usbTaskSdCardHandle = osThreadCreate(osThread(SDCardTask), NULL);
-	
-	uFilesCount = 0;
-	startBtnState = 0;
-	startBtnPress = 0;
-
-
+	/**
+	 * @NOTE Задача sdcard_task - задача реального времени. Это некорректно с точки зрения пострения RTOS системы,
+	 * т.к. время выполнения записи на карту с программным LL SD-карты - продолжительный процесс.
+	 * TODO необходимо пересмотреть приоритет задачи при переходе на DMA SDIO интерфейс обмена.
+	 */
+	osThreadDef(sdcard_task, BSP_SDCard_Task, osPriorityRealtime, 0, configMINIMAL_STACK_SIZE + 0x400);
+	usbTaskSdCardHandle = osThreadCreate(osThread(sdcard_task), NULL);
 }
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  Функция инициализации аппаратного SPI
   * @param	baudratePrescaler: предделитель скорости SPI
@@ -69,12 +73,11 @@ void BSP_SDCard_SPIInit(uint32_t	baudratePrescaler)
 	spiSDHandle.Init.TIMode            = SPI_TIMODE_DISABLE;
 	spiSDHandle.Init.Mode = SPI_MODE_MASTER;
 
-	if(HAL_SPI_Init(&spiSDHandle) != HAL_OK){
-		/* Initialization Error */
+	if(HAL_SPI_Init(&spiSDHandle) != HAL_OK) {
 		_Error_Handler("bsp_sdcard.c",74);
 	  }
 }
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  Функция деинициализации аппаратного SPI
   * @retval None
@@ -83,7 +86,7 @@ void BSP_SDCardSPIDeInit()
 {
 	HAL_SPI_DeInit(&spiSDHandle);
 }
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  Функция отправки данных в очередь для записи на SD карту
   * @param 	Data: указатель на структуры данных с сенсоров
@@ -95,7 +98,7 @@ void	BSP_SDCard_WriteSensorsData(tSDCardWriteData	*Data)
 		xQueueSendToBack(xSDCardDataWriteQueue,Data,0);
 }
 
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
 	* @brief	Функция генерации имен файлов с логами на SD карте
 	* @reval	указатель на структуру содержащую именя файлов логов
@@ -103,7 +106,7 @@ void	BSP_SDCard_WriteSensorsData(tSDCardWriteData	*Data)
   */
 char	*BSP_SDCard_GetNewFileName()
 {
-	static char	strFileName[16];
+	static char	strFileName[SDCARD_FILENAME_MAX_LEN];
 
 	uint16_t	uFilesInDir = 0;
 
@@ -112,7 +115,7 @@ char	*BSP_SDCard_GetNewFileName()
 
 	return strFileName;
 }
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
 	* @brief	Запуск потока на запись на SD карту
 	* @param	argument: параметры потока FreeRTOS 
@@ -122,16 +125,15 @@ void	BSP_SDCard_StartWrite()
 {
 	xSemaphoreGive(xSDWriteProcessSemaphore);
 }
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
 	* @brief	Основной поток для работы с SD картой
 	* @param	argument: параметры потока FreeRTOS
 	* @reval	None
   */
-extern tSDCardWriteData	accumData[IMU_LOW_DATA_SIZE] CCM_SRAM;
 void	BSP_SDCard_Task(void const * argument)
 {
-	/*
+	/**
 	Инициализация драйвера
 	Монтирование файловой системы
 	Создание директории
@@ -142,36 +144,37 @@ void	BSP_SDCard_Task(void const * argument)
 
 	FATFS_LinkDriver(&SD_Driver, SDPath);
 	BSP_SD_Init();
-
+	//монтирование файловой системы
 	if(f_mount(&fileSystem, "", 0) != FR_OK){
 		_Error_Handler("bsp_sdcard.c",147);
 	}
-
+	//получение информации о SD карте
 	BSP_SD_GetCardInfo(&sdInfo);
-
+	//генерация имени файла лога
 	pFileName = BSP_SDCard_GetNewFileName();
 	if(!pFileName)
 		return;
-
+	//открываем файл лога и делаем стартовую метку
 	fResult = f_open(&fFile,pFileName,FA_OPEN_APPEND|FA_WRITE);
 	if(fResult == FR_OK){
-		f_printf(&fFile,"\r\n--------------------START--------------------\r\n");
+		f_printf(&fFile,str_start_label);
 		f_close(&fFile);
 	}
-
+	//ждём команды от СКИФ на запись
 	xSemaphoreTake( xSDWriteProcessSemaphore, portMAX_DELAY );
-
 	while(1)
 	{
+		//ждём команды от СКИФ на запись
 		xSemaphoreTake( xSDWriteProcessSemaphore, portMAX_DELAY );
 		{
+			//открываем файл логи и пишем в него данные
 			fResult = f_open(&fFile,pFileName,FA_OPEN_APPEND|FA_WRITE);
 			if(fResult == FR_OK){
-				Devices_LedToggle();
+				Devices_LedToggle();	//мигнем ледом, чтобы мониторить запись
 
 				for(int i = 0;i<IMU_LOW_DATA_SIZE;i++)
 				{
-					sprintf(usbOutputBuffer,"%5d, %5d, %5d, %5d, %5d, %2d, %5d, %0.6f, %0.6f, %0.6f, %0.6f, %0.6f, %s, %s\n",
+					sprintf(str_skif_logdata,"%5d, %5d, %5d, %5d, %5d, %2d, %5d, %0.6f, %0.6f, %0.6f, %0.6f, %0.6f, %s, %s\n",
 							accumData[i].sensorsData.ulCenterLidarDistance,
 							accumData[i].sensorsData.ulLeftLidarDistance,
 							accumData[i].sensorsData.ulRightLidarDistance,
@@ -188,15 +191,15 @@ void	BSP_SDCard_Task(void const * argument)
 							accumData[i].strNMEAVelocity
 							);
 
-					f_printf(&fFile,"%s",usbOutputBuffer);
+					f_printf(&fFile,"%s",str_skif_logdata);
 				}
 				f_close(&fFile);
 			}
 		}
 	}
 }
-/*----------------------------------------------------------------------------------------------------*/
-/*
+/**----------------------------------------------------------------------------------------------------*/
+/**
  * @brief	Функция получения количества файлов в корневом каталоге
  * @param	strPath:каталог
  * @reval	количество файлов
@@ -212,8 +215,8 @@ uint16_t	BSP_SDCard_GetFileNumbers(char	*strPath)
 	//открываем корень
 	fResult = f_opendir(&fDir,strPath);
 
-	if(fResult == FR_OK){
-		for (;;){
+	if(fResult == FR_OK) {
+		for (;;) {
 			fResult = f_readdir(&fDir, &fInfo);
 
 		if(fResult != FR_OK || fInfo.fname[0] == 0)
@@ -225,9 +228,10 @@ uint16_t	BSP_SDCard_GetFileNumbers(char	*strPath)
 	}
 	return uResult;
 }
-/*----------------------------------------------------------------------------------------------------*/
-/*
+/**----------------------------------------------------------------------------------------------------*/
+/**
  * @brief	Функция проверки и создания отдельных директорий для записи лог файлов
+ * @note	не используется
  * @reval	количество файлов
  */
 void BSP_SDCard_CreateDefaultFolders()
@@ -240,8 +244,8 @@ void BSP_SDCard_CreateDefaultFolders()
 		f_mkdir(DIRNAME_SENSORS);
 }
 
-/*----------------------------------------------------------------------------------------------------*/
-/*
+/**----------------------------------------------------------------------------------------------------*/
+/**
  * @brief	LL функция обработки ошибок SPI
  * @reval	None
  */
@@ -250,8 +254,8 @@ static void SPIx_Error()
 	//HAL_SPI_DeInit(&spiSDHandle);
 	//BSP_SDCard_SPIInit();
 }
-/*----------------------------------------------------------------------------------------------------*/
-/*
+/**----------------------------------------------------------------------------------------------------*/
+/**
  * @brief	LL функция чтения/отправки данных SPI
  * @reval	None
  */
@@ -265,8 +269,8 @@ static void SPIx_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t
     SPIx_Error();
   }
 }
-/*----------------------------------------------------------------------------------------------------*/
-/*
+/**----------------------------------------------------------------------------------------------------*/
+/**
  * @brief	LL функция инициализации SDCard по SPI
  * @reval	None
  */
@@ -279,8 +283,8 @@ void    SD_IO_Init(void)
 	}
 	BSP_SDCard_SPIInit(SPI_BAUDRATEPRESCALER_8);
 }
-/*----------------------------------------------------------------------------------------------------*/
-/*
+/**----------------------------------------------------------------------------------------------------*/
+/**
  * @brief	LL функция софтварного чипселекта
  * @param	state: CS High/Low
  * @reval	None
@@ -292,8 +296,8 @@ void    SD_IO_CSState(uint8_t state)
 	else
 		HAL_GPIO_WritePin(GPIOE,GPIO_PIN_4,GPIO_PIN_RESET);
 }
-/*----------------------------------------------------------------------------------------------------*/
-/*
+/**----------------------------------------------------------------------------------------------------*/
+/**
  * @brief	LL функция чтения/отправки данных SPI
  * @param	DataIn: указатель на буфер принятых данны
  * @param	DataOut: указатель на буфер даннх для отправки
@@ -304,8 +308,8 @@ void   SD_IO_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t Dat
 {
 	SPIx_WriteReadData(DataIn, DataOut, DataLength);
 }
-/*----------------------------------------------------------------------------------------------------*/
-/*
+/**----------------------------------------------------------------------------------------------------*/
+/**
  * @brief	LL функция записи/чтения байта по SPI
  * @param	Data: указатель на буфер принятых данны
  * @reval	прочитанный байт
@@ -316,5 +320,5 @@ uint8_t   SD_IO_WriteByte(uint8_t Data)
 		SPIx_WriteReadData(&Data,&tmp,1);
 	return tmp;
 }
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 

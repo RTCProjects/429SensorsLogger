@@ -4,7 +4,8 @@
   * @brief          ћодуль декодировани€ GNGLL данных с координатами GPS
 **/
 /*----------------------------------------------------------------------------------------------------*/
-#include "nmea.h"
+#include "gps.h"
+
 tNMEAPosition	nmeaPosition;
 
 uint8_t		gpsBuffer[NMEA_BUF_SIZE];

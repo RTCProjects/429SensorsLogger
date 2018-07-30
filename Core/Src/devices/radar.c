@@ -6,8 +6,8 @@
 /**----------------------------------------------------------------------------------------------------*/
 #include "radar.h"
 
-xQueueHandle		os_rx_query;
-xQueueHandle		os_data_query;
+xQueueHandle		os_rx_query;	//очередь на приём сообщений от радара
+xQueueHandle		os_data_query;	//очередь на отправку обработанных данных радара
 
 osThreadId 			os_radar_task;
 radar_rx_buffer_t	rx_buffer;
@@ -29,8 +29,8 @@ void	radar_init(UART_HandleTypeDef *uart_hdl)
 	osThreadDef(radar_task_rtos, radar_task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE );
 	os_radar_task = osThreadCreate(osThread(radar_task_rtos), NULL);
 
-	os_rx_query		= xQueueCreate(1, sizeof(radar_rx_buffer_t));
-	os_data_query 	= xQueueCreate(8, sizeof(radar_queue_data_t));
+	os_rx_query		= xQueueCreate(RADAR_RX_BUFFER_QUERY_SIZE, sizeof(radar_rx_buffer_t));
+	os_data_query 	= xQueueCreate(RADAR_RX_DATA_QUERY_SIZE, sizeof(radar_queue_data_t));
 
 	HAL_UART_Receive_DMA(uart_hdl,(uint8_t *)rx_buffer.data,RADAR_RX_BUFFER_SIZE);
 
@@ -101,7 +101,6 @@ void	radar_package_analysis(radar_rx_buffer_t	*radar_rx_buffer)
 							break;
 						}
 					}
-
 				}
 			}
 		}

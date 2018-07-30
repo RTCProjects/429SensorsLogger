@@ -197,6 +197,7 @@ float	BMP180_GetAltitude(eBMP180Channel ch)
 /**
   * @brief 			Калибровка данных температуры и давления + рассчёт высоты
   * @param			ch:Номер канала высотомера
+  * @note			TODO говнокодец из даташита, надо сделать нормально
   * @reval			None
   */
 void BMP180_CalibrateData(eBMP180Channel ch)
@@ -234,7 +235,6 @@ void BMP180_CalibrateData(eBMP180Channel ch)
 
 	//*Pressure = p;
 	bmpSensor[ch].ulPressure = p;
-
 	bmpSensor[ch].fAltitude = 44330.0f*(1-pow(p/(float)bmpSensor[ch].ulZeroPressure,1/5.255));
 
 	if(bmpSensor[ch].uZeroAltCounter < BMP180_ZEROALT_ITERs){
