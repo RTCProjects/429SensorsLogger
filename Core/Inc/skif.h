@@ -8,8 +8,8 @@
 
 #define RAD_TO_DEG 180./M_PI
 #define DEG_TO_RAD M_PI/180.
-#define A_RES 2.0/32768.0
-#define G_RES 250.0/32768.0
+#define A_RES 16.0/32768.0
+#define G_RES 2000.0/32768.0
 #define M_RES 1.501831501
 #define GYRO_SENS 130
 #define Pi 3.14159265359
@@ -30,6 +30,7 @@ typedef struct
 
 void 	IMU_Init(void);
 void 	IMU_Calcualte(void);
+void	IMU_ExternalISR(void);
 void	*IMU_GetSkifCurrentData(void);
 
 #endif

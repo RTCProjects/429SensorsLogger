@@ -21,6 +21,13 @@ osThreadId 				IMUDeviceHandle;
 void	IMU_Task(void const * argument);
 
 float Ax, Ay, Az, Gx, Gy, Gz;
+float mAx, mAy, mAz;
+
+const float k_offsetx = 1.0f, k_offsety = 1.0f, k_offsetz = 1.0f;
+const float kx1 = 0.998861465243721f,  kx2 = 0.002440092241872f,  kx3 = -0.019185983660316f;
+const float ky1 = -0.003995052213048f, ky2 = 0.998301725777487f,  ky3 = 0.007573822958361f;
+const float kz1 = -0.008787429652340f, kz2 = -0.008839325773609f, kz3 = 0.992047478932301f;
+
 
 tSDCardWriteData	accumData[IMU_LOW_DATA_SIZE] CCM_SRAM;	//размер массива равен частоте опроса датчика IMU
 tSDCardWriteData	skifCurrentData;
@@ -30,6 +37,8 @@ uint16_t	uIMUCounter = 0;
 uint16_t	uIMUSDCardCounter = 0;
 
 xSemaphoreHandle xIMURdySemaphore;
+
+static float clamp(float v, float minv, float maxv);
 /*----------------------------------------------------------------------------------------------------*/
 /**
   * @brief 		IMU Инициализация
@@ -37,8 +46,8 @@ xSemaphoreHandle xIMURdySemaphore;
   */
 void IMU_Init(void)
 {
-	osThreadDef(IMUTask, IMU_Task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE + 0x300 );
-	IMUDeviceHandle = osThreadCreate(osThread(IMUTask), NULL);
+	osThreadDef(skif_task, IMU_Task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE + 0x300 );
+	IMUDeviceHandle = osThreadCreate(osThread(skif_task), NULL);
 
 	vSemaphoreCreateBinary(xIMURdySemaphore);
 	uIMUCounter = 0;
@@ -78,10 +87,10 @@ void	IMU_Task(void const * argument)
 		BSP_I2C_Write_Byte(MPU6050_ADDRESS, CONFIG, 0x06);
 		osDelay(10);
 		//	Configure gyroscope range
-		BSP_I2C_Write_Byte(MPU6050_ADDRESS, GYRO_CONFIG, GYRO_FULL_SCALE_250_DPS);
+		BSP_I2C_Write_Byte(MPU6050_ADDRESS, GYRO_CONFIG, GYRO_FULL_SCALE_2000_DPS);
 		osDelay(10);
 		//	Configure accelerometers range
-		BSP_I2C_Write_Byte(MPU6050_ADDRESS, ACCEL_CONFIG, ACC_FULL_SCALE_2_G);
+		BSP_I2C_Write_Byte(MPU6050_ADDRESS, ACCEL_CONFIG, ACC_FULL_SCALE_16_G);
 		osDelay(10);
 		// Set 200Hz INT
 		BSP_I2C_Write_Byte(MPU6050_ADDRESS, SMPLRT_DIV , 0x03);
@@ -109,20 +118,52 @@ void	IMU_Task(void const * argument)
   * @brief 			Функция запроса измеренных данных с IMU датчика
   * @reval			None
   */
+float fNewAx = 0, fOldAx = 0;
+float fNewAy = 0, fOldAy = 0;
+
+uint16_t	ulTickNew = 0, ulTickOld;
+
+//const float K = 0.05f;
+
+__IO float K = 0.05f;
+
+
+
 void IMU_Calcualte(void)
 {
 	//	Send raw data to the filter
-	MadgwickAHRSupdateIMU(Gx, Gy, Gz, Ax, Ay, Az);
+	/*MadgwickAHRSupdateIMU(Gx, Gy, Gz, Ax, Ay, Az);
 
 	//	Calculate angles from quaternions
 	roll = atan2(2*(q0*q1+q2*q3), q3*q3-q2*q2-q1*q1+q0*q0);
 	pitch = asin(2.0f*(q1*q3-q0*q2));
-	yaw = atan2(2*(q0*q3+q1*q2), q1*q1+q0*q0-q3*q3-q2*q2);
+	yaw = atan2(2*(q0*q3+q1*q2), q1*q1+q0*q0-q3*q3-q2*q2);*/
+
+	ulTickNew = xTaskGetTickCount();
+	/*
+	 *
+	 */
+	Ax = Ax + 0.000706733398438f;
+	Ay = Ay - 0.001532560872396f;
+	Az = Az - 0.033312629557292f;
+
+	mAx = kx1 * Ax + ky1 * Ay + kz1 * Az;
+	mAy = kx2 * Ax + ky2 * Ay + kz2 * Az;
+	mAz = kx3 * Ax + ky3 * Ay + kz3 * Az;
+
+	fNewAx = (1.0f - K) * (fOldAx + (Gx * ((ulTickNew - ulTickOld)*0.001f) )) + K * (M_PI_2 - acosf(clamp(mAx,-1.0,1.0)) );
+	fNewAy = (1.0f - K) * (fOldAy + (Gy * ((ulTickNew - ulTickOld)*0.001f) )) + K * asinf(clamp(mAy,-1.0,1.0));
+
+	fOldAx = fNewAx;
+	fOldAy = fNewAy;
+	ulTickOld = ulTickNew;
 
 	//	Translation of angles from radians to degrees
 	yaw = RAD_TO_DEG * yaw;
-	pitch = RAD_TO_DEG * pitch;
-	roll = RAD_TO_DEG * roll;
+	pitch = RAD_TO_DEG * fNewAx;//pitch;
+	roll = RAD_TO_DEG * fNewAy;
+
+	//printf("%0.2f %0.2f %0.2f\r\n",pitch,roll,mAz);
 
 	//отправка на запись на SD карту происходит после заполнения временного буфера данных от акселерометра
 	if(uIMUCounter < IMU_LOW_DATA_SIZE)
@@ -145,7 +186,7 @@ void IMU_Calcualte(void)
 		 */
 		accumData[uIMUCounter].uRadarVspeed = radar_get_targetdata()->vspeed;
 		accumData[uIMUCounter].sensorsData.ulRadarDistance = radar_get_targetdata()->distance;
-		accumData[uIMUCounter].imuData.fAz = Az;
+		accumData[uIMUCounter].imuData.fAz = mAz;
 		accumData[uIMUCounter].imuData.fPitch = pitch;
 		accumData[uIMUCounter].imuData.fRoll = roll;
 		accumData[uIMUCounter].fLatitude = 0;
@@ -177,7 +218,7 @@ void IMU_Calcualte(void)
   * @brief 			Прерываение 200Hz с MPU6050
   * @reval			None
   */
-void BSP_EXTI5_Callback()
+void IMU_ExternalISR()
 {
 	portBASE_TYPE 	xTaskWoken;
 	uint8_t 		Buf[14];
@@ -214,7 +255,7 @@ void BSP_EXTI5_Callback()
 	}
 
 }
-/*----------------------------------------------------------------------------------------------------*/
+/**----------------------------------------------------------------------------------------------------*/
 /**
   * @brief 			Запрос указателя на последний элемент массива текущих данных Skif
   * @reval			None
@@ -222,5 +263,21 @@ void BSP_EXTI5_Callback()
 void	*IMU_GetSkifCurrentData()
 {
 	return &skifCurrentData;
+}
+/**----------------------------------------------------------------------------------------------------*/
+/**
+  * @brief 			Ограничение значения входного параметра
+  * @param			v - значение параметра
+  * 				minv - левая граница
+  * 				maxv - правая граница
+  * @reval			значение ограниченного параметра
+  */
+static float clamp(float v, float minv, float maxv)
+{
+    if( v>maxv )
+        return maxv;
+    else if( v<minv )
+        return minv;
+    return v;
 }
 /*----------------------------------------------------------------------------------------------------*/

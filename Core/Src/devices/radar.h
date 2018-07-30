@@ -11,7 +11,9 @@
 #define RADAR_RX_BUFFER_QUERY_SIZE	1	//размер очереди DMA буфера
 #define RADAR_RX_DATA_QUERY_SIZE	8	//размер очереди дл€ данных рассто€ни€
 
+//Send msg ID
 #define RADAR_SENSOR_CONFIGURATUION_MSGID	0x200	//Sensor Configuration
+//Rcv msg ID
 #define RADAR_SENSOR_BACK_MSGID				0x400	//Sensor Version
 #define RADAR_SENSOR_STATUS_MSGID			0x60A	//Sensor Status
 #define RADAR_SENSOR_TARGET_STATUS_MSGID	0x70B	//Target Status
@@ -26,7 +28,7 @@ typedef struct
 }radar_rx_buffer_t;
 
 /**
- * —труктура принимаемого пакета данных от радара
+ * —труктура принимаемого пакета данных от радара в общем виде
  */
 typedef struct
 {
@@ -38,7 +40,7 @@ typedef struct
 }radar_rx_package_t;
 
 /**
- * —труктура отправл€емого в очередь сообщени€ с данными рассто€ни€
+ * —труктура отправл€емого в очередь дл€ — »‘ сообщени€ с данными рассто€ни€
  */
 typedef struct
 {
@@ -54,7 +56,7 @@ typedef struct
 	uint8_t	vrelh:3;
 	uint8_t	rsvd:3;
 	uint8_t	roll_count:2;
-}radar_target_into_bytefield_t;	//структура битового пол€ сообщени€ 0x70C
+}radar_target_into_bytefield_t;	//структура битового пол€ [40:47] сообщени€ 0x70C
 typedef struct
 {
 	uint8_t		index;
@@ -71,16 +73,32 @@ typedef struct
  **********************/
 typedef struct
 {
-	uint8_t		rollcount:3;
-	uint8_t		rsvd:5;
-}radar_target_status_bytefield_t;
+	uint8_t		rollcount:2;
+	uint8_t		rsvd:6;
+}radar_target_status_bytefield_t; //структура битового пол€ [8:9] сообщени€ 0x70B
 typedef struct
 {
 	uint8_t		nooftarget;
 	radar_target_status_bytefield_t		bytefield;
 	uint8_t		rsvd[5];
-}radar_target_status_msg_t;
+}radar_target_status_msg_t;	//структура пакета 0x70B
 
+/***********************
+ * 0x400 message struct
+ ***********************/
+typedef struct
+{
+	uint8_t		datatype:7;
+	uint8_t		result:1;
+}radar_target_sensor_version_bytefield_t;
+typedef struct
+{
+	radar_target_sensor_version_bytefield_t		bytefield;
+	uint8_t		master_vers;
+	uint8_t		second_vers;
+	uint8_t		step_vers;
+	uint8_t		rsvd[3];
+}radar_target_sensor_version_msg_t;
 
 
 void					radar_init(UART_HandleTypeDef *uart_hdl);

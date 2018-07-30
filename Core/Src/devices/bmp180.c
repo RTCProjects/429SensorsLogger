@@ -23,8 +23,8 @@ void	BMP180_Init()
 
 	vSemaphoreCreateBinary(xAltitudeSemaphore);
 
-	osThreadDef(altitudeTask, BMP180Task, osPriorityRealtime, 0, configMINIMAL_STACK_SIZE + 0x100);
-	altitudeTaskHandle = osThreadCreate(osThread(altitudeTask), NULL);
+	osThreadDef(altitude_task_rtos, BMP180Task, osPriorityRealtime, 0, configMINIMAL_STACK_SIZE + 0x100);
+	altitudeTaskHandle = osThreadCreate(osThread(altitude_task_rtos), NULL);
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**

@@ -17,7 +17,7 @@ void	BSP_RTC_Init()
 	  __HAL_RTC_RESET_HANDLE_STATE(&RtcHandle);
 
 	if(HAL_RTC_Init(&RtcHandle) != HAL_OK){
-	    Error_Handler();
+	    _Error_Handler("bsp_rtc.h",20);
 	}
 
 	if(HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0) != 0x32F2){
@@ -32,7 +32,7 @@ void	BSP_RTC_Init()
 		  if(HAL_RTC_SetDate(&RtcHandle,&sdatestructure,RTC_FORMAT_BCD) != HAL_OK)
 		  {
 		    /* Initialization Error */
-		    Error_Handler();
+			_Error_Handler("bsp_rtc.h",35);
 		  }
 
 		  stimestructure.Hours = 0x00;
@@ -45,7 +45,7 @@ void	BSP_RTC_Init()
 		    if(HAL_RTC_SetTime(&RtcHandle,&stimestructure,RTC_FORMAT_BCD) != HAL_OK)
 		    {
 		      /* Initialization Error */
-		      Error_Handler();
+		    	_Error_Handler("bsp_rtc.h",48);
 		    }
 
 		    /*##-3- Writes a data in a RTC Backup data Register1 #######################*/

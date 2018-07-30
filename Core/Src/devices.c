@@ -150,43 +150,22 @@ void BSP_EXTI4_Callback()//Center Lidar
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**
+  * @brief  Канал 5 - внешнее прерывание от MPU6050
+  * @retval None
+  */
+void BSP_EXTI5_Callback()
+{
+	IMU_ExternalISR();
+}
+/*----------------------------------------------------------------------------------------------------*/
+/**
   * @brief  	Обработчик прерывания UART1 от радара
   * @param		rxByte:входной байт из потока UART1
   * @retval 	None
   */
 void BSP_USART_RxData(uint8_t rxByte)
 {
-	/*
-	tempData = rxByte;
-	if (tempData == 0xAA) {
-		if (flag == 1) {
-			flag2 = 1;
-			flag = 0;
-		} else flag = 1;
-	}
-
-	if (flag2 == 1) {
-		if(tempData == 0x0C) {
-			flag3 = 1;
-			flag2 = 0;
-		} else flag3 = 0;
-	}
-
-	if (flag3 == 1) {
-		receivedData[receivedDataCounter] = USART1->DR;
-		receivedDataCounter++;
-
-		if (receivedDataCounter > 5) {
-			ulDistances[0] = (receivedData[4] * 256 + receivedData[5]);
-
-			for(uint8_t i = 0; i < 20; i++) {
-				receivedData[i] = 0;
-			}
-			receivedDataCounter  = 0;
-			flag3 = 0;
-		}
-	}*/
-	receivedData[receivedDataCounter] = rxByte;
+	/*receivedData[receivedDataCounter] = rxByte;
 	receivedDataCounter++;
 	if(receivedDataCounter>=20)
 		receivedDataCounter = 0;
@@ -205,7 +184,7 @@ void BSP_USART_RxData(uint8_t rxByte)
 				}
 			}
 		}
-	}
+	}*/
 }
 /*----------------------------------------------------------------------------------------------------*/
 /**

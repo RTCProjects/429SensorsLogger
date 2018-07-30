@@ -39,8 +39,8 @@ int main(void)
   systemClock_Config();
   portClkInit();
 
-  osThreadDef(defaultTask, mainTask, osPriorityNormal, 0, configMINIMAL_STACK_SIZE + 0x400);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  osThreadDef(main_task_rtos, mainTask, osPriorityNormal, 0, configMINIMAL_STACK_SIZE + 0x400);
+  defaultTaskHandle = osThreadCreate(osThread(main_task_rtos), NULL);
   vSemaphoreCreateBinary(xMainSemaphore);
 	
   osKernelStart();	
@@ -285,7 +285,7 @@ void SetupRunTimeStatsTimer()
   */
 void _Error_Handler(char *file, int line)
 {
-  printf("Error handler in %file on %d line\n");
+  printf("Error handler in %s file on %d line\n",file,line);
 
   while(1){
 	osDelay(100);

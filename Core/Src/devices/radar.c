@@ -16,6 +16,8 @@ void			radar_task(void const * argument);
 static uint8_t	radar_calc_chksum(uint8_t	*data);
 
 static radar_queue_data_t target_distance;
+
+__IO static radar_target_sensor_version_msg_t	target_sensor_version;
 /**----------------------------------------------------------------------------------------------------*/
 /**
   * @brief  Инициализация процесса обрабокти данных от NRA24 Radar
@@ -24,8 +26,8 @@ static radar_queue_data_t target_distance;
   */
 void	radar_init(UART_HandleTypeDef *uart_hdl)
 {
-	osThreadDef(radar_task_hdl, radar_task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE );
-	os_radar_task = osThreadCreate(osThread(radar_task_hdl), NULL);
+	osThreadDef(radar_task_rtos, radar_task, osPriorityNormal, 0, configMINIMAL_STACK_SIZE );
+	os_radar_task = osThreadCreate(osThread(radar_task_rtos), NULL);
 
 	os_rx_query		= xQueueCreate(1, sizeof(radar_rx_buffer_t));
 	os_data_query 	= xQueueCreate(8, sizeof(radar_queue_data_t));
@@ -46,12 +48,9 @@ void	radar_task(void const * argument)
 	while(1)
 	{
 		portBASE_TYPE os_xstatus;
-
 		os_xstatus = xQueueReceive(os_rx_query, &current_rx_buffer, portMAX_DELAY);
-
-		if (os_xstatus == pdPASS){
+		if (os_xstatus == pdPASS) {
 			radar_package_analysis(&current_rx_buffer);
-
 		}
 	}
 }
@@ -76,12 +75,9 @@ void	radar_package_analysis(radar_rx_buffer_t	*radar_rx_buffer)
 
 					switch(radar_package.msg_id)
 					{
-						case RADAR_SENSOR_CONFIGURATUION_MSGID: {
-
-						}break;
-
 						case RADAR_SENSOR_BACK_MSGID: {
-
+							memcpy((uint8_t*)&target_sensor_version,(uint8_t*)&radar_package.data,sizeof(radar_target_sensor_version_msg_t));
+							__IO uint8_t	foobar1 = 0;
 						}break;
 
 						case RADAR_SENSOR_STATUS_MSGID: {
